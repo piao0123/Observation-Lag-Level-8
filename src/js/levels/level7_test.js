@@ -485,19 +485,34 @@ function drawBufferDressingMonitorStatic(ctx, cx, cy, angle) {
     ctx.lineWidth = 0.85;
     ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-    // 清晰高对比度监控液晶面板 (56.4 x 11.2)
+    // 清晰高对比度蓝色监控液晶面板 (56.4 x 11.2，保留外壳翡翠色描边)
     const scrX = boxX + 2.8;
     const scrY = boxY + 1.8;
     const scrW = boxW - 5.6;
     const scrH = boxH - 3.6;
-    ctx.fillStyle = '#05261d';
+    const scrGrad = ctx.createLinearGradient(scrX, scrY, scrX + scrW, scrY + scrH);
+    scrGrad.addColorStop(0, '#020617');
+    scrGrad.addColorStop(0.45, '#075985');
+    scrGrad.addColorStop(0.75, '#0369a1');
+    scrGrad.addColorStop(1, '#020617');
+    ctx.fillStyle = scrGrad;
     ctx.fillRect(scrX, scrY, scrW, scrH);
-    ctx.strokeStyle = '#34d399';
-    ctx.lineWidth = 0.7;
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.75;
     ctx.strokeRect(scrX, scrY, scrW, scrH);
 
-    // 双分栏隔线 + 大字清晰等宽读数 (气压 / 温度 / O2)
-    ctx.strokeStyle = 'rgba(110, 231, 183, 0.50)';
+    // 屏幕内部水平扫描底纹
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.14)';
+    ctx.lineWidth = 0.4;
+    for (let sy = scrY + 1.6; sy < scrY + scrH - 0.8; sy += 2.0) {
+        ctx.beginPath();
+        ctx.moveTo(scrX + 0.5, sy);
+        ctx.lineTo(scrX + scrW - 0.5, sy);
+        ctx.stroke();
+    }
+
+    // 双分栏隔线 + 蓝色等宽读数 (气压 / 温度 / O2)
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
     ctx.lineWidth = 0.6;
     ctx.beginPath();
     ctx.moveTo(scrX + 20.5, scrY + 0.8);
@@ -507,30 +522,93 @@ function drawBufferDressingMonitorStatic(ctx, cx, cy, angle) {
     ctx.stroke();
 
     ctx.textAlign = 'left';
-    ctx.font = 'bold 3.4px monospace';
-    ctx.fillStyle = '#6ee7b7';
-    ctx.fillText('PRESS', scrX + 1.4, scrY + 4.3);
-    ctx.fillText('TEMP', scrX + 21.8, scrY + 4.3);
-    ctx.fillText('O2', scrX + 40.4, scrY + 4.3);
+    ctx.font = 'bold 3.1px monospace';
+    ctx.fillStyle = '#7dd3fc';
+    ctx.fillText('PRESS', scrX + 1.4, scrY + 3.2);
+    ctx.fillText('TEMP', scrX + 21.8, scrY + 3.2);
+    ctx.fillText('O2', scrX + 40.4, scrY + 3.2);
 
-    ctx.font = '3.5px monospace';
-    ctx.fillStyle = '#ecfdf5';
-    ctx.fillText('+18.4P', scrX + 1.4, scrY + 9.2);
-    ctx.fillText('21.4C', scrX + 21.8, scrY + 9.2);
-    ctx.fillStyle = '#fbbf24';
-    ctx.fillText('21.0%', scrX + 40.4, scrY + 9.2);
+    ctx.font = '3.2px monospace';
+    ctx.fillStyle = '#e0f2fe';
+    ctx.fillText('+18.4P', scrX + 1.4, scrY + 6.5);
+    ctx.fillText('21.4C', scrX + 21.8, scrY + 6.5);
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillText('21.0%', scrX + 40.4, scrY + 6.5);
+
+    // 底部三栏动态指示条暗槽背景
+    const barY = scrY + 7.7;
+    const barH = 2.2;
+    [
+        { x: scrX + 1.4, w: 17.5 },
+        { x: scrX + 21.8, w: 15.6 },
+        { x: scrX + 40.4, w: 14.4 }
+    ].forEach(slot => {
+        ctx.fillStyle = '#082f49';
+        ctx.fillRect(slot.x, barY, slot.w, barH);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+        ctx.lineWidth = 0.4;
+        ctx.strokeRect(slot.x, barY, slot.w, barH);
+    });
 
     ctx.restore();
 }
 
 function drawBufferDressingMonitorDynamic(ctx, cx, cy, angle) {
     const time = Date.now() * 0.001;
+    const scrX = -28.2;
+    const scrY = -4.3;
+    const scrW = 56.4;
+    const scrH = 11.2;
+
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
-    const blink = Math.sin(time * 3.5) > 0;
-    ctx.fillStyle = blink ? '#34d399' : '#064e3b';
-    ctx.fillRect(21.5, -4.0, 4.2, 2.2);
+
+    // 1. 屏幕扫描光束 (柔和循环扫过蓝屏)
+    const sweepT = (time * 0.42) % 1;
+    const sweepX = scrX + 1.0 + sweepT * (scrW - 5.0);
+    const sweepGrad = ctx.createLinearGradient(sweepX, 0, sweepX + 4.0, 0);
+    sweepGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+    sweepGrad.addColorStop(0.5, 'rgba(125, 211, 252, 0.22)');
+    sweepGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = sweepGrad;
+    ctx.fillRect(sweepX, scrY + 0.5, 4.0, scrH - 1.0);
+
+    // 2. 三栏实时动态指示条 (PRESS / TEMP / O2)
+    const barY = scrY + 8.05;
+    const barH = 1.5;
+    const bars = [
+        { x: scrX + 1.75, maxW: 16.8, ratio: 0.68 + 0.16 * Math.sin(time * 2.1) },
+        { x: scrX + 22.15, maxW: 14.9, ratio: 0.58 + 0.14 * Math.sin(time * 1.6 + 1.2) },
+        { x: scrX + 40.75, maxW: 13.7, ratio: 0.78 + 0.10 * Math.sin(time * 2.6 + 2.4) }
+    ];
+    bars.forEach(b => {
+        const fillW = Math.max(2.0, b.maxW * b.ratio);
+        const barGrad = ctx.createLinearGradient(b.x, 0, b.x + fillW, 0);
+        barGrad.addColorStop(0, '#0284c7');
+        barGrad.addColorStop(0.75, '#38bdf8');
+        barGrad.addColorStop(1, '#e0f2fe');
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(b.x, barY, fillW, barH);
+        // 高亮前端游标线
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(b.x + fillW - 0.8, barY - 0.15, 0.8, barH + 0.3);
+    });
+
+    // 3. 右上角闪烁蓝屏在线指示灯 + 左上呼吸脉冲点
+    const blink = Math.sin(time * 3.8) > 0;
+    ctx.fillStyle = blink ? '#38bdf8' : '#0c4a6e';
+    ctx.fillRect(22.4, -3.6, 4.0, 1.8);
+    if (blink) {
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fillRect(23.1, -3.2, 2.6, 1.0);
+    }
+    const pulseAlpha = 0.45 + 0.55 * (Math.sin(time * 3.0) * 0.5 + 0.5);
+    ctx.fillStyle = `rgba(56, 189, 248, ${pulseAlpha.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(scrX + 17.4, scrY + 2.2, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.restore();
 }
 
@@ -542,7 +620,7 @@ function getBufferDressingMonitor(cx, cy, angle) {
         'BUFFER PRESSURE & TEMP MONITOR',
         drawBufferDressingMonitorStatic,
         drawBufferDressingMonitorDynamic,
-        '__bufMonitorCache'
+        '__bufMonitorCacheV2'
     );
 }
 
@@ -782,13 +860,21 @@ function getBufferDressingSuitRack(cx, cy, angle) {
 // 全区总量对标三联工作站 (~140图元, ~60色)；红绿指示灯直接读取通道状态字段
 // =========================================================================
 
-// 状态驱动的红绿双色指示灯 (尺寸清晰，喷洒中亮红、喷完亮绿)
+// 状态驱动的三态指示灯 (没轮到/暂停=琥珀 #f59e0b，喷洒中=红 #ef4444，已完成=绿 #10b981)
 function drawNozzleDualIndicatorLamps(ctx, bx, yRed, yGreen, isSpraying, isDone) {
-    ctx.fillStyle = isSpraying ? '#ef4444' : (isDone ? '#3b0d0d' : '#521818');
+    if (isSpraying) {
+        ctx.fillStyle = '#ef4444';
+        ctx.strokeStyle = '#fca5a5';
+    } else if (isDone) {
+        ctx.fillStyle = '#3b0d0d';
+        ctx.strokeStyle = '#1f2937';
+    } else {
+        ctx.fillStyle = '#f59e0b';
+        ctx.strokeStyle = '#fde68a';
+    }
     ctx.beginPath();
     ctx.arc(bx, yRed, 1.35, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = isSpraying ? '#fca5a5' : '#1f2937';
     ctx.lineWidth = 0.5;
     ctx.stroke();
 
@@ -873,14 +959,89 @@ function drawBufferDeconGratingStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
-function getBufferDeconGrating(cx, cy, angle) {
+function drawBufferDeconGratingDynamic(ctx, cx, cy, angle, getCorridor) {
+    const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
+    const isAir = !!(corridor && corridor.airSpraying);
+    const isLiq = !!(corridor && corridor.liquidSpraying);
+    const isActive = isAir || isLiq;
+    const duration = (corridor && corridor.sprayDuration) ? corridor.sprayDuration : 180;
+    const activeRatio = corridor
+        ? (isLiq
+            ? Math.min(1, (corridor.liquidProgress || 0) / duration)
+            : (isAir ? Math.min(1, (corridor.airProgress || 0) / duration) : Math.max(0, Math.min(1, ((corridor.airProgress || 0) + (corridor.liquidProgress || 0)) / (duration * 2)))))
+        : 0;
+    const time = Date.now() * 0.001;
+    const halfW = 33.6;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+
+    // 1. 右侧液位视窗动态液柱条 (联动喷淋进度与实时波动)
+    const gx = halfW - 3.6;
+    const gy = -6.0;
+    const gw = 2.2;
+    const gh = 12.0;
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(gx, gy, gw, gh);
+    const levelRatio = isLiq
+        ? (0.35 + 0.55 * activeRatio + 0.08 * Math.sin(time * 7.0))
+        : (isAir ? (0.30 + 0.45 * activeRatio + 0.08 * Math.sin(time * 5.0)) : (0.28 + 0.12 * Math.sin(time * 1.8)));
+    const clampedLevel = Math.max(0.15, Math.min(0.96, levelRatio));
+    const fillH = Math.max(2.0, (gh - 0.8) * clampedLevel);
+    const fillY = gy + gh - 0.4 - fillH;
+    ctx.fillStyle = isLiq ? '#22d3ee' : (isAir ? '#bae6fd' : '#f59e0b');
+    ctx.fillRect(gx + 0.35, fillY, gw - 0.7, fillH);
+    ctx.fillStyle = '#e0f2fe';
+    ctx.fillRect(gx + 0.25, fillY, gw - 0.5, 0.9);
+    ctx.strokeStyle = isActive ? '#38bdf8' : '#0ea5e9';
+    ctx.lineWidth = 0.45;
+    ctx.strokeRect(gx, gy, gw, gh);
+
+    // 2. 格栅左框角双遥测脉冲指示灯
+    [-19.5, 19.5].forEach((ly, idx) => {
+        const pulse = Math.sin(time * (isActive ? 7.0 : 2.6) + idx * Math.PI) > 0;
+        ctx.fillStyle = isActive
+            ? (pulse ? (isLiq ? '#22d3ee' : '#e0f2fe') : '#075985')
+            : (pulse ? '#34d399' : '#064e3b');
+        ctx.beginPath();
+        ctx.arc(-halfW + 1.8, ly, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 3. 喷淋/气流激活时，双排污口动态排水波纹与液体积水反光
+    if (isLiq) {
+        ctx.fillStyle = `rgba(34, 211, 238, ${(0.18 + 0.08 * Math.sin(time * 4.5)).toFixed(2)})`;
+        ctx.fillRect(-halfW + 3.5, -6.0, (halfW - 4.0) * 2, 12.0);
+    }
+    if (isActive) {
+        [-15, 15].forEach((dx, idx) => {
+            for (let rIdx = 0; rIdx < 2; rIdx++) {
+                const wave = (time * (isLiq ? 1.5 : 2.2) + idx * 0.35 + rIdx * 0.5) % 1;
+                const r = 3.2 + wave * (isLiq ? 6.5 : 4.6);
+                const alpha = (1 - wave) * (isLiq ? 0.75 : 0.45);
+                ctx.strokeStyle = isLiq
+                    ? `rgba(34, 211, 238, ${alpha.toFixed(2)})`
+                    : `rgba(224, 242, 254, ${alpha.toFixed(2)})`;
+                ctx.lineWidth = isLiq ? 0.85 : 0.55;
+                ctx.beginPath();
+                ctx.arc(dx, 0, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        });
+    }
+
+    ctx.restore();
+}
+
+function getBufferDeconGrating(cx, cy, angle, getCorridor) {
     return buildCorridorPropBox(
         cx, cy, angle, 67.2, 46.2, true,
         'buffer_decon_grating',
         'DECON FLOOR GRATING & WASTE SUMP',
         'DECON DRAINAGE GRATING & SUMP',
         drawBufferDeconGratingStatic,
-        null,
+        (ctx, x, y, a) => drawBufferDeconGratingDynamic(ctx, x, y, a, getCorridor),
         '__bufDeconGratingCache'
     );
 }
@@ -976,22 +1137,131 @@ function drawBufferDeconAirNozzlesStatic(ctx, cx, cy, angle, isNorth) {
 
 function drawBufferDeconAirNozzlesDynamic(ctx, cx, cy, angle, isNorth, getCorridor) {
     const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
-    const isSpraying = !!(corridor && (corridor.airSpraying || corridor.sprayState === 'air_spray'));
-    const isDone = !!(corridor && (corridor.sprayState === 'liquid_spray' || corridor.sprayState === 'done'));
+    const duration = (corridor && corridor.sprayDuration) ? corridor.sprayDuration : 180;
+    const progress = corridor ? (corridor.airProgress || 0) : 0;
+    const progressRatio = Math.max(0, Math.min(1, progress / duration));
+    const isSpraying = !!(corridor && corridor.airSpraying);
+    const isDone = !!(corridor && (corridor.airStatus === 'done' || progress >= duration));
+    const time = Date.now() * 0.001;
 
+    const W = 64.4;
+    const halfW = W / 2;
     const halfH = 9.1;
     const dir = isNorth ? 1 : -1;
     const wallY = isNorth ? -halfH : halfH;
+    const pipeY = wallY + dir * 3.8;
+
+    // 尺寸按通道几何推导：从喷嘴末端 (wallY + dir * 17.2) 到通道中线 (wallY + dir * corridor.width * 0.5)
+    const corridorHalfW = ((corridor && corridor.width) ? corridor.width : 91.5) * 0.5;
+    const tipOffset = 17.2;
+    const centerReach = Math.max(18, corridorHalfW - tipOffset);
+    const jetReach = centerReach + 4.0;
 
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
 
-    BUFFER_DECON_AIR_NOZZLE_XS.forEach(nx => {
+    // 1. 左端截断阀块动态脉冲指示灯 (待机琥珀 / 吹扫高亮青白 / 完成绿)
+    const valvePulse = isSpraying
+        ? (Math.sin(time * 9.0) > 0)
+        : (Math.sin(time * 2.4) > 0);
+    ctx.fillStyle = isSpraying
+        ? (valvePulse ? '#e0f2fe' : '#38bdf8')
+        : (isDone ? '#10b981' : (valvePulse ? '#fbbf24' : '#b45309'));
+    ctx.fillRect(-halfW + 3.0, pipeY - 0.75, 2.4, 1.5);
+
+    // 2. 供气总管上的分段计时进度反馈条 (仅在有进度/喷洒中/已完成时叠加，不改静态底座)
+    if (isSpraying || progress > 0) {
+        const trackX = -halfW + 7.2;
+        const trackW = W - 10.2;
+        const trackY = pipeY - 1.3;
+        const trackH = 2.6;
+        ctx.fillStyle = 'rgba(2, 12, 22, 0.85)';
+        ctx.fillRect(trackX, trackY, trackW, trackH);
+        const fillW = Math.max(1.2, trackW * progressRatio);
+        if (isDone) {
+            ctx.fillStyle = '#10b981';
+        } else if (isSpraying) {
+            const pGrad = ctx.createLinearGradient(trackX, 0, trackX + fillW, 0);
+            pGrad.addColorStop(0, '#0284c7');
+            pGrad.addColorStop(0.75, '#7dd3fc');
+            pGrad.addColorStop(1, '#f0f9ff');
+            ctx.fillStyle = pGrad;
+        } else {
+            ctx.fillStyle = '#f59e0b';
+        }
+        ctx.fillRect(trackX + 0.4, trackY + 0.4, Math.max(0, fillW - 0.8), trackH - 0.8);
+        if (isSpraying && progressRatio < 1) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(trackX + fillW - 1.0, trackY + 0.2, 1.2, trackH - 0.4);
+        }
+        // 3 秒刻度线
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        ctx.fillRect(trackX + trackW / 3 - 0.3, trackY + 0.3, 0.6, trackH - 0.6);
+        ctx.fillRect(trackX + (trackW * 2) / 3 - 0.3, trackY + 0.3, 0.6, trackH - 0.6);
+        ctx.strokeStyle = isDone ? '#6ee7b7' : (isSpraying ? '#7dd3fc' : '#fbbf24');
+        ctx.lineWidth = 0.45;
+        ctx.strokeRect(trackX, trackY, trackW, trackH);
+    }
+
+    // 3. 喷头指示灯 + 气喷流动态粒子层 (快而淡，向通道中线高压喷射)
+    BUFFER_DECON_AIR_NOZZLE_XS.forEach((nx, idx) => {
         const ledX = nx + 4.4;
         const yRed = wallY + dir * 7.8;
         const yGreen = wallY + dir * 10.6;
         drawNozzleDualIndicatorLamps(ctx, ledX, yRed, yGreen, isSpraying, isDone);
+
+        if (isSpraying) {
+            const tipY = wallY + dir * tipOffset;
+            const endY = tipY + dir * jetReach;
+
+            // A) 淡白青高速气流扩散锥
+            const coneGrad = ctx.createLinearGradient(nx, tipY, nx, endY);
+            coneGrad.addColorStop(0, 'rgba(224, 242, 254, 0.30)');
+            coneGrad.addColorStop(0.55, 'rgba(186, 230, 253, 0.14)');
+            coneGrad.addColorStop(1, 'rgba(186, 230, 253, 0.0)');
+            ctx.fillStyle = coneGrad;
+            ctx.beginPath();
+            ctx.moveTo(nx - 1.8, tipY);
+            ctx.lineTo(nx + 1.8, tipY);
+            ctx.lineTo(nx + 6.8, endY);
+            ctx.lineTo(nx - 6.8, endY);
+            ctx.closePath();
+            ctx.fill();
+
+            // B) 高速锐利气流线 (8 条/喷头，高速冲向通道中线)
+            for (let k = 0; k < 8; k++) {
+                const p = (time * 6.2 + idx * 0.27 + k * 0.125) % 1;
+                const latSeed = (k - 3.5) / 3.5;
+                const x0 = nx + latSeed * (1.4 + p * 3.4);
+                const x1 = nx + latSeed * (1.6 + Math.min(1, p + 0.22) * 4.4);
+                const sLen = 5.0 + (k % 3) * 2.2;
+                const yStart = tipY + dir * (p * (jetReach - 2.0));
+                const yEnd = yStart + dir * sLen;
+                const alpha = Math.max(0.08, (1 - p) * 0.72);
+                ctx.strokeStyle = (k % 2 === 0)
+                    ? `rgba(240, 249, 255, ${alpha.toFixed(2)})`
+                    : `rgba(186, 230, 253, ${(alpha * 0.85).toFixed(2)})`;
+                ctx.lineWidth = (k % 3 === 0) ? 1.15 : 0.8;
+                ctx.beginPath();
+                ctx.moveTo(x0, yStart);
+                ctx.lineTo(x1, yEnd);
+                ctx.stroke();
+            }
+
+            // C) 淡白气旋微粒 (7 粒/喷头，中线附近微微散开)
+            for (let m = 0; m < 7; m++) {
+                const mp = (time * 5.0 + idx * 0.31 + m * 0.143) % 1;
+                const jitter = Math.sin(time * 14.0 + m * 2.1 + idx) * 1.6;
+                const px = nx + ((m - 3) / 3) * (1.5 + mp * 4.2) + jitter * mp;
+                const py = tipY + dir * (mp * jetReach);
+                const mAlpha = Math.max(0.05, (1 - mp * 0.85) * 0.52);
+                ctx.fillStyle = `rgba(240, 249, 255, ${mAlpha.toFixed(2)})`;
+                ctx.beginPath();
+                ctx.arc(px, py, 0.8 + mp * 0.7, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
     });
 
     ctx.restore();
@@ -1100,22 +1370,164 @@ function drawBufferDeconLiquidNozzlesStatic(ctx, cx, cy, angle, isNorth) {
 
 function drawBufferDeconLiquidNozzlesDynamic(ctx, cx, cy, angle, isNorth, getCorridor) {
     const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
-    const isSpraying = !!(corridor && (corridor.liquidSpraying || corridor.sprayState === 'liquid_spray'));
-    const isDone = !!(corridor && corridor.sprayState === 'done');
+    const duration = (corridor && corridor.sprayDuration) ? corridor.sprayDuration : 180;
+    const progress = corridor ? (corridor.liquidProgress || 0) : 0;
+    const progressRatio = Math.max(0, Math.min(1, progress / duration));
+    const isSpraying = !!(corridor && corridor.liquidSpraying);
+    const isDone = !!(corridor && (corridor.liquidStatus === 'done' || progress >= duration));
+    const time = Date.now() * 0.001;
 
+    const W = 68.6;
+    const halfW = W / 2;
     const halfH = 9.1;
     const dir = isNorth ? 1 : -1;
     const wallY = isNorth ? -halfH : halfH;
+    const mainPipeY = wallY + dir * 2.8;
+
+    // 尺寸按通道几何推导：从喷嘴末端 (wallY + dir * 17.4) 到通道中线格栅区 (wallY + dir * corridor.width * 0.5)
+    const corridorHalfW = ((corridor && corridor.width) ? corridor.width : 91.5) * 0.5;
+    const tipOffset = 17.4;
+    const centerReach = Math.max(18, corridorHalfW - tipOffset);
+    const mistReach = centerReach + 3.0;
 
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
 
-    BUFFER_DECON_LIQ_NOZZLE_XS.forEach(nx => {
+    // 1. 左侧药液视窗动态液位条
+    const winX = -halfW + 1.8;
+    const winY = wallY + dir * 4.0 - 2.2;
+    const winW = 4.0;
+    const winH = 4.4;
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(winX, winY, winW, winH);
+    const liqRatio = isSpraying
+        ? (0.45 + 0.45 * Math.sin(time * 7.5))
+        : (isDone ? 0.85 : (0.55 + 0.20 * Math.sin(time * 2.0)));
+    const liqH = Math.max(1.0, (winH - 0.6) * liqRatio);
+    ctx.fillStyle = isSpraying ? '#22d3ee' : (isDone ? '#10b981' : '#f59e0b');
+    ctx.fillRect(winX + 0.4, winY + winH - 0.3 - liqH, winW - 0.8, liqH);
+    ctx.fillStyle = '#e0f2fe';
+    ctx.fillRect(winX + 0.3, winY + winH - 0.3 - liqH, winW - 0.6, 0.7);
+    ctx.strokeStyle = isSpraying ? '#22d3ee' : '#64748b';
+    ctx.lineWidth = 0.45;
+    ctx.strokeRect(winX, winY, winW, winH);
+
+    // 2. 供液总管分段计时进度反馈条 (仅在有进度/喷洒中/已完成时叠加，不改静态底座)
+    if (isSpraying || progress > 0) {
+        const trackX = -halfW + 7.2;
+        const trackW = W - 10.2;
+        const trackY = mainPipeY - 1.3;
+        const trackH = 2.6;
+        ctx.fillStyle = 'rgba(2, 16, 18, 0.88)';
+        ctx.fillRect(trackX, trackY, trackW, trackH);
+        const fillW = Math.max(1.2, trackW * progressRatio);
+        if (isDone) {
+            ctx.fillStyle = '#10b981';
+        } else if (isSpraying) {
+            const pGrad = ctx.createLinearGradient(trackX, 0, trackX + fillW, 0);
+            pGrad.addColorStop(0, '#059669');
+            pGrad.addColorStop(0.65, '#22d3ee');
+            pGrad.addColorStop(1, '#cffafe');
+            ctx.fillStyle = pGrad;
+        } else {
+            ctx.fillStyle = '#f59e0b';
+        }
+        ctx.fillRect(trackX + 0.4, trackY + 0.4, Math.max(0, fillW - 0.8), trackH - 0.8);
+        if (isSpraying && progressRatio < 1) {
+            ctx.fillStyle = '#ecfeff';
+            ctx.fillRect(trackX + fillW - 1.0, trackY + 0.2, 1.2, trackH - 0.4);
+        }
+        // 3 秒刻度线
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        ctx.fillRect(trackX + trackW / 3 - 0.3, trackY + 0.3, 0.6, trackH - 0.6);
+        ctx.fillRect(trackX + (trackW * 2) / 3 - 0.3, trackY + 0.3, 0.6, trackH - 0.6);
+        ctx.strokeStyle = isDone ? '#6ee7b7' : (isSpraying ? '#22d3ee' : '#fbbf24');
+        ctx.lineWidth = 0.45;
+        ctx.strokeRect(trackX, trackY, trackW, trackH);
+    }
+
+    // 3. 喷头指示灯 + 消毒液雾化喷流与落地溅射 (慢、带色、粒密清晰)
+    BUFFER_DECON_LIQ_NOZZLE_XS.forEach((nx, idx) => {
         const ledX = nx + 4.8;
         const yRed = wallY + dir * 7.8;
         const yGreen = wallY + dir * 10.6;
         drawNozzleDualIndicatorLamps(ctx, ledX, yRed, yGreen, isSpraying, isDone);
+
+        if (isSpraying) {
+            const tipY = wallY + dir * tipOffset;
+            const impY = tipY + dir * (centerReach - 1.0);
+            const endY = tipY + dir * mistReach;
+
+            // A) 浓郁带色翡翠青雾锥
+            const mistGrad = ctx.createLinearGradient(nx, tipY, nx, endY);
+            mistGrad.addColorStop(0, 'rgba(16, 185, 129, 0.34)');
+            mistGrad.addColorStop(0.55, 'rgba(34, 211, 238, 0.44)');
+            mistGrad.addColorStop(1, 'rgba(56, 189, 248, 0.14)');
+            ctx.fillStyle = mistGrad;
+            ctx.beginPath();
+            ctx.moveTo(nx - 3.6, tipY);
+            ctx.lineTo(nx + 3.6, tipY);
+            ctx.lineTo(nx + 8.4, endY);
+            ctx.lineTo(nx - 8.4, endY);
+            ctx.closePath();
+            ctx.fill();
+
+            // B) 较慢且密集的带色药液液滴 (10 粒/喷头，带高亮核，缩放下清晰)
+            for (let k = 0; k < 10; k++) {
+                const p = (time * 2.0 + idx * 0.21 + k * 0.1) % 1;
+                const spreadSeed = (k - 4.5) / 4.5;
+                const dropReach = centerReach * (0.76 + (k % 3) * 0.13);
+                const dx = nx + spreadSeed * (2.6 + p * 5.2) + Math.sin(time * 5.0 + k) * 0.6;
+                const dy = tipY + dir * (p * dropReach);
+                const alpha = Math.max(0.25, 1 - p * 0.45);
+                const r = 1.25 + (k % 3) * 0.35;
+                ctx.fillStyle = (k % 2 === 0)
+                    ? `rgba(34, 211, 238, ${alpha.toFixed(2)})`
+                    : `rgba(52, 211, 153, ${alpha.toFixed(2)})`;
+                ctx.beginPath();
+                ctx.arc(dx, dy, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = `rgba(207, 250, 254, ${(alpha * 0.85).toFixed(2)})`;
+                ctx.beginPath();
+                ctx.arc(dx, dy, r * 0.42, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // C) 落地积液光晕 + 扩散水花波纹 + 四散溅射微滴
+            ctx.fillStyle = 'rgba(34, 211, 238, 0.22)';
+            ctx.beginPath();
+            ctx.ellipse(nx, impY, 6.2, 3.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            for (let rIdx = 0; rIdx < 2; rIdx++) {
+                const rp = (time * 2.3 + idx * 0.28 + rIdx * 0.5) % 1;
+                const rr = 1.6 + rp * 5.6;
+                const rAlpha = (1 - rp) * 0.72;
+                ctx.strokeStyle = (rIdx === 0)
+                    ? `rgba(34, 211, 238, ${rAlpha.toFixed(2)})`
+                    : `rgba(110, 231, 183, ${rAlpha.toFixed(2)})`;
+                ctx.lineWidth = 0.85;
+                ctx.beginPath();
+                ctx.ellipse(nx, impY, rr, rr * 0.62, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            for (let sp = 0; sp < 6; sp++) {
+                const spProg = (time * 2.9 + idx * 0.19 + sp * 0.167) % 1;
+                const ang = (sp / 6) * Math.PI * 2 + idx * 0.7;
+                const dist = 1.8 + spProg * 5.8;
+                const sx = nx + Math.cos(ang) * dist;
+                const sy = impY + Math.sin(ang) * dist * 0.65 - Math.sin(spProg * Math.PI) * 1.6;
+                const sAlpha = (1 - spProg) * 0.85;
+                ctx.fillStyle = (sp % 2 === 0)
+                    ? `rgba(165, 243, 252, ${sAlpha.toFixed(2)})`
+                    : `rgba(52, 211, 153, ${sAlpha.toFixed(2)})`;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 0.95 + (1 - spProg) * 0.45, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
     });
 
     ctx.restore();
@@ -1156,68 +1568,154 @@ function createCorridorDoorSprite(logicalW, logicalH, drawFn) {
 }
 
 function drawBiometricTerminalStatic(ctx, sideSign) {
-    // 贴平紧凑型实验室门侧生物识别终端 (位于北侧门垛肩部 px: ±[6.5..13.1], py: [-45.5..-27.5])
-    const cx = sideSign * 9.8;
-    const cy = -36.5;
-    const bw = 6.6;
-    const bh = 18.0;
+    // 贴平紧凑型实验室门侧生物识别终端 (位于北侧门垛肩部 px: ±[6.3..16.8], py: [-45.5..-21.5])
+    const cx = sideSign * 11.55;
+    const cy = -33.5;
+    const bw = 10.5;
+    const bh = 24.0;
     const x0 = cx - bw / 2;
     const y0 = cy - bh / 2;
 
-    // 1. 轻投影 + 贴墙导引线
-    ctx.fillStyle = 'rgba(2, 10, 8, 0.52)';
-    ctx.fillRect(x0 + sideSign * 0.7 - 0.3, y0 + 0.8, bw + 0.6, bh + 0.6);
+    // 1. 贴平轻阴影
+    ctx.fillStyle = 'rgba(2, 10, 18, 0.42)';
+    ctx.fillRect(x0 + sideSign * 0.5 - 0.25, y0 + 0.5, bw + 0.5, bh + 0.5);
 
-    // 2. 浅灰实验室复合面板外壳 (0.75px 翡翠/银灰描边，贴平少凹凸)
+    // 2. 浅灰实验室复合面板外壳 (与门板同调：#94a3b8 / #e2e8f0 / #cbd5e1 + 细描边，贴平安装)
     const bodyGrad = ctx.createLinearGradient(x0, y0, x0 + bw, y0 + bh);
     bodyGrad.addColorStop(0, '#cbd5e1');
-    bodyGrad.addColorStop(0.55, '#94a3b8');
-    bodyGrad.addColorStop(1, '#64748b');
+    bodyGrad.addColorStop(0.35, '#e2e8f0');
+    bodyGrad.addColorStop(0.75, '#cbd5e1');
+    bodyGrad.addColorStop(1, '#94a3b8');
     ctx.fillStyle = bodyGrad;
     ctx.fillRect(x0, y0, bw, bh);
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 1.4;
-    ctx.strokeRect(x0, y0, bw, bh);
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 0.75;
-    ctx.strokeRect(x0, y0, bw, bh);
 
-    // 3. 上部：齐平虹膜扫描光学窗
-    const irisY = y0 + 6.4;
-    ctx.fillStyle = '#062019';
+    // 细描边与贴平高光倒角
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.0;
+    ctx.strokeRect(x0, y0, bw, bh);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+    ctx.lineWidth = 0.55;
     ctx.beginPath();
-    ctx.arc(cx, irisY, 2.35, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#10b981';
+    ctx.moveTo(x0 + 0.7, y0 + bh - 0.7);
+    ctx.lineTo(x0 + 0.7, y0 + 0.7);
+    ctx.lineTo(x0 + bw - 0.7, y0 + 0.7);
+    ctx.stroke();
+
+    // 顶部状态灯槽底座 (由 drawAirtightBlastDoor 动态填充 isLocked/openProgress 灯条)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(cx - 2.8, y0 + 1.0, 5.6, 1.9);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.4;
+    ctx.strokeRect(cx - 2.8, y0 + 1.0, 5.6, 1.9);
+
+    // 3. 主科技蓝屏 (与控制台屏幕同色系 #38bdf8 / #0369a1 / #020617)
+    const scrX = x0 + 1.0;
+    const scrY = y0 + 3.7;
+    const scrW = bw - 2.0; // 8.5px
+    const scrH = 17.6;     // 17.6px
+    const scrGrad = ctx.createLinearGradient(scrX, scrY, scrX + scrW, scrY + scrH);
+    scrGrad.addColorStop(0, '#020617');
+    scrGrad.addColorStop(0.45, '#075985');
+    scrGrad.addColorStop(0.7, '#0369a1');
+    scrGrad.addColorStop(1, '#020617');
+    ctx.fillStyle = scrGrad;
+    ctx.fillRect(scrX, scrY, scrW, scrH);
+
+    // 屏幕细边框 (#38bdf8)
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.85;
+    ctx.strokeRect(scrX, scrY, scrW, scrH);
+
+    // 屏幕内部水平扫描底纹
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
+    ctx.lineWidth = 0.45;
+    for (let sy = scrY + 1.6; sy < scrY + scrH - 1.0; sy += 2.2) {
+        ctx.beginPath();
+        ctx.moveTo(scrX + 0.5, sy);
+        ctx.lineTo(scrX + scrW - 0.5, sy);
+        ctx.stroke();
+    }
+
+    // 3A. 上区：虹膜识别准星环
+    const irisY = scrY + 4.3;
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.arc(cx, irisY, 2.75, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#7dd3fc';
     ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(cx, irisY, 1.65, -0.4, Math.PI * 1.35);
     ctx.stroke();
 
-    ctx.fillStyle = '#34d399';
+    ctx.fillStyle = '#e0f2fe';
     ctx.beginPath();
-    ctx.arc(cx, irisY, 0.85, 0, Math.PI * 2);
+    ctx.arc(cx, irisY, 0.8, 0, Math.PI * 2);
     ctx.fill();
 
-    // 4. 下部：掌纹光学压板玻璃窗
-    const palmX = x0 + 1.05;
-    const palmY = y0 + 10.1;
-    const palmW = bw - 2.1;
-    const palmH = 6.6;
-    ctx.fillStyle = '#051f18';
-    ctx.fillRect(palmX, palmY, palmW, palmH);
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 0.6;
-    ctx.strokeRect(palmX, palmY, palmW, palmH);
-
-    // 极简扫描基线 + 单点琥珀参考标
-    ctx.strokeStyle = '#6ee7b7';
-    ctx.lineWidth = 0.6;
+    // 虹膜准星十字微标
+    ctx.strokeStyle = '#7dd3fc';
+    ctx.lineWidth = 0.5;
     ctx.beginPath();
-    ctx.moveTo(palmX + 0.7, palmY + 3.3);
-    ctx.lineTo(palmX + palmW - 0.7, palmY + 3.3);
+    ctx.moveTo(cx - 3.6, irisY); ctx.lineTo(cx - 2.3, irisY);
+    ctx.moveTo(cx + 2.3, irisY); ctx.lineTo(cx + 3.6, irisY);
     ctx.stroke();
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(cx - 0.7, palmY + 0.7, 1.4, 0.8);
+    // 分隔扫描线
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(scrX + 0.7, scrY + 8.4);
+    ctx.lineTo(scrX + scrW - 0.7, scrY + 8.4);
+    ctx.stroke();
+
+    // 3B. 下区：掌纹扫描界面 + 高亮扫描激光线
+    const palmTop = scrY + 9.4;
+    ctx.fillStyle = 'rgba(14, 165, 233, 0.24)';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    // 掌心主体
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(cx - 2.3, palmTop + 2.7, 4.6, 4.1, 1.2) : ctx.rect(cx - 2.3, palmTop + 2.7, 4.6, 4.1);
+    ctx.fill();
+    ctx.stroke();
+    // 4根清晰手指条 + 拇指
+    ctx.fillStyle = '#7dd3fc';
+    [-1.8, -0.6, 0.6, 1.8].forEach((fx, idx) => {
+        const fh = (idx === 1 || idx === 2) ? 2.4 : 2.0;
+        ctx.fillRect(cx + fx - 0.38, palmTop + (2.4 - fh), 0.76, fh);
+    });
+    ctx.fillRect(cx - 3.2, palmTop + 3.4, 0.85, 2.0);
+
+    // 亮蓝白色横向激光扫描线
+    const scanY = palmTop + 3.7;
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(scrX + 0.5, scanY);
+    ctx.lineTo(scrX + scrW - 0.5, scanY);
+    ctx.stroke();
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.moveTo(scrX + 0.7, scanY);
+    ctx.lineTo(scrX + scrW - 0.7, scanY);
+    ctx.stroke();
+
+    // 屏幕玻璃斜向高光反光
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.14)';
+    ctx.beginPath();
+    ctx.moveTo(scrX + 0.4, scrY + 0.4);
+    ctx.lineTo(scrX + scrW * 0.65, scrY + 0.4);
+    ctx.lineTo(scrX + 0.4, scrY + scrH * 0.45);
+    ctx.closePath();
+    ctx.fill();
+
+    // 4. 底部齐平蓝色读卡指示槽
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(cx - 1.5, y0 + bh - 1.7, 3.0, 0.8);
 }
 
 function drawPneumaticManifoldBoxStatic(ctx, sideSign) {
@@ -1461,8 +1959,8 @@ function ensureAirtightBlastDoorSprites() {
         ctx.stroke();
     });
 
-    // 2. 贴平实验室门框收纳门兜 + 瘦身版生物识别与气密阀盒 (严格落在 ±45.75 内)
-    const housingSprite = createCorridorDoorSprite(32, 96, (ctx) => {
+    // 2. 贴平实验室门框收纳门兜 + 放大版蓝屏生物识别与气密阀盒 (严格落在 ±45.75 内)
+    const housingSprite = createCorridorDoorSprite(40, 96, (ctx) => {
         // 南北两侧门兜 (py: -46..-30.5 与 +30.5..+46, 宽 13.0)
         [-1, 1].forEach(ySign => {
             const jy = (ySign < 0) ? -46.0 : 30.5;
@@ -1533,6 +2031,8 @@ function drawAirtightBlastDoor(ctx, door) {
     const openProg = Math.max(0, Math.min(1, door.openProgress !== undefined ? door.openProgress : 0));
     const wheelAng = door.wheelAngle || 0;
     const isLocked = !!door.isLocked;
+    const time = Date.now() * 0.001;
+    const phase = door.id === 'airtight_door_2' ? 1.4 : (door.id === 'airtight_door_3' ? 0.7 : (door.id === 'airtight_door_4' ? 2.1 : 0));
 
     ctx.save();
     ctx.translate(door.cx, door.cy);
@@ -1572,24 +2072,105 @@ function drawAirtightBlastDoor(ctx, door) {
     const hsg = sprites.housingSprite;
     ctx.drawImage(hsg.canvas, -hsg.w / 2, -hsg.h / 2, hsg.w, hsg.h);
 
-    // 4. 状态指示灯 (严格读取 isLocked 与 openProgress，静止无动画，不写开门逻辑)
+    // 4. 动态状态指示灯 + 生物识别蓝屏动态扫描 + 气密表指针微动 (不改门扇、转轮与 edge 光)
     const ledColor = isLocked ? '#ef4444' : (openProg > 0.05 ? '#10b981' : '#f59e0b');
     const ledRim = isLocked ? '#fca5a5' : (openProg > 0.05 ? '#a7f3d0' : '#fde68a');
+    const ledCore = isLocked ? '#fee2e2' : (openProg > 0.05 ? '#d1fae5' : '#fef3c7');
+    const ledPulse = isLocked
+        ? (0.45 + 0.55 * (Math.sin(time * 5.2 + phase) * 0.5 + 0.5))
+        : (openProg > 0.05 ? (0.72 + 0.28 * (Math.sin(time * 2.4 + phase) * 0.5 + 0.5)) : (0.55 + 0.45 * (Math.sin(time * 3.2 + phase) * 0.5 + 0.5)));
 
-    // 南北门垛锁状态小灯
+    // 南北门垛锁状态小灯 (动态脉动)
     [-38.4, 38.1].forEach(ly => {
+        ctx.save();
+        ctx.globalAlpha = ledPulse;
         ctx.fillStyle = ledColor;
         ctx.fillRect(-1.8, ly - 0.9, 3.6, 1.8);
         ctx.strokeStyle = ledRim;
         ctx.lineWidth = 0.45;
         ctx.strokeRect(-1.8, ly - 0.9, 3.6, 1.8);
+        ctx.fillStyle = ledCore;
+        ctx.fillRect(-0.9, ly - 0.35, 1.8, 0.7);
+        ctx.restore();
     });
 
-    // 东西两侧生物识别终端顶部状态条
+    // 东西两侧生物识别蓝屏与顶部状态条动态层
     [-1, 1].forEach(sideSign => {
-        const bx = sideSign * 9.8;
+        const bx = sideSign * 11.55;
+        const scrX = bx - 4.25;
+        const scrY = -41.8;
+        const scrW = 8.5;
+        const scrH = 17.6;
+
+        // 顶部状态条动态闪烁/呼吸
+        ctx.save();
+        ctx.globalAlpha = ledPulse;
         ctx.fillStyle = ledColor;
-        ctx.fillRect(bx - 2.2, -44.7, 4.4, 1.3);
+        ctx.fillRect(bx - 2.4, -44.2, 4.8, 1.3);
+        ctx.fillStyle = ledCore;
+        ctx.fillRect(bx - 1.4, -43.9, 2.8, 0.7);
+        ctx.restore();
+
+        // 蓝屏内部动态扫描线 + 虹膜准星旋转 + 掌纹高亮波
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(scrX + 0.3, scrY + 0.3, scrW - 0.6, scrH - 0.6);
+        ctx.clip();
+
+        // 虹膜动态旋转弧线
+        const irisY = scrY + 4.3;
+        const rotAng = time * 1.9 * sideSign + phase;
+        ctx.strokeStyle = 'rgba(224, 242, 254, 0.85)';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.arc(bx, irisY, 2.15, rotAng, rotAng + Math.PI * 0.75);
+        ctx.stroke();
+
+        // 掌纹区呼吸亮点
+        const palmPulse = 0.14 + 0.16 * (Math.sin(time * 3.1 + phase) * 0.5 + 0.5);
+        ctx.fillStyle = `rgba(56, 189, 248, ${palmPulse.toFixed(2)})`;
+        ctx.fillRect(bx - 2.6, scrY + 9.4, 5.2, 7.2);
+
+        // 全屏上下往返激光扫描线
+        const scanNorm = Math.sin(time * 2.3 + phase) * 0.5 + 0.5;
+        const scanY = scrY + 1.2 + scanNorm * (scrH - 2.4);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.moveTo(scrX + 0.4, scanY);
+        ctx.lineTo(scrX + scrW - 0.4, scanY);
+        ctx.stroke();
+        ctx.strokeStyle = '#e0f2fe';
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.moveTo(scrX + 0.6, scanY);
+        ctx.lineTo(scrX + scrW - 0.6, scanY);
+        ctx.stroke();
+        ctx.restore();
+
+        // 底部蓝色读卡指示槽动态闪烁
+        const cardPulse = Math.sin(time * 4.0 + phase + sideSign) > 0;
+        ctx.fillStyle = cardPulse ? '#e0f2fe' : '#0284c7';
+        ctx.fillRect(bx - 1.5, -23.2, 3.0, 0.8);
+
+        // 南侧气密压差阀盒：动态微振压差表指针 + 底部阀门闪烁微灯
+        const mx = sideSign * 9.6;
+        const gy = 34.7;
+        ctx.fillStyle = '#062019';
+        ctx.beginPath();
+        ctx.arc(mx, gy, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        const needleAng = -0.65 + (openProg > 0.05 ? 0.5 : 0) + 0.28 * Math.sin(time * 3.4 + phase + sideSign);
+        ctx.strokeStyle = openProg > 0.05 ? '#34d399' : '#7dd3fc';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.moveTo(mx, gy);
+        ctx.lineTo(mx + Math.cos(needleAng) * 1.45, gy + Math.sin(needleAng) * 1.45);
+        ctx.stroke();
+
+        const valveBlink = Math.sin(time * 2.8 + phase) > 0;
+        ctx.fillStyle = valveBlink ? '#fbbf24' : '#78350f';
+        ctx.fillRect(mx - 1.6, 40.9, 3.2, 1.4);
     });
 
     ctx.restore();
@@ -1611,12 +2192,12 @@ function getAirtightBlastDoor(id, cx, cy, angle, isLocked) {
         rotPt(-7, 32.5)
     ];
 
-    // 视锥剔除包围盒 (包含 28x94 完整门框+贴平生物识别终端)
+    // 视锥剔除包围盒 (包含 36x94 完整门框+贴平生物识别终端)
     const boundPts = [
-        rotPt(-14, -47),
-        rotPt(14, -47),
-        rotPt(14, 47),
-        rotPt(-14, 47)
+        rotPt(-18, -47),
+        rotPt(18, -47),
+        rotPt(18, 47),
+        rotPt(-18, 47)
     ];
     const xs = boundPts.map(p => p.x);
     const ys = boundPts.map(p => p.y);
@@ -1641,8 +2222,8 @@ function getAirtightBlastDoor(id, cx, cy, angle, isLocked) {
         isLocked: !!isLocked,
         noCollision: false,
         playerWasInDressing: false,
-        label: id === 'airtight_door_1' ? 'AIRTIGHT BLAST DOOR 1' : 'AIRTIGHT BLAST DOOR 2',
-        displayName: id === 'airtight_door_1' ? 'AIRLOCK BLAST GATE 01' : 'AIRLOCK BLAST GATE 02',
+        label: id === 'airtight_door_1' ? 'AIRTIGHT BLAST DOOR 1' : (id === 'airtight_door_2' ? 'AIRTIGHT BLAST DOOR 2' : (id === 'airtight_door_3' ? 'AIRTIGHT BLAST DOOR 3' : 'AIRTIGHT BLAST DOOR 4')),
+        displayName: id === 'airtight_door_1' ? 'AIRLOCK BLAST GATE 01' : (id === 'airtight_door_2' ? 'AIRLOCK BLAST GATE 02' : (id === 'airtight_door_3' ? 'AIRLOCK BLAST GATE 03' : 'AIRLOCK BLAST GATE 04')),
         hideLabel: true,
         draw: function(ctx) {
             drawAirtightBlastDoor(ctx, this);
@@ -1654,38 +2235,74 @@ function getAirtightBlastDoor(id, cx, cy, angle, isLocked) {
 // 斜向缓冲通道外壳（长 392px / 宽 91.5px 实验室气闸底盘）
 // =========================================================================
 function drawBufferCorridorSystem(ctx, corridor) {
-    const L = corridor.length || 392; // 通道总长 392px
+    const L = corridor.length || 392; // 通道总长 (通道1=392px，通道2按南端至北端实算)
     const W = corridor.width || 91.5; // 通道净宽 91.5px
-    const halfL = L / 2; // 196px
-    const halfW = W / 2; // 45.75px
+    const halfL = L / 2;
+    const halfW = W / 2;
+    // 更衣区与消毒区分界局部 x (默认 0 = halfL，通道2按门3实算偏移)
+    const splitX = (typeof corridor.deconSplitS === 'number') ? (corridor.deconSplitS - halfL) : 0;
 
     ctx.save();
     ctx.translate(corridor.cx, corridor.cy);
     ctx.rotate(corridor.angle);
 
+    // 若该通道带东侧门洞衔接踏步区 (通道2留口跨越东外墙 14px)，先铺设银白门洞过渡地坪
+    if (corridor.doorwayThresholdLocal) {
+        const th = corridor.doorwayThresholdLocal;
+        ctx.save();
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(th.x, th.y, th.w, th.h);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.lineWidth = 1;
+        for (let tx = th.x; tx <= th.x + th.w + 0.1; tx += 14) {
+            ctx.beginPath(); ctx.moveTo(tx, th.y); ctx.lineTo(tx, th.y + th.h); ctx.stroke();
+        }
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(th.x, th.y + th.h);
+        ctx.lineTo(th.x + th.w, th.y + th.h);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // 若指定了斜切多边形裁剪区（通道2南端贴底部墙斜切），将地坪、网格与警戒带严密裁剪在通道轮廓内
+    if (Array.isArray(corridor.floorClipLocal) && corridor.floorClipLocal.length >= 3) {
+        ctx.beginPath();
+        ctx.moveTo(corridor.floorClipLocal[0].x, corridor.floorClipLocal[0].y);
+        for (let i = 1; i < corridor.floorClipLocal.length; i++) {
+            ctx.lineTo(corridor.floorClipLocal[i].x, corridor.floorClipLocal[i].y);
+        }
+        ctx.closePath();
+        ctx.clip();
+    }
+
     // =========================================================
-    // 1. 缓冲区写实重型金属地坪与高能警戒线
-    // 更衣区: x: -196 ~ 0
-    // 消毒区: x: 0 ~ +196
+    // 1. 缓冲区银白高洁净金属地坪与屏幕蓝警戒线
+    // 更衣区: x: -halfL ~ splitX
+    // 消毒区: x: splitX ~ +halfL
     // =========================================================
-    // 更衣区地坪 (Class-100 Cleanroom 防静电环氧科技地坪)
-    const gradDress = ctx.createLinearGradient(-halfL, 0, 0, 0);
-    gradDress.addColorStop(0, '#03140e');
-    gradDress.addColorStop(0.5, '#072b21');
-    gradDress.addColorStop(1, '#03140e');
+    const dressW = Math.max(1, splitX - (-halfL));
+    const deconW = Math.max(1, halfL - splitX);
+
+    // 更衣区地坪 (银白复合洁净地坪，对标门板浅灰渐变 #94a3b8 / #e2e8f0 / #cbd5e1)
+    const gradDress = ctx.createLinearGradient(-halfL, 0, splitX, 0);
+    gradDress.addColorStop(0, '#cbd5e1');
+    gradDress.addColorStop(0.5, '#e2e8f0');
+    gradDress.addColorStop(1, '#cbd5e1');
     ctx.fillStyle = gradDress;
-    ctx.fillRect(-halfL, -halfW, halfL, W);
+    ctx.fillRect(-halfL, -halfW, dressW, W);
 
-    // 消毒区地坪 (316L 高耐磨不锈钢工业地坪)
-    const gradDecon = ctx.createLinearGradient(0, 0, halfL, 0);
-    gradDecon.addColorStop(0, '#02120e');
-    gradDecon.addColorStop(0.5, '#06281e');
-    gradDecon.addColorStop(1, '#02120e');
+    // 消毒区地坪 (银灰拉丝不锈钢工业地坪，稍深一阶以区分功能区)
+    const gradDecon = ctx.createLinearGradient(splitX, 0, halfL, 0);
+    gradDecon.addColorStop(0, '#94a3b8');
+    gradDecon.addColorStop(0.5, '#cbd5e1');
+    gradDecon.addColorStop(1, '#94a3b8');
     ctx.fillStyle = gradDecon;
-    ctx.fillRect(0, -halfW, halfL, W);
+    ctx.fillRect(splitX, -halfW, deconW, W);
 
-    // 导静电防滑网格与不锈钢焊缝
-    ctx.strokeStyle = 'rgba(16, 185, 129, 0.18)';
+    // 导静电防滑网格与焊缝 (屏幕蓝 #38bdf8 点缀)
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.32)';
     ctx.lineWidth = 1;
     for (let lx = -halfL; lx <= halfL; lx += 28) {
         ctx.beginPath(); ctx.moveTo(lx, -halfW); ctx.lineTo(lx, halfW); ctx.stroke();
@@ -1694,12 +2311,20 @@ function drawBufferCorridorSystem(ctx, corridor) {
         ctx.beginPath(); ctx.moveTo(-halfL, ly); ctx.lineTo(halfL, ly); ctx.stroke();
     }
 
-    // 两侧黑黄高光防滑斜纹警戒带 (High-Visibility Safety Hazard Bands, 4px 窄带适配 91.5px 宽度)
+    // 更衣区 / 消毒区中央蓝色分界标线
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(splitX, -halfW);
+    ctx.lineTo(splitX, halfW);
+    ctx.stroke();
+
+    // 两侧屏幕蓝高光防滑斜纹警戒带 (4px 窄带适配 91.5px 宽度，改蓝，不留琥珀色)
     const drawHazardStripe = (startY) => {
         ctx.save();
-        ctx.fillStyle = '#02120e';
+        ctx.fillStyle = '#0f172a';
         ctx.fillRect(-halfL, startY, L, 4);
-        ctx.fillStyle = 'rgba(245, 158, 11, 0.82)';
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.88)';
         for (let hx = -halfL; hx < halfL; hx += 12) {
             ctx.beginPath();
             ctx.moveTo(hx, startY + 4);
@@ -1714,7 +2339,6 @@ function drawBufferCorridorSystem(ctx, corridor) {
     drawHazardStripe(-halfW);
     drawHazardStripe(halfW - 4);
 
-
     ctx.restore();
 }
 const LEVEL_7_TEST = {
@@ -1724,7 +2348,7 @@ const LEVEL_7_TEST = {
     themeColor: "#022c22",
     gridColor: "rgba(16, 185, 129, 0.22)",
     accentColor: "#10b981",
-    playerStart: { x: 1600, y: 1835 },
+    playerStart: { x: 1600, y: 900 },
 
     getMapLayout: (width, height) => {
         const cx = 1600;
@@ -1951,9 +2575,10 @@ const LEVEL_7_TEST = {
                 }
             },
 
-            // H. 缓冲区通道倾斜重装甲北墙与南墙（通道等比缩小至 392×91.5px，内端 (1121, 920) 锚定不动）
+            // H. 缓冲区通道倾斜重装甲北墙与南墙（通道等比缩小至 392×91.5px，内端 (1121, 920) 锚定不动；加通道专属银白标记）
             {
                 type: 'poly_wall',
+                isBufferCorridorWall: true,
                 points: [
                     { x: 1112.75, y: 875 },
                     { x: 1110.23, y: 861.23 },
@@ -1965,6 +2590,7 @@ const LEVEL_7_TEST = {
             },
             {
                 type: 'poly_wall',
+                isBufferCorridorWall: true,
                 points: [
                     { x: 1129.25, y: 965 },
                     { x: 1131.77, y: 978.77 },
@@ -2799,18 +3425,32 @@ const LEVEL_7_TEST = {
             // 两侧斜墙各一个，贴墙旋转（2026-11-05）
             getServerCluster(1252, 1200, 4.5350, 0.85, 'L7 LEFT SERVER'),
             getServerCluster(1948, 1200, 1.7480, 0.85, 'L7 RIGHT SERVER'),
-            // 7. 斜向缓冲通道系统对象（长 560×0.7=392px，宽 122×0.75=91.5px，内端 (1121, 920) 不动）
+            // 7. 斜向缓冲通道系统对象（长 560×0.7=392px，宽 122×0.75=91.5px，状态完全参数化挂于自身实例）
             {
+                id: 'buffer_corridor_1',
                 type: 'buffer_corridor_system',
                 cx: 928.21,
                 cy: 955.34,
                 length: 392,
                 width: 91.5,
                 angle: 2.96027,
+                door1Id: 'airtight_door_1',
+                door2Id: 'airtight_door_2',
+                sprayTriggerDist: 52,
+                sprayDuration: 180,
+                direction: null,
+                stage: 'idle',
+                airProgress: 0,
+                liquidProgress: 0,
+                airStatus: 'waiting',
+                liquidStatus: 'waiting',
                 airSpraying: false,
                 liquidSpraying: false,
                 sprayState: 'idle', // 'idle' | 'air_spray' | 'liquid_spray' | 'done'
                 sprayTimer: 0,
+                lastApproachSide: null,
+                airNozzleProps: [],
+                liquidNozzleProps: [],
                 noCollision: true,
                 hideLabel: true,
                 draw: function(ctx) {
@@ -2825,18 +3465,299 @@ const LEVEL_7_TEST = {
         ];
 
         // 9. 缓冲通道 · 消毒区内部静态道具 (沿通道按 0.7 重推、横向贴 ±45.75 内壁重坐，中间净空 53.6px)
-        // 喷头红绿指示灯直接读取 bufferCorridorObj 的 airSpraying / liquidSpraying / sprayState 字段
-        const bufferCorridorObj = props.find(p => p.type === 'buffer_corridor_system');
+        // 喷头指示灯与喷流直接读取各自所属通道实例的状态字段
+        const bufferCorridorObj = props.find(p => p.id === 'buffer_corridor_1' || p.type === 'buffer_corridor_system');
         const getCorridorRef = () => bufferCorridorObj;
+        const deconAirN = getBufferDeconAirNozzles(870.79, 929.37, 2.96027 - Math.PI, true, getCorridorRef);
+        const deconAirS = getBufferDeconAirNozzles(883.74, 1000, 2.96027 - Math.PI, false, getCorridorRef);
+        const deconLiqN = getBufferDeconLiquidNozzles(798.49, 942.63, 2.96027 - Math.PI, true, getCorridorRef);
+        const deconLiqS = getBufferDeconLiquidNozzles(811.44, 1013.25, 2.96027 - Math.PI, false, getCorridorRef);
+        if (bufferCorridorObj) {
+            bufferCorridorObj.airNozzleProps = [deconAirN, deconAirS];
+            bufferCorridorObj.liquidNozzleProps = [deconLiqN, deconLiqS];
+        }
         props.push(
-            getBufferDeconGrating(804.97, 977.94, 2.96027 - Math.PI),
-            getBufferDeconAirNozzles(870.79, 929.37, 2.96027 - Math.PI, true, getCorridorRef),
-            getBufferDeconAirNozzles(883.74, 1000, 2.96027 - Math.PI, false, getCorridorRef),
-            getBufferDeconLiquidNozzles(798.49, 942.63, 2.96027 - Math.PI, true, getCorridorRef),
-            getBufferDeconLiquidNozzles(811.44, 1013.25, 2.96027 - Math.PI, false, getCorridorRef),
+            getBufferDeconGrating(804.97, 977.94, 2.96027 - Math.PI, getCorridorRef),
+            deconAirN,
+            deconAirS,
+            deconLiqN,
+            deconLiqS,
             // 10. 缓冲通道两扇实验室风格气密门 (门1在交界 s=196；门2在出口内侧 s=375.2，完全落在 392px 通道外墙内)
             getAirtightBlastDoor('airtight_door_1', 928.21, 955.34, 2.96027 - Math.PI, false),
             getAirtightBlastDoor('airtight_door_2', 751.95, 987.66, 2.96027 - Math.PI, true)
+        );
+
+        // =====================================================================
+        // 11. 第二条缓冲通道 (buffer_corridor_system_2)：
+        //     从西墙下门 (1288.5, 1835) 沿西墙向北延伸，与通道1全长/宽/间距保持严格一致，
+        //     南端贴底部外墙内缘斜切留安全余量，北端严格落在西侧大圆弧南端 (1215, 1415) 下方
+        // =====================================================================
+        const c1Ref = bufferCorridorObj;
+        const c1Len = (c1Ref && c1Ref.length) ? c1Ref.length : 392;
+        const c1Wid = (c1Ref && c1Ref.width) ? c1Ref.width : 91.5;
+        const c1HalfW = c1Wid * 0.5;
+        const c1Cos = Math.cos(c1Ref ? c1Ref.angle : 2.96027);
+        const c1Sin = Math.sin(c1Ref ? c1Ref.angle : 2.96027);
+        const projC1S = (px, py) => ((px - c1Ref.cx) * c1Cos + (py - c1Ref.cy) * c1Sin) + c1Len * 0.5;
+
+        const c1Door1Obj = props.find(p => p.id === (c1Ref ? c1Ref.door1Id : 'airtight_door_1'));
+        const c1Door2Obj = props.find(p => p.id === (c1Ref ? c1Ref.door2Id : 'airtight_door_2'));
+        const c1Door1Off = c1Door1Obj ? projC1S(c1Door1Obj.cx, c1Door1Obj.cy) : c1Len * 0.5;
+        const c1Door2Off = c1Door2Obj ? projC1S(c1Door2Obj.cx, c1Door2Obj.cy) : (c1Len - 16.8);
+        const c1AirOff = (c1Ref && c1Ref.airNozzleProps && c1Ref.airNozzleProps.length === 2)
+            ? projC1S((c1Ref.airNozzleProps[0].cx + c1Ref.airNozzleProps[1].cx) * 0.5, (c1Ref.airNozzleProps[0].cy + c1Ref.airNozzleProps[1].cy) * 0.5)
+            : (c1Door1Off + 51.8);
+        const c1LiqOff = (c1Ref && c1Ref.liquidNozzleProps && c1Ref.liquidNozzleProps.length === 2)
+            ? projC1S((c1Ref.liquidNozzleProps[0].cx + c1Ref.liquidNozzleProps[1].cx) * 0.5, (c1Ref.liquidNozzleProps[0].cy + c1Ref.liquidNozzleProps[1].cy) * 0.5)
+            : (c1Door1Off + 125.3);
+
+        // 沿西墙贴墙斜度向量 (WALL 2 -> DOOR 2 -> WALL 3 西侧面 (1132,980)-(1304,1960)，约偏竖直 9.95°)
+        const c2WallT = 14;
+        const w2x0 = 1132, w2y0 = 980, w2x1 = 1304, w2y1 = 1960;
+        const w2Len = Math.hypot(w2x1 - w2x0, w2y1 - w2y0);
+        const c2UxN = (w2x0 - w2x1) / w2Len; // 向北单位向量
+        const c2UyN = (w2y0 - w2y1) / w2Len;
+        const c2Angle = Math.atan2(c2UyN, c2UxN);
+        const c2NxE = -c2UyN; // 向东 (+w, 朝向 Room 01 墙) 单位法向
+        const c2NyE = c2UxN;
+
+        // 西墙下门 WEST LOWER HEAVY AUTO DOOR 西侧开口中心 (1281.5, 1835)
+        const c2DwCx = 1281.5 - (c2WallT + c1HalfW) * c2NxE;
+        const c2DwCy = 1835 - (c2WallT + c1HalfW) * c2NyE;
+
+        // 西眼左下外墙内缘 (154.4, 1193.3)-(1308.4, 1953.3)：贴底部墙并留 5px 净间隙，绝不压线戳出
+        const eyeBot0 = { x: 1308.4, y: 1953.3 };
+        const eyeBot1 = { x: 154.4, y: 1193.3 };
+        const eyeBotLen = Math.hypot(eyeBot1.x - eyeBot0.x, eyeBot1.y - eyeBot0.y);
+        const eyeEuX = (eyeBot1.x - eyeBot0.x) / eyeBotLen;
+        const eyeEuY = (eyeBot1.y - eyeBot0.y) / eyeBotLen;
+        const eyeInNx = -eyeEuY, eyeInNy = eyeEuX; // 指向观测区内部法向
+        const c2SlopeIn = c2UxN * eyeInNx + c2UyN * eyeInNy;
+        const c2SRelAtBottomMargin = (w, margin) => {
+            const px = c2DwCx + w * c2NxE;
+            const py = c2DwCy + w * c2NyE;
+            const d0 = (px - eyeBot0.x) * eyeInNx + (py - eyeBot0.y) * eyeInNy;
+            return (margin - d0) / c2SlopeIn;
+        };
+
+        const c2OuterGap = 5.0; // 通道南端外墙外皮距底部边界内缘保留 5px 安全余量
+        const c2FloorMargin = c2OuterGap + c2WallT;
+        const c2SouthExt = -c2SRelAtBottomMargin(c1HalfW, c2FloorMargin); // 东侧内缘最南锚点距门洞中心约 76.15px
+        const c2TotalLen = +(c2SouthExt + c1Len).toFixed(2);
+        const c2HalfL = c2TotalLen * 0.5;
+        const c2SRelFloorW = c2SRelAtBottomMargin(-c1HalfW, c2FloorMargin);
+        const c2SRelWallSE = c2SRelAtBottomMargin(c1HalfW + c2WallT, c2OuterGap);
+        const c2SRelWallSW = c2SRelAtBottomMargin(-c1HalfW - c2WallT, c2OuterGap);
+        const c2SFloorW = +(c2SouthExt + c2SRelFloorW).toFixed(2);
+        const c2SWallSE = +(c2SouthExt + c2SRelWallSE).toFixed(2);
+        const c2SWallSW = +(c2SouthExt + c2SRelWallSW).toFixed(2);
+
+        const c2WorldPt = (s, w) => ({
+            x: +(c2DwCx + (s - c2SouthExt) * c2UxN + w * c2NxE).toFixed(2),
+            y: +(c2DwCy + (s - c2SouthExt) * c2UyN + w * c2NyE).toFixed(2)
+        });
+        const c2Center = c2WorldPt(c2HalfL, 0);
+        const c2LocalX = (s) => +(s - c2HalfL).toFixed(2);
+
+        const c2SDoorway = c2SouthExt;
+        const c2DoorwaySpanHalf = 60.9; // 对应 y: 1775 ~ 1895 (120px 净门洞)
+        const c2SDoor3 = +(c2SDoorway + c1Door1Off).toFixed(2);
+        const c2SAir = +(c2SDoorway + c1AirOff).toFixed(2);
+        const c2SLiq = +(c2SDoorway + c1LiqOff).toFixed(2);
+        const c2SDoor4 = +(c2SDoorway + c1Door2Off).toFixed(2);
+
+        // 通道2银白重装甲外墙 (西侧连续墙、东侧门洞北段/南段留口、南端平行斜切封口墙，严格不碰共用墙)
+        obstacles.push(
+            {
+                type: 'poly_wall',
+                isBufferCorridorWall: true,
+                points: [
+                    c2WorldPt(c2SWallSW, -c1HalfW - c2WallT),
+                    c2WorldPt(c2SFloorW, -c1HalfW),
+                    c2WorldPt(c2TotalLen, -c1HalfW),
+                    c2WorldPt(c2TotalLen, -c1HalfW - c2WallT)
+                ],
+                label: 'BUFFER CORRIDOR 2 WEST ARMORED WALL',
+                hideLabel: true
+            },
+            {
+                type: 'poly_wall',
+                isBufferCorridorWall: true,
+                points: [
+                    c2WorldPt(c2SDoorway + c2DoorwaySpanHalf, c1HalfW),
+                    c2WorldPt(c2SDoorway + c2DoorwaySpanHalf, c1HalfW + c2WallT),
+                    c2WorldPt(c2TotalLen, c1HalfW + c2WallT),
+                    c2WorldPt(c2TotalLen, c1HalfW)
+                ],
+                label: 'BUFFER CORRIDOR 2 EAST NORTH ARMORED WALL',
+                hideLabel: true
+            },
+            {
+                type: 'poly_wall',
+                isBufferCorridorWall: true,
+                points: [
+                    c2WorldPt(0, c1HalfW),
+                    c2WorldPt(c2SWallSE, c1HalfW + c2WallT),
+                    c2WorldPt(c2SDoorway - c2DoorwaySpanHalf, c1HalfW + c2WallT),
+                    c2WorldPt(c2SDoorway - c2DoorwaySpanHalf, c1HalfW)
+                ],
+                label: 'BUFFER CORRIDOR 2 EAST SOUTH ARMORED WALL',
+                hideLabel: true
+            },
+            {
+                type: 'poly_wall',
+                isBufferCorridorWall: true,
+                points: [
+                    c2WorldPt(c2SWallSW, -c1HalfW - c2WallT),
+                    c2WorldPt(c2SWallSE, c1HalfW + c2WallT),
+                    c2WorldPt(0, c1HalfW),
+                    c2WorldPt(c2SFloorW, -c1HalfW)
+                ],
+                label: 'BUFFER CORRIDOR 2 SOUTH BEVEL ARMORED WALL',
+                hideLabel: true
+            }
+        );
+
+        // 通道2两扇气密门南北门垛刚体碰撞 (留 63px 净门洞，draw 为空避免遮盖门兜与识别终端)
+        [
+            { name: 'DOOR 3', pt: c2WorldPt(c2SDoor3, 0) },
+            { name: 'DOOR 4', pt: c2WorldPt(c2SDoor4, 0) }
+        ].forEach(d => {
+            const ca = Math.cos(c2Angle), sa = Math.sin(c2Angle);
+            const makeJamb2 = (y1, y2, tag) => ({
+                type: 'poly_wall',
+                points: [
+                    { x: -6, y: y1 },
+                    { x: 6, y: y1 },
+                    { x: 6, y: y2 },
+                    { x: -6, y: y2 }
+                ].map(pt => ({
+                    x: +(d.pt.x + pt.x * ca - pt.y * sa).toFixed(1),
+                    y: +(d.pt.y + pt.x * sa + pt.y * ca).toFixed(1)
+                })),
+                label: `BUFFER ${d.name} ${tag} BULKHEAD JAMB`,
+                hideLabel: true,
+                draw: () => {}
+            });
+            obstacles.push(makeJamb2(-46, -31.5, 'WEST'), makeJamb2(31.5, 46, 'EAST'));
+        });
+
+        // 第二条缓冲通道系统对象 (s 从南端 0 起算；状态完全挂于自身实例，与通道1互不串线)
+        const c2FloorClipLocal = [
+            { x: c2LocalX(0), y: c1HalfW },
+            { x: c2LocalX(c2TotalLen), y: c1HalfW },
+            { x: c2LocalX(c2TotalLen), y: -c1HalfW },
+            { x: c2LocalX(c2SFloorW), y: -c1HalfW }
+        ];
+        const c2DoorwayThresholdLocal = {
+            x: c2LocalX(c2SDoorway - c2DoorwaySpanHalf),
+            y: c1HalfW,
+            w: +(c2DoorwaySpanHalf * 2).toFixed(2),
+            h: c2WallT
+        };
+        const c2FloorWorld = [
+            c2WorldPt(0, c1HalfW),
+            c2WorldPt(c2TotalLen, c1HalfW),
+            c2WorldPt(c2TotalLen, -c1HalfW),
+            c2WorldPt(c2SFloorW, -c1HalfW)
+        ];
+        const c2DeconWorld = [
+            c2WorldPt(c2SDoor3, c1HalfW),
+            c2WorldPt(c2TotalLen, c1HalfW),
+            c2WorldPt(c2TotalLen, -c1HalfW),
+            c2WorldPt(c2SDoor3, -c1HalfW)
+        ];
+        const c2DividerWorld = [
+            c2WorldPt(c2SDoor3, -c1HalfW),
+            c2WorldPt(c2SDoor3, c1HalfW)
+        ];
+        const c2ThresholdWorld = [
+            c2WorldPt(c2SDoorway - c2DoorwaySpanHalf, c1HalfW),
+            c2WorldPt(c2SDoorway + c2DoorwaySpanHalf, c1HalfW),
+            c2WorldPt(c2SDoorway + c2DoorwaySpanHalf, c1HalfW + c2WallT),
+            c2WorldPt(c2SDoorway - c2DoorwaySpanHalf, c1HalfW + c2WallT)
+        ];
+
+        const bufferCorridor2Obj = {
+            id: 'buffer_corridor_system_2',
+            type: 'buffer_corridor_system',
+            cx: c2Center.x,
+            cy: c2Center.y,
+            length: c2TotalLen,
+            width: c1Wid,
+            angle: +c2Angle.toFixed(6),
+            deconSplitS: c2SDoor3,
+            floorClipLocal: c2FloorClipLocal,
+            doorwayThresholdLocal: c2DoorwayThresholdLocal,
+            floorWorldPoly: c2FloorWorld,
+            deconWorldPoly: c2DeconWorld,
+            dividerWorldPts: c2DividerWorld,
+            thresholdWorldPoly: c2ThresholdWorld,
+            door1Id: 'airtight_door_3',
+            door2Id: 'airtight_door_4',
+            sprayTriggerDist: c1Ref ? c1Ref.sprayTriggerDist : 52,
+            sprayDuration: c1Ref ? c1Ref.sprayDuration : 180,
+            direction: null,
+            stage: 'idle',
+            airProgress: 0,
+            liquidProgress: 0,
+            airStatus: 'waiting',
+            liquidStatus: 'waiting',
+            airSpraying: false,
+            liquidSpraying: false,
+            sprayState: 'idle',
+            sprayTimer: 0,
+            lastApproachSide: null,
+            airNozzleProps: [],
+            liquidNozzleProps: [],
+            noCollision: true,
+            hideLabel: true,
+            draw: function(ctx) {
+                drawBufferCorridorSystem(ctx, this);
+            }
+        };
+
+        const getCorridor2Ref = () => bufferCorridor2Obj;
+        const c2AirNPos = c2WorldPt(c2SAir, -35.9); // 西侧气流喷嘴组 (朝东喷向通道中线)
+        const c2AirSPos = c2WorldPt(c2SAir, 35.9);  // 东侧气流喷嘴组 (朝西喷向通道中线)
+        const c2LiqNPos = c2WorldPt(c2SLiq, -35.9); // 西侧消毒液喷头组
+        const c2LiqSPos = c2WorldPt(c2SLiq, 35.9);  // 东侧消毒液喷头组
+        const c2GratePos = c2WorldPt(c2SLiq, 0);
+
+        const c2DeconAirN = getBufferDeconAirNozzles(c2AirNPos.x, c2AirNPos.y, c2Angle, true, getCorridor2Ref);
+        const c2DeconAirS = getBufferDeconAirNozzles(c2AirSPos.x, c2AirSPos.y, c2Angle, false, getCorridor2Ref);
+        const c2DeconLiqN = getBufferDeconLiquidNozzles(c2LiqNPos.x, c2LiqNPos.y, c2Angle, true, getCorridor2Ref);
+        const c2DeconLiqS = getBufferDeconLiquidNozzles(c2LiqSPos.x, c2LiqSPos.y, c2Angle, false, getCorridor2Ref);
+        bufferCorridor2Obj.airNozzleProps = [c2DeconAirN, c2DeconAirS];
+        bufferCorridor2Obj.liquidNozzleProps = [c2DeconLiqN, c2DeconLiqS];
+
+        // 通道2更衣区道具 (贴两侧内壁布置并朝向通道中线，留足 48.7~50.1px 中央通路与门洞通行净空)
+        const c2LockersS = +(c2SFloorW + 2.5 + 39.2).toFixed(2);
+        const c2SuitRackS = +(c2LockersS + 39.2 + 1.5 + 43.4).toFixed(2);
+        const c2DoorwayTopS = c2SDoorway + c2DoorwaySpanHalf;
+        const c2SinkS = +(c2DoorwayTopS + 0.8 + 28.7).toFixed(2);
+        const c2MonitorS = +(c2SDoor3 - 12.7 - 0.5 - 31.0).toFixed(2);
+
+        const c2LockersPos = c2WorldPt(c2LockersS, -34.5);
+        const c2SuitRackPos = c2WorldPt(c2SuitRackS, -34.16);
+        const c2SinkPos = c2WorldPt(c2SinkS, 34.85);
+        const c2MonitorPos = c2WorldPt(c2MonitorS, 35.9);
+        const c2Door3Pos = c2WorldPt(c2SDoor3, 0);
+        const c2Door4Pos = c2WorldPt(c2SDoor4, 0);
+
+        props.push(
+            bufferCorridor2Obj,
+            getBufferDressingLockers(c2LockersPos.x, c2LockersPos.y, c2Angle),
+            getBufferDressingSuitRack(c2SuitRackPos.x, c2SuitRackPos.y, c2Angle + Math.PI),
+            getBufferDressingSink(c2SinkPos.x, c2SinkPos.y, c2Angle),
+            getBufferDressingMonitor(c2MonitorPos.x, c2MonitorPos.y, c2Angle + Math.PI),
+            getBufferDeconGrating(c2GratePos.x, c2GratePos.y, c2Angle, getCorridor2Ref),
+            c2DeconAirN,
+            c2DeconAirS,
+            c2DeconLiqN,
+            c2DeconLiqS,
+            getAirtightBlastDoor('airtight_door_3', c2Door3Pos.x, c2Door3Pos.y, c2Angle, false),
+            getAirtightBlastDoor('airtight_door_4', c2Door4Pos.x, c2Door4Pos.y, c2Angle, true)
         );
 
         // =====================================================================
@@ -2889,6 +3810,7 @@ const LEVEL_7_TEST = {
             { x: 1905, y: 1835 },
             { x: 950, y: 920 },
             { x: 950, y: 1835 },
+            { x: 1145, y: 1420 },
             { x: 805, y: 1200 },
             { x: 665, y: 1200 },
             { x: 530, y: 1200 },

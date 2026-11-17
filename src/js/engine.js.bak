@@ -4774,108 +4774,255 @@ function update() {
             }
         });
 
-        // Level 8 专属：更衣消毒缓冲区喷雾时序与机械转轮气密防爆门联动系统
-        // (严格仅在 level7_test 执行，隔离其他关卡；移植自清理副本 2026-11-13，关卡 id 已改 level7_test)
+        // Level 8 专属：更衣消毒缓冲区喷雾时序与机械转轮气密防爆门联动系统（按通道参数化状态机）
+        // (严格仅在 level7_test 执行，隔离其他关卡；无全局状态，每条通道独立实例化与推导几何)
         if (currentLevelId === 'level7_test') {
-            const corridor = props.find(p => p.type === 'buffer_corridor_system');
-            const door1 = props.find(p => p.id === 'airtight_door_1');
-            const door2 = props.find(p => p.id === 'airtight_door_2');
+            const corridors = props.filter(p => p && p.type === 'buffer_corridor_system');
+            corridors.forEach(corridor => {
+                const door1 = corridor.door1Id ? props.find(p => p.id === corridor.door1Id) : props.find(p => p.id === 'airtight_door_1');
+                const door2 = corridor.door2Id ? props.find(p => p.id === corridor.door2Id) : props.find(p => p.id === 'airtight_door_2');
+                if (!door1 || !door2) return;
 
-            if (corridor && door1 && door2) {
-                // 计算玩家在通道轴向上的投影坐标 (s: 沿通道外延距离 0~480, w: 沿通道截面横向偏移 -61~+61)
-                const dx = player.x - 1121;
-                const dy = player.y - 920;
-                // 沿通道向外法线向量 (-0.983607, 0.180328)
-                const s = dx * (-0.983607) + dy * (0.180328);
-                // 沿截面门洞方向向量 (0.180328, 0.983607)
-                const w = dx * (0.180328) + dy * (0.983607);
+                const len = corridor.length || 392;
+                const wid = corridor.width || 91.5;
+                const halfL = len * 0.5;
+                const halfW = wid * 0.5;
+                const cosA = Math.cos(corridor.angle || 0);
+                const sinA = Math.sin(corridor.angle || 0);
 
-                const inCorridor = (s >= -20 && s <= 580 && Math.abs(w) <= 65);
-                const inDressing = inCorridor && (s < 275);
-                const inDecon = inCorridor && (s >= 285);
+                // 按通道自身锚点与角度计算局部投影坐标 (s: 0~length, w: -halfW~+halfW)
+                const projectOntoCorridor = (px, py) => {
+                    const rx = px - corridor.cx;
+                    const ry = py - corridor.cy;
+                    return {
+                        s: (rx * cosA + ry * sinA) + halfL,
+                        w: rx * (-sinA) + ry * cosA
+                    };
+                };
 
+                const pProj = projectOntoCorridor(player.x, player.y);
+                const s = pProj.s;
+                const w = pProj.w;
+                const sDoor1 = projectOntoCorridor(door1.cx, door1.cy).s;
+                const sDoor2 = projectOntoCorridor(door2.cx, door2.cy).s;
+
+                const duration = corridor.sprayDuration || 180;
+                const triggerDist = corridor.sprayTriggerDist || 52;
+                if (corridor.sprayDuration === undefined) corridor.sprayDuration = duration;
+                if (corridor.sprayTriggerDist === undefined) corridor.sprayTriggerDist = triggerDist;
+                if (corridor.stage === undefined) corridor.stage = 'idle';
+                if (corridor.direction === undefined) corridor.direction = null;
+                if (corridor.airProgress === undefined) corridor.airProgress = 0;
+                if (corridor.liquidProgress === undefined) corridor.liquidProgress = 0;
+                if (corridor.airStatus === undefined) corridor.airStatus = 'waiting';
+                if (corridor.liquidStatus === undefined) corridor.liquidStatus = 'waiting';
+                if (corridor.lastApproachSide === undefined) corridor.lastApproachSide = null;
                 if (door1.openProgress === undefined) door1.openProgress = 0;
                 if (door2.openProgress === undefined) door2.openProgress = 0;
 
-                // 1. 玩家由更衣区穿过门1进入消毒区检测
-                if (inDecon && door1.playerWasInDressing) {
-                    door1.playerWasInDressing = false;
-                    door1.isLocked = true; // 身后的气密门自动锁定关闭
-                    if (corridor.sprayState === 'idle') {
-                        corridor.sprayState = 'air_spray';
-                        corridor.sprayTimer = 180; // 气流喷雾持续 3 秒 (180 帧)
-                        corridor.airSpraying = true;
-                        corridor.liquidSpraying = false;
+                // 从通道绑定的喷头组对象动态计算两喷头组中心点
+                const getGroupCenter = (list) => {
+                    if (!Array.isArray(list) || list.length === 0) return null;
+                    let sx = 0, sy = 0;
+                    for (let i = 0; i < list.length; i++) {
+                        sx += list[i].cx;
+                        sy += list[i].cy;
                     }
-                } else if (inDressing) {
-                    door1.playerWasInDressing = true;
-                }
+                    return { x: sx / list.length, y: sy / list.length };
+                };
+                const airCenter = getGroupCenter(
+                    (Array.isArray(corridor.airNozzleProps) && corridor.airNozzleProps.length)
+                        ? corridor.airNozzleProps
+                        : props.filter(p => p.type === 'buffer_decon_air_n' || p.type === 'buffer_decon_air_s')
+                );
+                const liqCenter = getGroupCenter(
+                    (Array.isArray(corridor.liquidNozzleProps) && corridor.liquidNozzleProps.length)
+                        ? corridor.liquidNozzleProps
+                        : props.filter(p => p.type === 'buffer_decon_liquid_n' || p.type === 'buffer_decon_liquid_s')
+                );
+                const distAir = airCenter ? Math.hypot(player.x - airCenter.x, player.y - airCenter.y) : 9999;
+                const distLiq = liqCenter ? Math.hypot(player.x - liqCenter.x, player.y - liqCenter.y) : 9999;
 
-                // 2. 消毒流程状态机 (先高压气流喷雾 -> 红灯转绿灯 -> 消毒液喷洒 -> 红灯转绿灯 -> 门2解锁自动开启)
-                if (corridor.sprayState === 'air_spray') {
-                    corridor.airSpraying = true;
-                    corridor.liquidSpraying = false;
-                    if (corridor.sprayTimer > 0) {
-                        corridor.sprayTimer -= ff;
-                    } else {
-                        // 气流喷雾结束，绿灯亮起，紧接着启动消毒液喷淋
-                        corridor.airSpraying = false;
-                        corridor.sprayState = 'liquid_spray';
-                        corridor.sprayTimer = 180; // 消毒液喷淋持续 3 秒 (180 帧)
-                        corridor.liquidSpraying = true;
-                    }
-                } else if (corridor.sprayState === 'liquid_spray') {
+                const resetCorridorPass = (approachSide) => {
+                    corridor.stage = 'idle';
+                    corridor.direction = null;
+                    corridor.airProgress = 0;
+                    corridor.liquidProgress = 0;
                     corridor.airSpraying = false;
-                    corridor.liquidSpraying = true;
-                    if (corridor.sprayTimer > 0) {
-                        corridor.sprayTimer -= ff;
-                    } else {
-                        // 消毒液喷淋完毕，绿灯亮起，出口气密防爆门2自动解锁
-                        corridor.liquidSpraying = false;
-                        corridor.sprayState = 'done';
+                    corridor.liquidSpraying = false;
+                    corridor.airStatus = 'waiting';
+                    corridor.liquidStatus = 'waiting';
+                    corridor.sprayState = 'idle';
+                    corridor.sprayTimer = 0;
+                    if (approachSide !== undefined) corridor.lastApproachSide = approachSide;
+                };
+
+                const inCorridorTube = (Math.abs(w) <= halfW + 8);
+                // 玩家完全离开门体碰撞厚度的阈值 (门半厚 7 + 玩家移动碰撞半径 18 = 25px，防止关门夹人卡死)
+                const enterMargin = 25;
+                const exitMargin = 26;
+                const inDeconInterior = inCorridorTube && (s >= sDoor1 + enterMargin) && (s <= sDoor2 - enterMargin);
+                const distFromCorridor = Math.hypot(player.x - corridor.cx, player.y - corridor.cy);
+
+                // 1. 待机阶段：记录玩家处于内侧还是外侧（外门从外面靠近即自动解锁开启，无需“出去过一次”）
+                if (corridor.stage === 'idle') {
+                    corridor.airSpraying = false;
+                    corridor.liquidSpraying = false;
+                    corridor.airStatus = 'waiting';
+                    corridor.liquidStatus = 'waiting';
+                    corridor.sprayState = 'idle';
+
+                    if (s < sDoor1 - 4) {
+                        corridor.lastApproachSide = 'inner';
+                    } else if (s > sDoor2 + 4) {
+                        corridor.lastApproachSide = 'outer';
+                    }
+
+                    // 进来的门保持解锁等待靠近；对面未通过消毒的门保持锁定
+                    if (corridor.lastApproachSide === 'outer') {
                         door2.isLocked = false;
+                        door1.isLocked = true;
+                    } else {
+                        door1.isLocked = false;
+                        door2.isLocked = true;
                     }
-                } else if (corridor.sprayState === 'done') {
+
+                    // 完整越过入口门进入消毒区：判定方向并锁定身后门（中途不反悔）
+                    if (inDeconInterior) {
+                        if (corridor.lastApproachSide === 'outer') {
+                            corridor.direction = 'inbound'; // 从外门进（回来）：液 -> 气
+                        } else if (corridor.lastApproachSide === 'inner') {
+                            corridor.direction = 'outbound'; // 从内门进（出去）：气 -> 液
+                        } else {
+                            corridor.direction = (Math.abs(s - sDoor2) < Math.abs(s - sDoor1)) ? 'inbound' : 'outbound';
+                        }
+                        corridor.stage = 'phase1';
+                        corridor.airProgress = 0;
+                        corridor.liquidProgress = 0;
+                        door1.isLocked = true;
+                        door2.isLocked = true;
+                    }
+                }
+
+                // 2. 消毒区工作阶段机（接近喷头组中心触发累积，离开暂停保留进度，双向顺序严格执行）
+                if (corridor.stage === 'phase1' || corridor.stage === 'phase2') {
+                    // 双向期间两扇门都锁定（身后门锁定且出口门未喷完不开）
+                    door1.isLocked = true;
+                    door2.isLocked = true;
+
+                    // 防瞬移出通道后的死锁兜底：若玩家已完全离开通道区域，自动重置待机
+                    if (s < sDoor1 - exitMargin || s > sDoor2 + exitMargin || distFromCorridor > halfL + 120) {
+                        resetCorridorPass(s > sDoor2 ? 'outer' : 'inner');
+                    } else {
+                        const isOutbound = (corridor.direction !== 'inbound');
+                        const activeType = (corridor.stage === 'phase1')
+                            ? (isOutbound ? 'air' : 'liquid')
+                            : (isOutbound ? 'liquid' : 'air');
+
+                        if (activeType === 'air') {
+                            const nearAir = (distAir <= triggerDist);
+                            corridor.liquidSpraying = false;
+                            corridor.liquidStatus = (corridor.stage === 'phase2') ? 'done' : 'waiting';
+                            if (nearAir) {
+                                corridor.airSpraying = true;
+                                corridor.airStatus = 'spraying';
+                                corridor.sprayState = 'air_spray';
+                                corridor.airProgress = Math.min(duration, corridor.airProgress + ff);
+                                corridor.sprayTimer = Math.max(0, duration - corridor.airProgress);
+                            } else {
+                                corridor.airSpraying = false;
+                                corridor.airStatus = 'waiting';
+                                corridor.sprayState = 'air_spray';
+                            }
+                            if (corridor.airProgress >= duration) {
+                                corridor.airSpraying = false;
+                                corridor.airStatus = 'done';
+                                if (corridor.stage === 'phase1') {
+                                    corridor.stage = 'phase2';
+                                } else {
+                                    corridor.stage = 'done';
+                                    corridor.sprayState = 'done';
+                                }
+                            }
+                        } else {
+                            const nearLiq = (distLiq <= triggerDist);
+                            corridor.airSpraying = false;
+                            corridor.airStatus = (corridor.stage === 'phase2') ? 'done' : 'waiting';
+                            if (nearLiq) {
+                                corridor.liquidSpraying = true;
+                                corridor.liquidStatus = 'spraying';
+                                corridor.sprayState = 'liquid_spray';
+                                corridor.liquidProgress = Math.min(duration, corridor.liquidProgress + ff);
+                                corridor.sprayTimer = Math.max(0, duration - corridor.liquidProgress);
+                            } else {
+                                corridor.liquidSpraying = false;
+                                corridor.liquidStatus = 'waiting';
+                                corridor.sprayState = 'liquid_spray';
+                            }
+                            if (corridor.liquidProgress >= duration) {
+                                corridor.liquidSpraying = false;
+                                corridor.liquidStatus = 'done';
+                                if (corridor.stage === 'phase1') {
+                                    corridor.stage = 'phase2';
+                                } else {
+                                    corridor.stage = 'done';
+                                    corridor.sprayState = 'done';
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 3. 两种都喷完：解锁前方出口门（靠近才自动开），身后门保持锁定；完整走出一侧门后重置下一趟
+                if (corridor.stage === 'done') {
                     corridor.airSpraying = false;
                     corridor.liquidSpraying = false;
+                    corridor.airStatus = 'done';
+                    corridor.liquidStatus = 'done';
+                    corridor.sprayState = 'done';
+
+                    if (corridor.direction === 'inbound') {
+                        door2.isLocked = true;
+                        door1.isLocked = false;
+                        if (s <= sDoor1 - exitMargin || distFromCorridor > halfL + 120) {
+                            resetCorridorPass('inner');
+                            door1.isLocked = false;
+                            door2.isLocked = true;
+                        }
+                    } else {
+                        door1.isLocked = true;
+                        door2.isLocked = false;
+                        if (s >= sDoor2 + exitMargin || distFromCorridor > halfL + 120) {
+                            resetCorridorPass('outer');
+                            door2.isLocked = false;
+                            door1.isLocked = true;
+                        }
+                    }
                 }
 
-                // 3. 气密防爆门1 (更衣区与消毒区间)：人靠近自动开启；进入消毒区锁定后强制平滑关闭
-                if (door1.isLocked) {
-                    if (door1.openProgress > 0) {
-                        door1.openProgress = Math.max(0, door1.openProgress - 0.05);
-                        door1.wheelAngle = (door1.wheelAngle || 0) + 0.25;
+                // 4. 气密防爆门开合更新 (内门 95px、外门 120px；未锁定且玩家靠近才开启；开门过半取消碰撞)
+                const updateAirtightDoor = (door, proxDist) => {
+                    if (door.isLocked) {
+                        if (door.openProgress > 0) {
+                            door.openProgress = Math.max(0, door.openProgress - 0.05 * ff);
+                            door.wheelAngle = (door.wheelAngle || 0) + 0.25 * ff;
+                        }
+                    } else {
+                        const distDoor = Math.hypot(player.x - door.cx, player.y - door.cy);
+                        if (distDoor < proxDist) {
+                            door.openProgress = Math.min(1.0, door.openProgress + 0.08 * ff);
+                            door.wheelAngle = (door.wheelAngle || 0) + 0.25 * ff;
+                        } else if (door.openProgress > 0) {
+                            door.openProgress = Math.max(0, door.openProgress - 0.05 * ff);
+                            door.wheelAngle = (door.wheelAngle || 0) + 0.25 * ff;
+                        }
                     }
-                } else {
-                    const distDoor1 = Math.hypot(player.x - door1.cx, player.y - door1.cy);
-                    if (distDoor1 < 95) {
-                        door1.openProgress = Math.min(1.0, door1.openProgress + 0.08);
-                        door1.wheelAngle = (door1.wheelAngle || 0) + 0.25;
-                    } else if (door1.openProgress > 0) {
-                        door1.openProgress = Math.max(0, door1.openProgress - 0.05);
-                        door1.wheelAngle = (door1.wheelAngle || 0) + 0.25;
-                    }
-                }
-                door1.noCollision = (door1.openProgress > 0.4);
+                    door.noCollision = (door.openProgress > 0.4);
+                };
 
-                // 4. 气密防爆门2 (消毒区最外侧出口)：喷雾完成后自动开启，未喷完锁死
-                if (door2.isLocked) {
-                    if (door2.openProgress > 0) {
-                        door2.openProgress = Math.max(0, door2.openProgress - 0.05);
-                        door2.wheelAngle = (door2.wheelAngle || 0) + 0.25;
-                    }
-                } else {
-                    const distDoor2 = Math.hypot(player.x - door2.cx, player.y - door2.cy);
-                    if (distDoor2 < 120 || corridor.sprayState === 'done') {
-                        door2.openProgress = Math.min(1.0, door2.openProgress + 0.08);
-                        door2.wheelAngle = (door2.wheelAngle || 0) + 0.25;
-                    } else if (door2.openProgress > 0) {
-                        door2.openProgress = Math.max(0, door2.openProgress - 0.05);
-                        door2.wheelAngle = (door2.wheelAngle || 0) + 0.25;
-                    }
-                }
-                door2.noCollision = (door2.openProgress > 0.4);
-            }
+                updateAirtightDoor(door1, 95);
+                updateAirtightDoor(door2, 120);
+            });
         }
 
     }
@@ -22069,15 +22216,33 @@ function applyObstacleTheme(obs) {
             ctx.lineWidth = 2.2;
             ctx.stroke();
         } else if (levelId === 'level7_test') {
-            // V22：墙体恢复原来深色扁平填色，移除 V14–V21 新加的渐变效果（用户：墙体不用管了）
-            ctx.fillStyle = (obs.type === 'low_wall') ? '#064e3b' : '#051914';
-            ctx.fill();
-            ctx.strokeStyle = (obs.type === 'low_wall') ? '#34d399' : '#10b981';
-            ctx.lineWidth = 2.2;
-            ctx.stroke();
-            ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+            if (obs.isBufferCorridorWall && obs.points && obs.points.length >= 2) {
+                // 通道专属银白外墙（只改标记了 isBufferCorridorWall 的两扇通道外墙，不动共用墙体）
+                const bb = ensureObstacleBBox(obs);
+                const wallGrad = ctx.createLinearGradient(bb.minX, bb.minY, bb.maxX, bb.maxY);
+                wallGrad.addColorStop(0, '#94a3b8');
+                wallGrad.addColorStop(0.32, '#e2e8f0');
+                wallGrad.addColorStop(0.68, '#cbd5e1');
+                wallGrad.addColorStop(1, '#94a3b8');
+                ctx.fillStyle = wallGrad;
+                ctx.fill();
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 2.0;
+                ctx.stroke();
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 0.9;
+                ctx.stroke();
+            } else {
+                // V22：墙体恢复原来深色扁平填色，移除 V14–V21 新加的渐变效果（用户：墙体不用管了）
+                ctx.fillStyle = (obs.type === 'low_wall') ? '#064e3b' : '#051914';
+                ctx.fill();
+                ctx.strokeStyle = (obs.type === 'low_wall') ? '#34d399' : '#10b981';
+                ctx.lineWidth = 2.2;
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
         } else {
             ctx.fillStyle = '#0f172a';
             ctx.fill();
@@ -22141,6 +22306,7 @@ function drawObstacle(obs) {
             applyObstacleTheme(obs);
 
             if ((levelId === 'level7_test' || (levelId === 'level7_lab' && obs.label && obs.label.includes('HEAVY ARMORED WALL'))) && obs.points && obs.points.length >= 2) {
+                const isCorridorSilver = !!(levelId === 'level7_test' && obs.isBufferCorridorWall);
                 for (let i = 0; i < obs.points.length; i++) {
                     const p1 = obs.points[i];
                     const p2 = obs.points[(i + 1) % obs.points.length];
@@ -22151,15 +22317,15 @@ function drawObstacle(obs) {
                             const t = r / (numRivets + 1);
                             const rx = p1.x + (p2.x - p1.x) * t;
                             const ry = p1.y + (p2.y - p1.y) * t;
-                            ctx.fillStyle = '#02120e';
+                            ctx.fillStyle = isCorridorSilver ? '#334155' : '#02120e';
                             ctx.beginPath();
                             ctx.arc(rx, ry, 2.2, 0, Math.PI * 2);
                             ctx.fill();
-                            ctx.fillStyle = '#064e3b';
+                            ctx.fillStyle = isCorridorSilver ? '#94a3b8' : '#064e3b';
                             ctx.beginPath();
                             ctx.arc(rx - 0.4, ry - 0.4, 1.4, 0, Math.PI * 2);
                             ctx.fill();
-                            ctx.fillStyle = '#34d399';
+                            ctx.fillStyle = isCorridorSilver ? '#38bdf8' : '#34d399';
                             ctx.beginPath();
                             ctx.arc(rx - 0.6, ry - 0.6, 0.6, 0, Math.PI * 2);
                             ctx.fill();
@@ -27326,33 +27492,33 @@ function draw() {
             ctx.beginPath(); ctx.moveTo(1040, cy); ctx.lineTo(2160, cy); ctx.stroke();
         }
 
-        // C. Level 8 外接缓冲区通道专属地面 (向外沿法线精准倾斜，更衣区与消毒区金属科技地坪，长度 560px)
+        // C. Level 8 外接缓冲区通道专属地面 (银白科技地坪，对标门板浅灰 #94a3b8 / #cbd5e1 / #e2e8f0 + #38bdf8 蓝分界线)
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(1110, 860);
-        ctx.lineTo(559, 961);
-        ctx.lineTo(581, 1081);
-        ctx.lineTo(1132, 980);
+        ctx.moveTo(1112.75, 875);
+        ctx.lineTo(727.18, 945.69);
+        ctx.lineTo(743.68, 1035.69);
+        ctx.lineTo(1129.25, 965);
         ctx.closePath();
-        ctx.fillStyle = '#061612';
+        ctx.fillStyle = '#cbd5e1';
         ctx.fill();
 
-        // 消毒区分区高耐磨金属不锈钢地坪
+        // 消毒区分区银灰不锈钢地坪
         ctx.beginPath();
-        ctx.moveTo(835, 911);
-        ctx.lineTo(559, 961);
-        ctx.lineTo(581, 1081);
-        ctx.lineTo(857, 1031);
+        ctx.moveTo(919.96, 910.34);
+        ctx.lineTo(727.18, 945.69);
+        ctx.lineTo(743.68, 1035.69);
+        ctx.lineTo(936.46, 1000.34);
         ctx.closePath();
-        ctx.fillStyle = '#031913';
+        ctx.fillStyle = '#94a3b8';
         ctx.fill();
 
-        // 门槛分界线与导电网格
-        ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+        // 门槛分界线 (屏幕蓝 #38bdf8)
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
         ctx.lineWidth = 1.6;
         ctx.beginPath();
-        ctx.moveTo(835, 911);
-        ctx.lineTo(857, 1031);
+        ctx.moveTo(919.96, 910.34);
+        ctx.lineTo(936.46, 1000.34);
         ctx.stroke();
 
         ctx.restore();
