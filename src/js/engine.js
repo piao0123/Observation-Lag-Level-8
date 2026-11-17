@@ -4782,7 +4782,7 @@ function update() {
             const door2 = props.find(p => p.id === 'airtight_door_2');
 
             if (corridor && door1 && door2) {
-                // 计算玩家在通道轴向上的投影坐标 (s: 沿通道外延距离 0~480, w: 沿通道截面横向偏移 -61~+61)
+                // 计算玩家在通道轴向上的投影坐标 (s: 沿通道外延距离 0~392, w: 沿通道截面横向偏移 -45.75~+45.75)
                 const dx = player.x - 1121;
                 const dy = player.y - 920;
                 // 沿通道向外法线向量 (-0.983607, 0.180328)
@@ -4790,9 +4790,9 @@ function update() {
                 // 沿截面门洞方向向量 (0.180328, 0.983607)
                 const w = dx * (0.180328) + dy * (0.983607);
 
-                const inCorridor = (s >= -20 && s <= 580 && Math.abs(w) <= 65);
-                const inDressing = inCorridor && (s < 275);
-                const inDecon = inCorridor && (s >= 285);
+                const inCorridor = (s >= -20 && s <= 412 && Math.abs(w) <= 50);
+                const inDressing = inCorridor && (s < 191);
+                const inDecon = inCorridor && (s >= 201);
 
                 if (door1.openProgress === undefined) door1.openProgress = 0;
                 if (door2.openProgress === undefined) door2.openProgress = 0;
@@ -27326,33 +27326,33 @@ function draw() {
             ctx.beginPath(); ctx.moveTo(1040, cy); ctx.lineTo(2160, cy); ctx.stroke();
         }
 
-        // C. Level 8 外接缓冲区通道专属地面 (向外沿法线精准倾斜，更衣区与消毒区金属科技地坪，长度 560px)
+        // C. Level 8 外接缓冲区通道专属地面 (向外沿法线精准倾斜，更衣区与消毒区金属科技地坪，长度 392px × 宽 91.5px)
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(1110, 860);
-        ctx.lineTo(559, 961);
-        ctx.lineTo(581, 1081);
-        ctx.lineTo(1132, 980);
+        ctx.moveTo(1112.75, 875);
+        ctx.lineTo(727.18, 945.69);
+        ctx.lineTo(743.68, 1035.69);
+        ctx.lineTo(1129.25, 965);
         ctx.closePath();
         ctx.fillStyle = '#061612';
         ctx.fill();
 
         // 消毒区分区高耐磨金属不锈钢地坪
         ctx.beginPath();
-        ctx.moveTo(835, 911);
-        ctx.lineTo(559, 961);
-        ctx.lineTo(581, 1081);
-        ctx.lineTo(857, 1031);
+        ctx.moveTo(919.96, 910.34);
+        ctx.lineTo(727.18, 945.69);
+        ctx.lineTo(743.68, 1035.69);
+        ctx.lineTo(936.46, 1000.34);
         ctx.closePath();
         ctx.fillStyle = '#031913';
         ctx.fill();
 
         // 门槛分界线与导电网格
         ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 1.4;
         ctx.beginPath();
-        ctx.moveTo(835, 911);
-        ctx.lineTo(857, 1031);
+        ctx.moveTo(919.96, 910.34);
+        ctx.lineTo(936.46, 1000.34);
         ctx.stroke();
 
         ctx.restore();
