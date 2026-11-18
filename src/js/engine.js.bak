@@ -4872,10 +4872,12 @@ function update() {
                     corridor.liquidStatus = 'waiting';
                     corridor.sprayState = 'idle';
 
-                    if (s < sDoor1 - 4) {
-                        corridor.lastApproachSide = 'inner';
-                    } else if (s > sDoor2 + 4) {
-                        corridor.lastApproachSide = 'outer';
+                    if (Math.abs(w) <= halfW + 105 && distFromCorridor <= halfL + 180) {
+                        if (s < sDoor1 - 4) {
+                            corridor.lastApproachSide = 'inner';
+                        } else if (s > sDoor2 + 4) {
+                            corridor.lastApproachSide = 'outer';
+                        }
                     }
 
                     // 进来的门保持解锁等待靠近；对面未通过消毒的门保持锁定
@@ -27495,20 +27497,20 @@ function draw() {
         // C. Level 8 外接缓冲区通道专属地面 (银白科技地坪，对标门板浅灰 #94a3b8 / #cbd5e1 / #e2e8f0 + #38bdf8 蓝分界线)
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(1112.75, 875);
-        ctx.lineTo(727.18, 945.69);
-        ctx.lineTo(743.68, 1035.69);
-        ctx.lineTo(1129.25, 965);
+        ctx.moveTo(1111.61, 868.81);
+        ctx.lineTo(787.06, 1130.34);
+        ctx.lineTo(844.48, 1201.59);
+        ctx.lineTo(1130.39, 971.19);
         ctx.closePath();
         ctx.fillStyle = '#cbd5e1';
         ctx.fill();
 
         // 消毒区分区银灰不锈钢地坪
         ctx.beginPath();
-        ctx.moveTo(919.96, 910.34);
-        ctx.lineTo(727.18, 945.69);
-        ctx.lineTo(743.68, 1035.69);
-        ctx.lineTo(936.46, 1000.34);
+        ctx.moveTo(939.68, 1007.36);
+        ctx.lineTo(787.06, 1130.34);
+        ctx.lineTo(844.48, 1201.59);
+        ctx.lineTo(997.09, 1078.61);
         ctx.closePath();
         ctx.fillStyle = '#94a3b8';
         ctx.fill();
@@ -27517,9 +27519,36 @@ function draw() {
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
         ctx.lineWidth = 1.6;
         ctx.beginPath();
-        ctx.moveTo(919.96, 910.34);
-        ctx.lineTo(936.46, 1000.34);
+        ctx.moveTo(939.68, 1007.36);
+        ctx.lineTo(997.09, 1078.61);
         ctx.stroke();
+
+        // 通道2银白底层地坪与门洞过渡地坪（直接读取 buffer_corridor_system_2 推导多边形，不动通道1）
+        const c2Bg = (typeof props !== 'undefined' && Array.isArray(props))
+            ? props.find(p => p && p.id === 'buffer_corridor_system_2')
+            : null;
+        if (c2Bg) {
+            const fillPolyPts = (pts, color) => {
+                if (!Array.isArray(pts) || pts.length < 3) return;
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            };
+            fillPolyPts(c2Bg.thresholdWorldPoly, '#cbd5e1');
+            fillPolyPts(c2Bg.floorWorldPoly, '#cbd5e1');
+            fillPolyPts(c2Bg.deconWorldPoly, '#94a3b8');
+            if (Array.isArray(c2Bg.dividerWorldPts) && c2Bg.dividerWorldPts.length === 2) {
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.moveTo(c2Bg.dividerWorldPts[0].x, c2Bg.dividerWorldPts[0].y);
+                ctx.lineTo(c2Bg.dividerWorldPts[1].x, c2Bg.dividerWorldPts[1].y);
+                ctx.stroke();
+            }
+        }
 
         ctx.restore();
     } else {

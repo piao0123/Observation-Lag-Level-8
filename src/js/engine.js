@@ -5218,6 +5218,37 @@ function update() {
     
     if (dx !== 0 || dy !== 0) {
         if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+        // Level 8 专属：玩家位于任一斜缓冲通道内时，将已归一化的移动输入向量按通道倾斜角旋转，保证单键沿斜通道直行不撞墙不降速
+        if (currentLevelId === 'level7_test' && typeof props !== 'undefined' && Array.isArray(props)) {
+            for (let i = 0; i < props.length; i++) {
+                const corridor = props[i];
+                if (!corridor || corridor.type !== 'buffer_corridor_system') continue;
+                const len = corridor.length || 392;
+                const wid = corridor.width || 91.5;
+                const halfL = len * 0.5;
+                const halfW = wid * 0.5;
+                const corAngle = corridor.angle || 0;
+                const cosA = Math.cos(corAngle);
+                const sinA = Math.sin(corAngle);
+                const rx = player.x - corridor.cx;
+                const ry = player.y - corridor.cy;
+                const s = (rx * cosA + ry * sinA) + halfL;
+                const w = rx * (-sinA) + ry * cosA;
+                if (s >= -20 && s <= len + 20 && Math.abs(w) <= halfW + 8) {
+                    const halfPi = Math.PI * 0.5;
+                    const delta = corAngle - Math.round(corAngle / halfPi) * halfPi;
+                    if (delta !== 0) {
+                        const cosD = Math.cos(delta);
+                        const sinD = Math.sin(delta);
+                        const rdx = dx * cosD - dy * sinD;
+                        const rdy = dx * sinD + dy * cosD;
+                        dx = rdx;
+                        dy = rdy;
+                    }
+                    break;
+                }
+            }
+        }
         player.walkCycle += 0.22;
         if (typeof soundManager !== 'undefined') soundManager.playFootstep();
     } else { player.walkCycle = 0; }
@@ -27497,20 +27528,20 @@ function draw() {
         // C. Level 8 外接缓冲区通道专属地面 (银白科技地坪，对标门板浅灰 #94a3b8 / #cbd5e1 / #e2e8f0 + #38bdf8 蓝分界线)
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(1112.75, 875);
-        ctx.lineTo(727.18, 945.69);
-        ctx.lineTo(743.68, 1035.69);
-        ctx.lineTo(1129.25, 965);
+        ctx.moveTo(1111.61, 868.81);
+        ctx.lineTo(787.06, 1130.34);
+        ctx.lineTo(844.48, 1201.59);
+        ctx.lineTo(1130.39, 971.19);
         ctx.closePath();
         ctx.fillStyle = '#cbd5e1';
         ctx.fill();
 
         // 消毒区分区银灰不锈钢地坪
         ctx.beginPath();
-        ctx.moveTo(919.96, 910.34);
-        ctx.lineTo(727.18, 945.69);
-        ctx.lineTo(743.68, 1035.69);
-        ctx.lineTo(936.46, 1000.34);
+        ctx.moveTo(939.68, 1007.36);
+        ctx.lineTo(787.06, 1130.34);
+        ctx.lineTo(844.48, 1201.59);
+        ctx.lineTo(997.09, 1078.61);
         ctx.closePath();
         ctx.fillStyle = '#94a3b8';
         ctx.fill();
@@ -27519,8 +27550,8 @@ function draw() {
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
         ctx.lineWidth = 1.6;
         ctx.beginPath();
-        ctx.moveTo(919.96, 910.34);
-        ctx.lineTo(936.46, 1000.34);
+        ctx.moveTo(939.68, 1007.36);
+        ctx.lineTo(997.09, 1078.61);
         ctx.stroke();
 
         // 通道2银白底层地坪与门洞过渡地坪（直接读取 buffer_corridor_system_2 推导多边形，不动通道1）

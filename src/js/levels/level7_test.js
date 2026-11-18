@@ -2279,19 +2279,22 @@ function drawBufferCorridorSystem(ctx, corridor) {
 
     // =========================================================
     // 1. 缓冲区银白高洁净金属地坪与屏幕蓝警戒线
-    // 更衣区: x: -halfL ~ splitX
-    // 消毒区: x: splitX ~ +halfL
+    // 更衣区: minX ~ splitX (通道1内端斜切时 minX < -halfL)
+    // 消毒区: splitX ~ +halfL
     // =========================================================
-    const dressW = Math.max(1, splitX - (-halfL));
+    const minX = Array.isArray(corridor.floorClipLocal) && corridor.floorClipLocal.length > 0
+        ? Math.min(-halfL, ...corridor.floorClipLocal.map(p => p.x))
+        : -halfL;
+    const dressW = Math.max(1, splitX - minX);
     const deconW = Math.max(1, halfL - splitX);
 
     // 更衣区地坪 (银白复合洁净地坪，对标门板浅灰渐变 #94a3b8 / #e2e8f0 / #cbd5e1)
-    const gradDress = ctx.createLinearGradient(-halfL, 0, splitX, 0);
+    const gradDress = ctx.createLinearGradient(minX, 0, splitX, 0);
     gradDress.addColorStop(0, '#cbd5e1');
     gradDress.addColorStop(0.5, '#e2e8f0');
     gradDress.addColorStop(1, '#cbd5e1');
     ctx.fillStyle = gradDress;
-    ctx.fillRect(-halfL, -halfW, dressW, W);
+    ctx.fillRect(minX, -halfW, dressW, W);
 
     // 消毒区地坪 (银灰拉丝不锈钢工业地坪，稍深一阶以区分功能区)
     const gradDecon = ctx.createLinearGradient(splitX, 0, halfL, 0);
@@ -2304,11 +2307,12 @@ function drawBufferCorridorSystem(ctx, corridor) {
     // 导静电防滑网格与焊缝 (屏幕蓝 #38bdf8 点缀)
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.32)';
     ctx.lineWidth = 1;
-    for (let lx = -halfL; lx <= halfL; lx += 28) {
+    const gridStartX = minX < -halfL ? (-halfL - Math.ceil((-halfL - minX) / 28) * 28) : -halfL;
+    for (let lx = gridStartX; lx <= halfL; lx += 28) {
         ctx.beginPath(); ctx.moveTo(lx, -halfW); ctx.lineTo(lx, halfW); ctx.stroke();
     }
     for (let ly = -halfW; ly <= halfW; ly += 15.25) {
-        ctx.beginPath(); ctx.moveTo(-halfL, ly); ctx.lineTo(halfL, ly); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(minX, ly); ctx.lineTo(halfL, ly); ctx.stroke();
     }
 
     // 更衣区 / 消毒区中央蓝色分界标线
@@ -2320,12 +2324,13 @@ function drawBufferCorridorSystem(ctx, corridor) {
     ctx.stroke();
 
     // 两侧屏幕蓝高光防滑斜纹警戒带 (4px 窄带适配 91.5px 宽度，改蓝，不留琥珀色)
+    const stripeStartX = minX < -halfL ? (-halfL - Math.ceil((-halfL - minX) / 12) * 12) : -halfL;
     const drawHazardStripe = (startY) => {
         ctx.save();
         ctx.fillStyle = '#0f172a';
-        ctx.fillRect(-halfL, startY, L, 4);
+        ctx.fillRect(minX, startY, halfL - minX, 4);
         ctx.fillStyle = 'rgba(56, 189, 248, 0.88)';
-        for (let hx = -halfL; hx < halfL; hx += 12) {
+        for (let hx = stripeStartX; hx < halfL; hx += 12) {
             ctx.beginPath();
             ctx.moveTo(hx, startY + 4);
             ctx.lineTo(hx + 5, startY);
@@ -2575,15 +2580,15 @@ const LEVEL_7_TEST = {
                 }
             },
 
-            // H. 缓冲区通道倾斜重装甲北墙与南墙（通道等比缩小至 392×91.5px，内端 (1121, 920) 锚定不动；加通道专属银白标记）
+            // H. 缓冲区通道倾斜重装甲北墙与南墙（平行左上外墙 2.4633 弧度，内端 (1121, 920) 锚定不动；内端沿门洞墙线斜切密封，不戳出、不留缝）
             {
                 type: 'poly_wall',
                 isBufferCorridorWall: true,
                 points: [
-                    { x: 1112.75, y: 875 },
-                    { x: 1110.23, y: 861.23 },
-                    { x: 724.65, y: 931.92 },
-                    { x: 727.18, y: 945.69 }
+                    { x: 1111.61, y: 868.81 },
+                    { x: 1108.74, y: 853.14 },
+                    { x: 778.28, y: 1119.44 },
+                    { x: 787.06, y: 1130.34 }
                 ],
                 label: 'BUFFER CORRIDOR NORTH ARMORED WALL',
                 hideLabel: true
@@ -2592,43 +2597,20 @@ const LEVEL_7_TEST = {
                 type: 'poly_wall',
                 isBufferCorridorWall: true,
                 points: [
-                    { x: 1129.25, y: 965 },
-                    { x: 1131.77, y: 978.77 },
-                    { x: 746.2, y: 1049.46 },
-                    { x: 743.68, y: 1035.69 }
+                    { x: 1130.39, y: 971.19 },
+                    { x: 1133.26, y: 986.86 },
+                    { x: 853.26, y: 1212.49 },
+                    { x: 844.48, y: 1201.59 }
                 ],
                 label: 'BUFFER CORRIDOR SOUTH ARMORED WALL',
                 hideLabel: true
             },
-            // H-cap. 内端门洞肩部收口挡墙 (桥接大厅原 ±61 门框与缩小后 ±45.75 通道内壁，杜绝侧漏缝)
-            {
-                type: 'poly_wall',
-                points: [
-                    { x: 1110, y: 860 },
-                    { x: 1096.23, y: 862.52 },
-                    { x: 1098.98, y: 877.52 },
-                    { x: 1112.75, y: 875 }
-                ],
-                label: 'BUFFER CORRIDOR NORTH INNER SHOULDER CAP',
-                hideLabel: true
-            },
-            {
-                type: 'poly_wall',
-                points: [
-                    { x: 1129.25, y: 965 },
-                    { x: 1115.48, y: 967.52 },
-                    { x: 1118.23, y: 982.52 },
-                    { x: 1132, y: 980 }
-                ],
-                label: 'BUFFER CORRIDOR SOUTH INNER SHOULDER CAP',
-                hideLabel: true
-            },
             // H2. 缓冲区两扇气密门南北门洞墙垛刚体碰撞 (留出 63px 净门洞，draw 为空避免遮盖门兜与识别终端)
             ...[
-                { name: 'DOOR 1', cx: 928.21, cy: 955.34 },
-                { name: 'DOOR 2', cx: 751.95, cy: 987.66 }
+                { name: 'DOOR 1', cx: 968.39, cy: 1042.98 },
+                { name: 'DOOR 2', cx: 828.85, cy: 1155.42 }
             ].flatMap(d => {
-                const ang = 2.96027 - Math.PI;
+                const ang = 2.4633 - Math.PI;
                 const ca = Math.cos(ang), sa = Math.sin(ang);
                 const makeJamb = (y1, y2, tag) => ({
                     type: 'poly_wall',
@@ -3425,15 +3407,21 @@ const LEVEL_7_TEST = {
             // 两侧斜墙各一个，贴墙旋转（2026-11-05）
             getServerCluster(1252, 1200, 4.5350, 0.85, 'L7 LEFT SERVER'),
             getServerCluster(1948, 1200, 1.7480, 0.85, 'L7 RIGHT SERVER'),
-            // 7. 斜向缓冲通道系统对象（长 560×0.7=392px，宽 122×0.75=91.5px，状态完全参数化挂于自身实例）
+            // 7. 斜向缓冲通道系统对象（长 560×0.7=392px，宽 122×0.75=91.5px，转角 2.4633 平行左上外墙）
             {
                 id: 'buffer_corridor_1',
                 type: 'buffer_corridor_system',
-                cx: 928.21,
-                cy: 955.34,
+                cx: 968.39,
+                cy: 1042.98,
                 length: 392,
                 width: 91.5,
-                angle: 2.96027,
+                angle: 2.4633,
+                floorClipLocal: [
+                    { x: -220.81, y: 45.75 },
+                    { x: 196, y: 45.75 },
+                    { x: 196, y: -45.75 },
+                    { x: -171.19, y: -45.75 }
+                ],
                 door1Id: 'airtight_door_1',
                 door2Id: 'airtight_door_2',
                 sprayTriggerDist: 52,
@@ -3457,34 +3445,34 @@ const LEVEL_7_TEST = {
                     drawBufferCorridorSystem(ctx, this);
                 }
             },
-            // 8. 缓冲通道 · 更衣区内部道具 (沿通道按 0.7 重推、横向贴 ±45.75 内壁重坐，中间净空 48.7~50.1px)
-            getBufferDressingLockers(1065.2, 895.15, 2.96027 - Math.PI),
-            getBufferDressingMonitor(982.33, 908.92, 2.96027 - Math.PI),
-            getBufferDressingSink(1088.04, 961.47, 2.96027 - Math.PI),
-            getBufferDressingSuitRack(1005.98, 975.81, 2.96027 - Math.PI)
+            // 8. 缓冲通道 · 更衣区内部道具 (沿新角度 2.4633 重推，南侧洗手池/防护服架顺内斜切面微前移避开防爆门，保持净空 48.7~50.1px)
+            getBufferDressingLockers(1060.11, 924.76, 2.4633 - Math.PI),
+            getBufferDressingMonitor(993.82, 976.38, 2.4633 - Math.PI),
+            getBufferDressingSink(1100.04, 981.65, 2.4633 - Math.PI),
+            getBufferDressingSuitRack(1041.21, 1028.17, 2.4633 - Math.PI)
         ];
 
-        // 9. 缓冲通道 · 消毒区内部静态道具 (沿通道按 0.7 重推、横向贴 ±45.75 内壁重坐，中间净空 53.6px)
+        // 9. 缓冲通道 · 消毒区内部静态道具 (沿新角度 2.4633 重推、横向贴 ±45.75 内壁，中间净空 53.6px)
         // 喷头指示灯与喷流直接读取各自所属通道实例的状态字段
         const bufferCorridorObj = props.find(p => p.id === 'buffer_corridor_1' || p.type === 'buffer_corridor_system');
         const getCorridorRef = () => bufferCorridorObj;
-        const deconAirN = getBufferDeconAirNozzles(870.79, 929.37, 2.96027 - Math.PI, true, getCorridorRef);
-        const deconAirS = getBufferDeconAirNozzles(883.74, 1000, 2.96027 - Math.PI, false, getCorridorRef);
-        const deconLiqN = getBufferDeconLiquidNozzles(798.49, 942.63, 2.96027 - Math.PI, true, getCorridorRef);
-        const deconLiqS = getBufferDeconLiquidNozzles(811.44, 1013.25, 2.96027 - Math.PI, false, getCorridorRef);
+        const deconAirN = getBufferDeconAirNozzles(905.53, 1047.53, 2.4633 - Math.PI, true, getCorridorRef);
+        const deconAirS = getBufferDeconAirNozzles(950.58, 1103.44, 2.4633 - Math.PI, false, getCorridorRef);
+        const deconLiqN = getBufferDeconLiquidNozzles(848.3, 1093.65, 2.4633 - Math.PI, true, getCorridorRef);
+        const deconLiqS = getBufferDeconLiquidNozzles(893.35, 1149.56, 2.4633 - Math.PI, false, getCorridorRef);
         if (bufferCorridorObj) {
             bufferCorridorObj.airNozzleProps = [deconAirN, deconAirS];
             bufferCorridorObj.liquidNozzleProps = [deconLiqN, deconLiqS];
         }
         props.push(
-            getBufferDeconGrating(804.97, 977.94, 2.96027 - Math.PI, getCorridorRef),
+            getBufferDeconGrating(870.82, 1121.6, 2.4633 - Math.PI, getCorridorRef),
             deconAirN,
             deconAirS,
             deconLiqN,
             deconLiqS,
             // 10. 缓冲通道两扇实验室风格气密门 (门1在交界 s=196；门2在出口内侧 s=375.2，完全落在 392px 通道外墙内)
-            getAirtightBlastDoor('airtight_door_1', 928.21, 955.34, 2.96027 - Math.PI, false),
-            getAirtightBlastDoor('airtight_door_2', 751.95, 987.66, 2.96027 - Math.PI, true)
+            getAirtightBlastDoor('airtight_door_1', 968.39, 1042.98, 2.4633 - Math.PI, false),
+            getAirtightBlastDoor('airtight_door_2', 828.85, 1155.42, 2.4633 - Math.PI, true)
         );
 
         // =====================================================================
@@ -3496,8 +3484,8 @@ const LEVEL_7_TEST = {
         const c1Len = (c1Ref && c1Ref.length) ? c1Ref.length : 392;
         const c1Wid = (c1Ref && c1Ref.width) ? c1Ref.width : 91.5;
         const c1HalfW = c1Wid * 0.5;
-        const c1Cos = Math.cos(c1Ref ? c1Ref.angle : 2.96027);
-        const c1Sin = Math.sin(c1Ref ? c1Ref.angle : 2.96027);
+        const c1Cos = Math.cos(c1Ref ? c1Ref.angle : 2.4633);
+        const c1Sin = Math.sin(c1Ref ? c1Ref.angle : 2.4633);
         const projC1S = (px, py) => ((px - c1Ref.cx) * c1Cos + (py - c1Ref.cy) * c1Sin) + c1Len * 0.5;
 
         const c1Door1Obj = props.find(p => p.id === (c1Ref ? c1Ref.door1Id : 'airtight_door_1'));
