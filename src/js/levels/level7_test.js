@@ -2346,6 +2346,3315 @@ function drawBufferCorridorSystem(ctx, corridor) {
 
     ctx.restore();
 }
+
+// =========================================================================
+// Level 8 西侧三角房 · 0.7x 等比重建法医解剖室与四联胶囊培养舱 (2026-11-18)
+// 尺寸锚点：地狱犬实际尺寸 68px (影子椭圆 68x44)，全屋等比 ×0.7 缩小
+// 约束：文字 >= 2.4px；描边 lineWidth <= 1.8 (中位 ~0.8)；仅改 level7_test.js
+// =========================================================================
+
+function drawAutopsySupineHoundHead(ctx, hx, hy, baseAng, isAlpha) {
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(baseAng);
+    const scale = isAlpha ? 1.22 : 0.96;
+    ctx.scale(scale, scale);
+
+    // 1) 颈部肌肉连接（暗哑黑炭色）
+    ctx.fillStyle = '#18181b';
+    ctx.beginPath();
+    ctx.ellipse(-5, 0, 7.5, 5.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2-3) 后掠暗色角刺（去发光）
+    ctx.fillStyle = '#1c1917';
+    ctx.strokeStyle = '#57534e';
+    ctx.lineWidth = 0.8;
+    [-1, 1].forEach(side => {
+        ctx.beginPath();
+        ctx.moveTo(-2, side * 4.6);
+        ctx.quadraticCurveTo(-7.5, side * 11, -13, side * 13);
+        ctx.quadraticCurveTo(-6.5, side * 7.2, 0, side * 3.8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    });
+
+    // 4-5) 仰躺犬耳轮廓
+    ctx.fillStyle = '#27272a';
+    ctx.strokeStyle = '#09090b';
+    ctx.lineWidth = 0.7;
+    [-1, 1].forEach(side => {
+        ctx.beginPath();
+        ctx.moveTo(-2.5, side * 4.0);
+        ctx.lineTo(-6.2, side * 8.0);
+        ctx.lineTo(1.2, side * 5.2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    });
+
+    // 6) 仰躺犬颅骨轮廓
+    ctx.fillStyle = '#27272a';
+    ctx.strokeStyle = '#09090b';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(-4, -4.8);
+    ctx.lineTo(8, -3.8);
+    ctx.lineTo(12.8, -1.9);
+    ctx.lineTo(14.5, 0);
+    ctx.lineTo(12.8, 1.9);
+    ctx.lineTo(8, 3.8);
+    ctx.lineTo(-4, 4.8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 7-8) 颅骨眉脊毛发纹理
+    ctx.strokeStyle = '#52525b';
+    ctx.lineWidth = 0.65;
+    [-1, 1].forEach(side => {
+        ctx.beginPath();
+        ctx.moveTo(-2.2, side * 2.2);
+        ctx.lineTo(3.5, side * 3.0);
+        ctx.lineTo(6.2, side * 2.0);
+        ctx.stroke();
+    });
+
+    // 9-10) 吻部鼻梁 + 鼻尖软骨块
+    ctx.fillStyle = '#09090b';
+    ctx.beginPath();
+    ctx.ellipse(8.8, 0, 5.5, 2.9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#3f3f46';
+    ctx.beginPath();
+    ctx.ellipse(13.2, 0, 1.4, 1.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 11-12) 微张暗红口腔 + 哑白上下利齿
+    ctx.fillStyle = '#450a0a';
+    ctx.beginPath();
+    ctx.ellipse(9.8, 0, 4.0, 1.9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#a8a29e';
+    ctx.beginPath();
+    ctx.moveTo(8.5, -2.5); ctx.lineTo(10.3, -2.5); ctx.lineTo(9.4, -0.6); ctx.closePath();
+    ctx.moveTo(8.5, 2.5); ctx.lineTo(10.3, 2.5); ctx.lineTo(9.4, 0.6); ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#d6d3d1';
+    ctx.fillRect(10.8, -1.1, 1.0, 2.2);
+
+    // 13-14) 失去光芒的死眼裂隙
+    ctx.fillStyle = '#18181b';
+    ctx.beginPath();
+    ctx.ellipse(3.8, -2.8, isAlpha ? 1.9 : 1.5, 1.0, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#4c1d1d';
+    ctx.beginPath();
+    ctx.ellipse(3.8, -2.8, isAlpha ? 1.2 : 0.9, 0.55, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawAutopsySupineCerberus(ctx, cx, cy, angle) {
+    // 复用 engine.js Cerberus 模型改平躺姿态：总长严格对齐 68px（敌人实际尺寸 68x44），颜色调暗、去发光
+    // 模型局部 x ∈ [-52, +43] (跨度 95)，缩放 0.715 -> 95 * 0.715 ≈ 67.9px 长
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.scale(0.715, 0.70);
+
+    // 1) 尸体贴槽柔和接触影
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+    ctx.beginPath();
+    ctx.ellipse(-2, 0, 34, 19, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2) 四肢仰躺外摊
+    [-1, 1].forEach(side => {
+        ctx.fillStyle = '#18181b';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.ellipse(-15, side * 14.5, 7.5, 4.5, side * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#27272a';
+        ctx.beginPath();
+        ctx.arc(-19, side * 17.5, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#3f3f46';
+        ctx.beginPath();
+        ctx.arc(-19, side * 17.8, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#78716c';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(-21, side * 17.0); ctx.lineTo(-24.5, side * 18.2);
+        ctx.moveTo(-20.4, side * 18.6); ctx.lineTo(-23.8, side * 19.9);
+        ctx.stroke();
+
+        ctx.fillStyle = '#18181b';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.ellipse(10, side * 15.2, 8.2, 4.8, -side * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#27272a';
+        ctx.beginPath();
+        ctx.arc(15.5, side * 17.8, 4.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#3f3f46';
+        ctx.beginPath();
+        ctx.arc(15.8, side * 18.0, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#78716c';
+        ctx.lineWidth = 0.95;
+        ctx.beginPath();
+        ctx.moveTo(17.5, side * 17.0); ctx.lineTo(21.5, side * 18.0);
+        ctx.moveTo(16.8, side * 18.8); ctx.lineTo(20.5, side * 20.0);
+        ctx.stroke();
+    });
+
+    // 3) 分节龙尾骨脊与尾端蛇首
+    const tailPts = [
+        { x: -19, y: 0, r: 3.1 },
+        { x: -25, y: 2.2, r: 2.7 },
+        { x: -31, y: 4.1, r: 2.3 },
+        { x: -37, y: 3.6, r: 1.9 },
+        { x: -42.5, y: 1.2, r: 1.6 },
+        { x: -46.8, y: -1.6, r: 1.3 }
+    ];
+    for (let i = 0; i < tailPts.length - 1; i++) {
+        const p1 = tailPts[i], p2 = tailPts[i + 1];
+        ctx.fillStyle = (i % 2 === 0) ? '#18181b' : '#27272a';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.ellipse((p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5, 4.2, p1.r, Math.atan2(p2.y - p1.y, p2.x - p1.x), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#5c1919';
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y - 1.0);
+        ctx.lineTo(p1.x - 1.5, p1.y - p1.r - 1.8);
+        ctx.lineTo(p1.x - 3.0, p1.y - 0.8);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.save();
+    ctx.translate(-48, -2.5);
+    ctx.rotate(Math.PI + 0.55);
+    ctx.fillStyle = '#2c0b0e';
+    ctx.strokeStyle = '#09090b';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(0, -2.8);
+    ctx.lineTo(6.8, 0);
+    ctx.lineTo(0, 2.8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#52525b';
+    ctx.beginPath();
+    ctx.arc(2.5, -1.0, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 4) 躯干仰躺轮廓与法医开胸解剖切口
+    ctx.fillStyle = '#141417';
+    ctx.beginPath();
+    ctx.ellipse(2, 0, 23, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const torsoGrad = ctx.createLinearGradient(-16, 0, 18, 0);
+    torsoGrad.addColorStop(0, '#09090b');
+    torsoGrad.addColorStop(0.45, '#27272a');
+    torsoGrad.addColorStop(1, '#18181b');
+    ctx.fillStyle = torsoGrad;
+    ctx.beginPath();
+    ctx.ellipse(2.5, 0, 20, 11.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#2c080b';
+    ctx.beginPath();
+    ctx.ellipse(3, 0, 12.2, 5.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+
+    ctx.fillStyle = '#450a0a';
+    ctx.beginPath();
+    ctx.ellipse(3, 0, 9.8, 4.0, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#78716c';
+    ctx.lineWidth = 0.85;
+    [-6.5, -2.0, 2.5, 7.0].forEach(rx => {
+        ctx.beginPath();
+        ctx.moveTo(rx, -7.2);
+        ctx.quadraticCurveTo(rx + 2.2, -4.5, rx + 1.2, -1.5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(rx, 7.2);
+        ctx.quadraticCurveTo(rx + 2.2, 4.5, rx + 1.2, 1.5);
+        ctx.stroke();
+    });
+
+    ctx.strokeStyle = '#a8a29e';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+    ctx.moveTo(-10, 0);
+    ctx.lineTo(13, 0);
+    ctx.stroke();
+
+    // 5) 垂落颈侧的暗化蛇毛
+    [
+        { bx: 7, by: -10, ex: 13, ey: -17 },
+        { bx: 11, by: -8, ex: 18, ey: -15 },
+        { bx: 14, by: -5, ex: 21, ey: -10 },
+        { bx: 7, by: 10, ex: 13, ey: 17 },
+        { bx: 11, by: 8, ex: 18, ey: 15 },
+        { bx: 14, by: 5, ex: 21, ey: 10 }
+    ].forEach((sn, idx) => {
+        ctx.strokeStyle = (idx % 2 === 0) ? '#18181b' : '#3b0d0d';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sn.bx, sn.by);
+        ctx.quadraticCurveTo((sn.bx + sn.ex) * 0.5, sn.by * 1.15, sn.ex, sn.ey);
+        ctx.stroke();
+
+        ctx.fillStyle = '#3b0d0d';
+        ctx.beginPath();
+        ctx.arc(sn.ex, sn.ey, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 6) 三颗仰躺地狱犬首
+    drawAutopsySupineHoundHead(ctx, 16, -12.5, -0.56, false);
+    drawAutopsySupineHoundHead(ctx, 16, 12.5, 0.56, false);
+    drawAutopsySupineHoundHead(ctx, 22, 0, 0.06, true);
+
+    ctx.restore();
+}
+
+function drawWestAutopsyTableDeckStatic(ctx, cx, cy) {
+    // 0.7x 等比缩小：桌下胶垫 + 台身(2抽屉/下层搁板/交叉撑/调平脚/向东电源线插头) + 140x45 304不锈钢台面 + 28x34一体水槽 + 台面小件
+    const W = 140;
+    const H = 45;
+    const halfW = W / 2;   // 70
+    const halfH = H / 2;   // 22.5
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 0) 桌下深色防疲劳胶垫（比台面略大 154x58，无碰撞）
+    ctx.fillStyle = '#090d11';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-77, -29, 154, 58, 4) : ctx.rect(-77, -29, 154, 58);
+    ctx.fill();
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.0;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-74.5, -26.5, 149, 53);
+    for (let mx = -70; mx <= 70; mx += 14) {
+        ctx.beginPath();
+        ctx.moveTo(mx, -25.5); ctx.lineTo(mx, -23.5);
+        ctx.moveTo(mx, 23.5); ctx.lineTo(mx, 25.5);
+        ctx.stroke();
+    }
+
+    // 0.5) 电源线（台身向东接墙方向延伸 + 地面线卡 + 三脚工业插头与地板插座盒）
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(68, -4);
+    ctx.bezierCurveTo(86, -4, 96, -10, 114, -6);
+    ctx.bezierCurveTo(126, -3, 134, -5, 143, -5);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(68, -4);
+    ctx.bezierCurveTo(86, -4, 96, -10, 114, -6);
+    ctx.bezierCurveTo(126, -3, 134, -5, 143, -5);
+    ctx.stroke();
+
+    // 2 个线卡 + 插头 + 墙面/地脚接线插座盒
+    [94, 122].forEach(kx => {
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(kx - 1.5, -8.5, 3, 3.2);
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(138, -7.8, 6.2, 5.6);
+    ctx.strokeRect(138, -7.8, 6.2, 5.6);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(144, -9.5, 7, 9);
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(144, -9.5, 7, 9);
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(147.5, -7.0, 0.9, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 0.7) 台身地面投影、调平脚、桌腿交叉撑、下层搁板（瓶子+叠布）、中央立柱与南面 2 个抽屉
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-halfW - 1.5, -halfH + 1, W + 3, H + 7, 3.5) : ctx.rect(-halfW - 1.5, -halfH + 1, W + 3, H + 7);
+    ctx.fill();
+
+    // 4 个调平脚 + 防滑垫（四角微探出，增强立体台身感）
+    [
+        [-64, -22.5], [60, -22.5], [-64, 24.5], [60, 24.5]
+    ].forEach(([fx, fy]) => {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(fx, fy - 1.2, 4.5, 3.2);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(fx + 0.8, fy - 1.6, 2.9, 1.5);
+    });
+
+    // 桌腿交叉撑（在南缘微露与下层框架）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(-61, halfH); ctx.lineTo(-42, halfH + 5.2);
+    ctx.moveTo(-42, halfH); ctx.lineTo(-61, halfH + 5.2);
+    ctx.moveTo(42, halfH); ctx.lineTo(61, halfH + 5.2);
+    ctx.moveTo(61, halfH); ctx.lineTo(42, halfH + 5.2);
+    ctx.stroke();
+
+    // 中央单立柱基座法兰
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-14, halfH - 0.5, 28, 5.2);
+    ctx.strokeStyle = '#061511';
+    ctx.lineWidth = 0.85;
+    ctx.strokeRect(-14, halfH - 0.5, 28, 5.2);
+
+    // 下层搁板（居中在桌下南缘可视带 y ∈ [22.5, 28.5]，上放玻璃瓶 2 个 + 叠布 1 叠）
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-44, halfH + 0.6, 88, 5.2);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-44, halfH + 0.6, 88, 5.2);
+    // 搁板上的试剂瓶 + 叠布
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-38, halfH + 1.5, 3.5, 3.4);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-33, halfH + 1.5, 3.5, 3.4);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(28, halfH + 1.8, 10, 2.8);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(29, halfH + 1.2, 8, 1.3);
+
+    // 南面 2 个不锈钢抽屉（带拉手与标签槽，位于 y ∈ [21.5, 25.6]）
+    [-22, 4].forEach(dx => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(dx, halfH - 0.8, 18, 4.2);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.7;
+        ctx.strokeRect(dx, halfH - 0.8, 18, 4.2);
+        // 拉手 + 锁孔
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(dx + 5.5, halfH + 0.8, 7, 1.2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(dx + 15.0, halfH + 0.9, 1.2, 1.2);
+    });
+
+    // 1) 304 不锈钢主台面 (140x45)
+    const deckGrad = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
+    deckGrad.addColorStop(0, '#94a3b8');
+    deckGrad.addColorStop(0.28, '#e2e8f0');
+    deckGrad.addColorStop(0.62, '#cbd5e1');
+    deckGrad.addColorStop(1, '#64748b');
+    ctx.fillStyle = deckGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-halfW, -halfH, W, H, 2.5) : ctx.rect(-halfW, -halfH, W, H);
+    ctx.fill();
+
+    ctx.strokeStyle = '#061511';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.52)';
+    ctx.lineWidth = 0.65;
+    ctx.stroke();
+
+    // 四周 4.2px 高凸边与斜接角线
+    const rim = 4.2;
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-halfW + 1.0, -halfH + 1.0, W - 2.0, H - 2.0);
+
+    ctx.fillStyle = '#aebbc9';
+    ctx.fillRect(-halfW + rim, -halfH + rim, W - rim * 2, H - rim * 2);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-halfW + rim, -halfH + rim, W - rim * 2, H - rim * 2);
+
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(-halfW, -halfH); ctx.lineTo(-halfW + rim, -halfH + rim);
+    ctx.moveTo(halfW, -halfH); ctx.lineTo(halfW - rim, -halfH + rim);
+    ctx.moveTo(halfW, halfH); ctx.lineTo(halfW - rim, halfH - rim);
+    ctx.moveTo(-halfW, halfH); ctx.lineTo(-halfW + rim, halfH - rim);
+    ctx.stroke();
+
+    // 台面精细激光网格蚀刻
+    ctx.strokeStyle = 'rgba(71, 85, 105, 0.25)';
+    ctx.lineWidth = 0.4;
+    for (let ex = -60; ex <= 30; ex += 10) {
+        ctx.beginPath();
+        ctx.moveTo(ex, -halfH + rim);
+        ctx.lineTo(ex, halfH - rim);
+        ctx.stroke();
+    }
+
+    // 2) 解剖槽 (92x31 @ x ∈ [-61.5, +30.5], y ∈ [-15.5, +15.5])
+    const slotX = -61.5, slotY = -15.5, slotW = 92, slotH = 31;
+    const slotGrad = ctx.createLinearGradient(0, slotY, 0, slotY + slotH);
+    slotGrad.addColorStop(0, '#1e293b');
+    slotGrad.addColorStop(0.5, '#334155');
+    slotGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = slotGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(slotX, slotY, slotW, slotH, 1.8) : ctx.rect(slotX, slotY, slotW, slotH);
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // 槽内格栅肋条与排水孔 (9 条)
+    [-45, -36, -27, -18, -9, 0, 9, 18, 26].forEach(gx => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(gx - 1.5, slotY + 1.8, 3.0, slotH - 3.6);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.45;
+        ctx.strokeRect(gx - 1.5, slotY + 1.8, 3.0, slotH - 3.6);
+        [-8.5, 0, 8.5].forEach(hy => {
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(gx, hy, 0.85, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    });
+
+    // 槽内排污滤网孔
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.arc(19, 0, 3.1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.55;
+    ctx.stroke();
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(17, 0); ctx.lineTo(21, 0);
+    ctx.moveTo(19, -2); ctx.lineTo(19, 2);
+    ctx.stroke();
+
+    // 3) 西端头枕小凸台
+    const hrGrad = ctx.createLinearGradient(-59.5, 0, -47, 0);
+    hrGrad.addColorStop(0, '#64748b');
+    hrGrad.addColorStop(0.5, '#cbd5e1');
+    hrGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = hrGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-59.5, -7.8, 12.5, 15.6, 2.5) : ctx.rect(-59.5, -7.8, 12.5, 15.6);
+    ctx.fill();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.beginPath();
+    ctx.ellipse(-52, 0, 3.6, 4.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4) 东端一体水槽 (28x34 @ x ∈ [35, 63], y ∈ [-17, +17])
+    const sinkX = 35, sinkY = -17, sinkW = 28, sinkH = 34;
+    // 槽边挡水沿
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(sinkX - 1.5, sinkY - 1.5, sinkW + 3.0, sinkH + 3.0);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.75;
+    ctx.strokeRect(sinkX - 1.5, sinkY - 1.5, sinkW + 3.0, sinkH + 3.0);
+
+    const sinkGrad = ctx.createLinearGradient(sinkX, sinkY, sinkX + sinkW, sinkY + sinkH);
+    sinkGrad.addColorStop(0, '#09111e');
+    sinkGrad.addColorStop(0.55, '#1e293b');
+    sinkGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = sinkGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(sinkX, sinkY, sinkW, sinkH, 2.2) : ctx.rect(sinkX, sinkY, sinkW, sinkH);
+    ctx.fill();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.85;
+    ctx.stroke();
+
+    // 排水口 + 橡胶塞 + 珠链
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.arc(48, 2, 2.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.arc(48, 2, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#334155';
+    ctx.beginPath();
+    ctx.arc(44.5, 5.2, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(44.5, 5.2);
+    ctx.quadraticCurveTo(42, 0, 41, -7.5);
+    ctx.stroke();
+
+    // 双龙头 + 冷热红蓝点 (#ef4444 / #38bdf8)
+    [
+        { fy: -12.5, dot: '#ef4444', nx: 49, ny: -7.5 },
+        { fy: -6.5, dot: '#38bdf8', nx: 51.5, ny: -4.2 }
+    ].forEach(f => {
+        ctx.fillStyle = '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.arc(59, f.fy, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = f.dot;
+        ctx.beginPath();
+        ctx.arc(60.2, f.fy, 0.85, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(59, f.fy);
+        ctx.quadraticCurveTo(54, f.fy, f.nx, f.ny);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(59, f.fy);
+        ctx.quadraticCurveTo(54, f.fy, f.nx, f.ny);
+        ctx.stroke();
+    });
+
+    // 皂液器（水槽北西角）
+    ctx.fillStyle = '#bae6fd';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(38.5, -13.5, 2.1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(38.0, -14.2, 2.5, 1.0);
+
+    // 弹簧软管喷头（水槽东南侧）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(58, 5.5, 2.4, 2.4);
+    [
+        { cx: 57, cy: 10.5, r: 4.0, a0: -0.5, a1: Math.PI * 1.15 },
+        { cx: 56.2, cy: 10.7, r: 2.7, a0: 0.2, a1: Math.PI * 1.65 }
+    ].forEach(seg => {
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.arc(seg.cx, seg.cy, seg.r, seg.a0, seg.a1);
+        ctx.stroke();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.arc(seg.cx, seg.cy, seg.r, seg.a0, seg.a1);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(46.5, 11.8, 4.2, 2.2);
+    ctx.strokeRect(46.5, 11.8, 4.2, 2.2);
+
+    // 晾架挂 2 件工具（水槽东侧不锈钢挂杆 + 刷子与探针）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(65.5, -13);
+    ctx.lineTo(65.5, 13);
+    ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(64.5, -9, 2.2, 6.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(64.8, 2, 1.6, 8);
+
+    // 5) 台面两侧刻度标尺线 + 标本编号钢印 (SPEC-00)
+    [-20.2, 20.2].forEach(ry => {
+        const dir = ry < 0 ? 1 : -1;
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-56, ry);
+        ctx.lineTo(28, ry);
+        ctx.stroke();
+        for (let tx = -56; tx <= 28; tx += 4) {
+            const off = tx + 56;
+            const isMaj = (off % 16 === 0);
+            const len = isMaj ? 2.6 : 1.2;
+            ctx.strokeStyle = isMaj ? '#1e293b' : '#475569';
+            ctx.lineWidth = isMaj ? 0.7 : 0.45;
+            ctx.beginPath();
+            ctx.moveTo(tx, ry);
+            ctx.lineTo(tx, ry + dir * len);
+            ctx.stroke();
+        }
+    });
+
+    // 标本编号钢印 (SPEC-00 @ 西南边框凸缘旁)
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-67, 15.8, 18, 5.2);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-67, 15.8, 18, 5.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('SPEC-00', -58, 18.5);
+
+    // 6) 台面小件（不遮挡尸体，分布于台面西端与槽边空位）：
+    // 6A) 标本罐（台面西端 x=-65.5, y=-9：玻璃罐 + 绿液 + 小标本 + 盖）
+    ctx.fillStyle = '#064e3b';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-65.5, -10, 3.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#34d399';
+    ctx.beginPath();
+    ctx.arc(-65.5, -10, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#991b1b';
+    ctx.beginPath();
+    ctx.arc(-65.3, -9.8, 1.0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 6B) 试剂瓶（带标签 @ x=-65.5, y=6）
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-67.8, 3.0, 4.6, 6.2);
+    ctx.strokeRect(-67.8, 3.0, 4.6, 6.2);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-67.4, 4.6, 3.8, 2.6);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-66.6, 1.8, 2.2, 1.2);
+
+    // 6C) 写字板（板+纸+夹+2-3行潦草字 @ x=25, y=17.5）
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(19, 13.8, 11.5, 7.8);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(19.8, 14.5, 9.9, 6.4);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(22.8, 13.6, 4.0, 1.4);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath();
+    ctx.moveTo(21, 16.2); ctx.lineTo(28.5, 16.2);
+    ctx.moveTo(21, 17.8); ctx.lineTo(27.0, 17.8);
+    ctx.moveTo(21, 19.4); ctx.lineTo(28.0, 19.4);
+    ctx.stroke();
+
+    // 6D) 叠巾（@ x=-40, y=-18.5）
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-45, -20.5, 10, 4.2);
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillRect(-44.2, -19.8, 8.4, 2.8);
+    ctx.strokeStyle = '#0369a1';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(-45, -20.5, 10, 4.2);
+
+    // 6E) 工具卷（卷布 + 露出工具柄 @ x=4, y=16.5）
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-4, 15.0, 14, 5.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-4, 15.0, 14, 5.2);
+    [-1.5, 1.8, 5.0, 7.8].forEach(tx => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(tx, 13.2, 1.3, 2.5);
+    });
+
+    // 6F) 摇臂放大镜（从北沿 x=-26 伸出，镜片直径 12 @ (-18, -16)，不遮挡尸体）
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(-29, -22.2, 4.5, 3.0);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.moveTo(-26.8, -20.5);
+    ctx.lineTo(-24, -17.5);
+    ctx.lineTo(-18, -16);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.34)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.arc(-18, -16, 6.0, 0, Math.PI * 2); // 直径 12
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-18, -16, 4.0, -2.5, -1.2);
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time) {
+    // 淡蓝白光晕椭圆 140x56 (×0.7 缩小)，透明度呼吸 (0.05 - 0.25)，周期 2 秒
+    const breath = 0.5 + 0.5 * Math.sin(time * Math.PI);
+    const centerAlpha = 0.05 + 0.20 * breath;
+    const midAlpha = centerAlpha * 0.72;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(70, 28); // 140x56
+    const glowGrad = ctx.createRadialGradient(0, 0, 0.05, 0, 0, 1);
+    glowGrad.addColorStop(0, `rgba(224, 242, 254, ${centerAlpha.toFixed(3)})`);
+    glowGrad.addColorStop(0.55, `rgba(56, 189, 248, ${midAlpha.toFixed(3)})`);
+    glowGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawWestAutopsyCorpseLayerStatic(ctx, cx, cy) {
+    // 槽内暗色血迹 + 68px 仰躺三头犬尸体 + 2 条固定束带（皮带+扣）+ Ø37 环形灯组支架/拉链/灯控盒
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 暗色血迹
+    [
+        { x: -32, y: 8.5, rx: 7.4, ry: 3.4, rot: 0.25 },
+        { x: -10, y: -9.5, rx: 8.5, ry: 3.1, rot: -0.18 },
+        { x: 12, y: 6.2, rx: 6.0, ry: 2.8, rot: 0.15 }
+    ].forEach(bp => {
+        ctx.fillStyle = '#450a0a';
+        ctx.beginPath();
+        ctx.ellipse(bp.x, bp.y, bp.rx, bp.ry, bp.rot, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(127, 29, 29, 0.85)';
+        ctx.beginPath();
+        ctx.ellipse(bp.x - 0.8, bp.y - 0.4, bp.rx * 0.68, bp.ry * 0.62, bp.rot, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 68px 平躺三头犬尸体（居中于解剖槽）
+    drawAutopsySupineCerberus(ctx, -14, 0, Math.PI);
+
+    // 2 条固定束带（横过尸体：棕色皮带 + 金属带扣 + 扣孔）
+    [-22, -6].forEach(bx => {
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(bx - 1.6, -15.5, 3.2, 31);
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 0.55;
+        ctx.strokeRect(bx - 1.6, -15.5, 3.2, 31);
+        // 金属皮带扣
+        ctx.fillStyle = '#cbd5e1';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(bx - 2.1, -2.0, 4.2, 4.0);
+        ctx.strokeRect(bx - 2.1, -2.0, 4.2, 4.0);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(bx - 0.8, -0.8, 1.6, 1.6);
+    });
+
+    // 环形灯组静态支架：北侧吊臂 (550, 1278) -> (550, 1262) 即 (0, -22) -> (0, -38)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-1.4, -38, 2.8, 16);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-0.9, -38, 1.8, 16);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.arc(0, -38, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // 吊臂上的灯控盒（小盒 + 开关 + 绿色指示灯）+ 细珠拉链
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-3.6, -34.5, 7.2, 4.5);
+    ctx.strokeRect(-3.6, -34.5, 7.2, 4.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-2.4, -33.0, 2.2, 1.4);
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(1.8, -32.2, 0.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 拉链（细珠链从灯控盒右侧垂下）
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([0.8, 0.8]);
+    ctx.beginPath();
+    ctx.moveTo(4.2, -31.5);
+    ctx.lineTo(4.6, -23.0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.arc(4.6, -22.5, 0.9, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 环形灯框：直径 37 (r = 18.5)
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.arc(0, 0, 18.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.arc(0, 0, 18.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 8 盏灯直径 7 (r = 3.5)
+    for (let i = 0; i < 8; i++) {
+        const theta = -Math.PI / 2 + i * (Math.PI / 4);
+        const lx = Math.cos(theta) * 18.5;
+        const ly = Math.sin(theta) * 18.5;
+
+        const housingGrad = ctx.createRadialGradient(lx - 0.8, ly - 0.8, 0.4, lx, ly, 3.5);
+        housingGrad.addColorStop(0, '#f1f5f9');
+        housingGrad.addColorStop(0.7, '#94a3b8');
+        housingGrad.addColorStop(1, '#475569');
+        ctx.fillStyle = housingGrad;
+        ctx.beginPath();
+        ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.85;
+        ctx.stroke();
+
+        // 暗态基底：蓝环与灯芯保留可见
+        ctx.fillStyle = '#0c4a6e';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 2.35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        ctx.fillStyle = '#7dd3fc';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 0.8, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+function drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time) {
+    // 8 盏灯单双号反相呼吸：周期 2 秒，亮度 0.30 - 1.00，直径 7 (r = 3.5)
+    const phaseBase = Math.sin(time * Math.PI);
+    ctx.save();
+    ctx.translate(cx, cy);
+    for (let i = 0; i < 8; i++) {
+        const theta = -Math.PI / 2 + i * (Math.PI / 4);
+        const lx = Math.cos(theta) * 18.5;
+        const ly = Math.sin(theta) * 18.5;
+        const groupWave = (i % 2 === 0) ? (0.5 + 0.5 * phaseBase) : (0.5 - 0.5 * phaseBase);
+        const brightness = 0.30 + 0.70 * groupWave;
+
+        ctx.save();
+        ctx.globalAlpha = brightness;
+
+        if (brightness > 0.42) {
+            const haloGrad = ctx.createRadialGradient(lx, ly, 1.0, lx, ly, 6.0);
+            haloGrad.addColorStop(0, 'rgba(56, 189, 248, 0.38)');
+            haloGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+            ctx.fillStyle = haloGrad;
+            ctx.beginPath();
+            ctx.arc(lx, ly, 6.0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        const lensGrad = ctx.createRadialGradient(lx, ly, 0.3, lx, ly, 2.35);
+        lensGrad.addColorStop(0, '#ffffff');
+        lensGrad.addColorStop(0.45, '#7dd3fc');
+        lensGrad.addColorStop(0.85, '#0284c7');
+        lensGrad.addColorStop(1, '#0369a1');
+        ctx.fillStyle = lensGrad;
+        ctx.beginPath();
+        ctx.arc(lx, ly, 2.35, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#bae6fd';
+        ctx.lineWidth = 0.55;
+        ctx.stroke();
+
+        ctx.fillStyle = '#f0f9ff';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 0.85, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    ctx.restore();
+}
+
+function drawWestAutopsyTableAssembly(ctx, cx, cy, time = 0) {
+    drawWestAutopsyTableDeckStatic(ctx, cx, cy);
+    drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time);
+    drawWestAutopsyCorpseLayerStatic(ctx, cx, cy);
+    drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time);
+}
+
+function drawDetailedHeartOrgan(ctx, hx, hy, sc, hasCore, time = 0, phase = 0) {
+    // 心脏搏动不变：周期约 1 秒，缩放 1.0 - 1.06，裂纹与核心呼吸 0.5 - 1.0
+    const beatWave = 0.5 + 0.5 * Math.sin(time * Math.PI * 2 + phase);
+    const beatScale = 1.0 + 0.06 * beatWave;
+    const crackAlpha = 0.5 + 0.5 * beatWave;
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.scale(sc * beatScale, sc * beatScale);
+
+    ctx.fillStyle = 'rgba(15, 5, 5, 0.48)';
+    ctx.beginPath();
+    ctx.ellipse(0.6, 1.4, 5.4, 4.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#5c1414';
+    ctx.strokeStyle = '#2c0808';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-2.1, -7.0, 2.0, 2.8);
+    ctx.strokeRect(-2.1, -7.0, 2.0, 2.8);
+    ctx.fillRect(0.5, -6.6, 1.8, 2.5);
+    ctx.strokeRect(0.5, -6.6, 1.8, 2.5);
+
+    const hGrad = ctx.createRadialGradient(-1.2, -1.2, 0.8, 0, 0, 7.0);
+    hGrad.addColorStop(0, '#991b1b');
+    hGrad.addColorStop(0.65, '#7f1d1d');
+    hGrad.addColorStop(1, '#450a0a');
+    ctx.fillStyle = hGrad;
+    ctx.beginPath();
+    ctx.moveTo(0, 6.0);
+    ctx.bezierCurveTo(-6.4, 2.5, -6.8, -4.2, -2.1, -5.0);
+    ctx.bezierCurveTo(0, -5.2, 0, -3.1, 0, -3.1);
+    ctx.bezierCurveTo(0, -3.1, 0, -5.2, 2.1, -5.0);
+    ctx.bezierCurveTo(6.8, -4.2, 6.4, 2.5, 0, 6.0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#2c0808';
+    ctx.lineWidth = 0.85;
+    ctx.stroke();
+
+    ctx.strokeStyle = '#3b0707';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(-0.3, -2.9);
+    ctx.quadraticCurveTo(0.8, 1.1, -0.2, 5.2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#4c0519';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(-1.0, -2.1); ctx.quadraticCurveTo(-3.1, -0.2, -3.6, 2.1);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0.4, -1.5); ctx.quadraticCurveTo(2.9, 0.2, 3.5, 2.3);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-0.2, 0.8); ctx.quadraticCurveTo(-2.1, 2.4, -1.5, 4.2);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.globalAlpha = crackAlpha;
+    ctx.strokeStyle = hasCore ? '#fb923c' : '#ea580c';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.moveTo(-3.1, -2.4); ctx.lineTo(-0.8, 0.2); ctx.lineTo(2.7, -1.5);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-0.8, 0.2); ctx.lineTo(0.4, 3.9);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(254, 202, 202, 0.42)';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-2.3, -1.9, 2.1, -2.6, -1.1);
+    ctx.stroke();
+
+    if (hasCore) {
+        const coreAlpha = 0.55 + 0.45 * beatWave;
+        ctx.save();
+        ctx.globalAlpha = coreAlpha;
+        ctx.fillStyle = 'rgba(249, 115, 22, 0.48)';
+        ctx.beginPath();
+        ctx.arc(-0.4, 0.3, 2.3 + 0.35 * beatWave, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.arc(-0.4, 0.3, 1.25 + 0.2 * beatWave, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    ctx.restore();
+}
+
+function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind) {
+    // 0.7x 托盘 30x20：盘脚 + 外翻盘沿 + 角排水孔 + 蚀刻小标签 (HEART/TOOLS/LIVER/GUT)
+    const W = 30, H = 20;
+    const halfW = W / 2, halfH = H / 2;
+    const tagText = trayKind === 'hearts' ? 'HEART' : (trayKind === 'organs' ? 'LIVER' : (trayKind === 'intestines' ? 'GUT' : 'TOOLS'));
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 1) 盘脚 + 地面投影
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.55)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-halfW - 0.8, -halfH + 0.6, W + 1.6, H + 1.6, 2.8) : ctx.rect(-halfW - 0.8, -halfH + 0.6, W + 1.6, H + 1.6);
+    ctx.fill();
+    [
+        [-halfW + 1.5, -halfH + 1.5], [halfW - 1.5, -halfH + 1.5],
+        [-halfW + 1.5, halfH - 1.5], [halfW - 1.5, halfH - 1.5]
+    ].forEach(([fx, fy]) => {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(fx, fy, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 2) 不锈钢浅口盘外翻沿
+    const rimGrad = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
+    rimGrad.addColorStop(0, '#f1f5f9');
+    rimGrad.addColorStop(0.5, '#cbd5e1');
+    rimGrad.addColorStop(1, '#64748b');
+    ctx.fillStyle = rimGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-halfW, -halfH, W, H, 2.8) : ctx.rect(-halfW, -halfH, W, H);
+    ctx.fill();
+    ctx.strokeStyle = '#061511';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+    ctx.lineWidth = 0.55;
+    ctx.stroke();
+
+    // 3) 内盘底 (25x15) + 四角排水孔
+    const innerGrad = ctx.createLinearGradient(-halfW + 2.5, -halfH + 2.5, halfW - 2.5, halfH - 2.5);
+    innerGrad.addColorStop(0, '#64748b');
+    innerGrad.addColorStop(0.5, '#94a3b8');
+    innerGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = innerGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-halfW + 2.4, -halfH + 2.4, W - 4.8, H - 4.8, 1.8) : ctx.rect(-halfW + 2.4, -halfH + 2.4, W - 4.8, H - 4.8);
+    ctx.fill();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.65;
+    ctx.stroke();
+
+    [
+        [-halfW + 3.6, -halfH + 3.6], [halfW - 3.6, -halfH + 3.6],
+        [-halfW + 3.6, halfH - 3.6], [halfW - 3.6, halfH - 3.6]
+    ].forEach(([dx, dy]) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(dx, dy, 0.55, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 4) 内容（按 0.64 缩放在内盘排布）
+    if (trayKind === 'hearts') {
+        ctx.save();
+        ctx.scale(0.64, 0.64);
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(20, 4, 4, 0.50)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(-16.5, 6.2); ctx.bezierCurveTo(-11.5, 10.6, -4.0, 3.2, 2.8, 8.2);
+        ctx.stroke();
+        ctx.strokeStyle = '#7f1d1d';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(-16.5, 5.6); ctx.bezierCurveTo(-11.5, 10.0, -4.0, 2.6, 2.8, 7.6);
+        ctx.stroke();
+        ctx.strokeStyle = '#b91c1c';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.moveTo(-16.2, 5.3); ctx.bezierCurveTo(-11.5, 9.6, -4.0, 2.2, 2.5, 7.2);
+        ctx.stroke();
+        ctx.restore();
+    } else if (trayKind === 'organs') {
+        ctx.save();
+        ctx.scale(0.64, 0.64);
+        const liverGrad = ctx.createLinearGradient(-17, -8.5, -1, 3.5);
+        liverGrad.addColorStop(0, '#6b21a8');
+        liverGrad.addColorStop(0.6, '#4c1d95');
+        liverGrad.addColorStop(1, '#3b0764');
+        ctx.fillStyle = liverGrad;
+        ctx.beginPath();
+        ctx.moveTo(-17.2, 1.5);
+        ctx.quadraticCurveTo(-16.5, -8.8, -5.5, -8.4);
+        ctx.quadraticCurveTo(0.2, -6.6, -1.8, 0.5);
+        ctx.quadraticCurveTo(-9.0, 3.5, -17.2, 1.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#1e1b4b';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(8.3, -9.8, 2.4, 4.4);
+        [-1, 1].forEach(side => {
+            const lx = 9.5 + side * 4.5;
+            const lungGrad = ctx.createRadialGradient(lx - 1.0, -2.0, 0.5, lx, -0.5, 6.5);
+            lungGrad.addColorStop(0, '#6b21a8');
+            lungGrad.addColorStop(0.65, '#581c87');
+            lungGrad.addColorStop(1, '#3b0764');
+            ctx.fillStyle = lungGrad;
+            ctx.beginPath();
+            ctx.ellipse(lx, -0.5, 3.8, 6.1, side * 0.12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#2e1065';
+            ctx.lineWidth = 0.75;
+            ctx.stroke();
+        });
+        ctx.restore();
+    } else if (trayKind === 'intestines') {
+        ctx.save();
+        ctx.scale(0.64, 0.64);
+        const bowelLoops = [
+            { x0: -15.5, y0: -5.5, cx: -11.5, cy: -10.5, x1: -7.5, y1: -5.2 },
+            { x0: -7.5, y0: -5.2, cx: -3.5, cy: 0.2, x1: 0.5, y1: -5.0 },
+            { x0: 0.5, y0: -5.0, cx: 4.5, cy: -10.2, x1: 8.2, y1: -4.8 },
+            { x0: -15.2, y0: 0.2, cx: -11.2, cy: -4.5, x1: -7.2, y1: 0.5 },
+            { x0: -7.2, y0: 0.5, cx: -3.2, cy: 5.5, x1: 0.8, y1: 0.5 },
+            { x0: 0.8, y0: 0.5, cx: 4.8, cy: -4.2, x1: 8.5, y1: 1.0 },
+            { x0: -14.8, y0: 5.5, cx: -10.8, cy: 1.2, x1: -6.8, y1: 6.0 },
+            { x0: -6.8, y0: 6.0, cx: -2.8, cy: 10.6, x1: 1.2, y1: 5.8 },
+            { x0: 1.2, y0: 5.8, cx: 5.2, cy: 1.5, x1: 9.0, y1: 6.2 }
+        ];
+        ctx.lineCap = 'round';
+        bowelLoops.forEach((lp, idx) => {
+            ctx.strokeStyle = '#2e1065';
+            ctx.lineWidth = 1.7;
+            ctx.beginPath();
+            ctx.moveTo(lp.x0, lp.y0);
+            ctx.quadraticCurveTo(lp.cx, lp.cy, lp.x1, lp.y1);
+            ctx.stroke();
+            ctx.strokeStyle = (idx % 2 === 0) ? '#6b21a8' : '#7e22ce';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(lp.x0, lp.y0);
+            ctx.quadraticCurveTo(lp.cx, lp.cy, lp.x1, lp.y1);
+            ctx.stroke();
+        });
+        const gbGrad = ctx.createRadialGradient(13.2, -5.2, 0.6, 14.0, -4.4, 4.5);
+        gbGrad.addColorStop(0, '#6ee7b7');
+        gbGrad.addColorStop(0.55, '#10b981');
+        gbGrad.addColorStop(1, '#065f46');
+        ctx.fillStyle = gbGrad;
+        ctx.beginPath();
+        ctx.ellipse(14.0, -4.4, 3.8, 2.5, -0.35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    } else {
+        // TOOLS：解剖刀x2 + 手术刀柄 + 手术剪 + 镊子 + 止血钳 + 缝合针 + 持针器
+        ctx.save();
+        ctx.scale(0.64, 0.64);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.65;
+
+        // 解剖刀 x2 + 额外手术刀柄
+        [-16.2, -11.4].forEach(sx => {
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(sx - 1.0, -2.0, 2.0, 10.5);
+            ctx.strokeRect(sx - 1.0, -2.0, 2.0, 10.5);
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.moveTo(sx - 0.8, -2.0);
+            ctx.lineTo(sx - 0.8, -8.5);
+            ctx.quadraticCurveTo(sx + 1.8, -6.2, sx + 0.8, -2.0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        });
+        // 备用手术刀柄（带刻槽与接口）
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(-7.2, -7.8, 1.8, 15.5);
+        ctx.strokeRect(-7.2, -7.8, 1.8, 15.5);
+
+        // 手术剪
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(-2.5, -8.2); ctx.lineTo(1.2, 3.8);
+        ctx.moveTo(1.2, -8.2); ctx.lineTo(-2.5, 3.8);
+        ctx.stroke();
+        [-2.8, 1.5].forEach(rx => {
+            ctx.fillStyle = '#cbd5e1';
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.arc(rx, 6.5, 2.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        });
+
+        // 镊子
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.moveTo(5.6, -8.2); ctx.lineTo(4.1, 7.6);
+        ctx.moveTo(5.6, -8.2); ctx.lineTo(7.1, 7.6);
+        ctx.stroke();
+
+        // 止血钳
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.6;
+        ctx.fillRect(9.5, -8.2, 2.0, 12.2);
+        ctx.strokeRect(9.5, -8.2, 2.0, 12.2);
+        [8.7, 12.2].forEach(rx => {
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.arc(rx, 6.5, 1.9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        });
+
+        // 持针器 + 弯缝合针（最东侧）
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(15.0, -5.5, 1.8, 12.5);
+        ctx.strokeRect(15.0, -5.5, 1.8, 12.5);
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.arc(15.8, -7.2, 2.4, 0.2, Math.PI * 1.15);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // 5) 蚀刻小标签 (HEART / TOOLS / LIVER / GUT，最小字号 >= 2.4px)
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+    ctx.fillRect(-10.5, halfH - 3.6, 21, 3.3);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText(tagText, 0, halfH - 1.9);
+
+    ctx.restore();
+}
+
+function drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time) {
+    if (trayKind === 'tools') return;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(0.64, 0.64);
+
+    if (trayKind === 'hearts') {
+        drawDetailedHeartOrgan(ctx, -8.2, -2.0, 1.00, true, time, 0.0);
+        drawDetailedHeartOrgan(ctx, 8.8, -4.5, 0.66, false, time, 2.1);
+        drawDetailedHeartOrgan(ctx, 10.2, 4.6, 0.63, false, time, 4.2);
+    } else if (trayKind === 'organs') {
+        const arcaneVessels = [
+            { x0: -14.5, y0: 6.2, cx: -6.0, cy: 9.8, x1: 3.5, y1: 6.8, glow: 'rgba(16,185,129,0.42)', core: '#34d399' },
+            { x0: 3.5, y0: 6.8, cx: 9.5, cy: 5.0, x1: 15.5, y1: 8.0, glow: 'rgba(16,185,129,0.42)', core: '#34d399' },
+            { x0: -9.5, y0: 7.4, cx: -4.5, cy: 4.5, x1: 0.5, y1: 3.2, glow: 'rgba(52,211,153,0.38)', core: '#6ee7b7' },
+            { x0: -9.0, y0: -4.2, cx: -1.5, cy: -2.2, x1: 4.2, y1: 0.8, glow: 'rgba(192,132,252,0.45)', core: '#e9d5ff' },
+            { x0: 4.2, y0: 0.8, cx: 7.5, cy: -1.5, x1: 12.2, y1: -2.8, glow: 'rgba(192,132,252,0.45)', core: '#d8b4fe' },
+            { x0: -4.2, y0: -1.8, cx: -1.2, cy: 2.2, x1: 1.2, y1: 5.5, glow: 'rgba(168,85,247,0.40)', core: '#c084fc' }
+        ];
+        ctx.lineCap = 'round';
+        arcaneVessels.forEach((v, idx) => {
+            const pulseA = 0.75 + 0.25 * Math.sin(time * Math.PI + idx * 0.55);
+            ctx.save();
+            ctx.globalAlpha = pulseA;
+            ctx.strokeStyle = v.glow;
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(v.x0, v.y0);
+            ctx.quadraticCurveTo(v.cx, v.cy, v.x1, v.y1);
+            ctx.stroke();
+            ctx.strokeStyle = v.core;
+            ctx.lineWidth = 0.7;
+            ctx.beginPath();
+            ctx.moveTo(v.x0, v.y0);
+            ctx.quadraticCurveTo(v.cx, v.cy, v.x1, v.y1);
+            ctx.stroke();
+            ctx.restore();
+        });
+    } else if (trayKind === 'intestines') {
+        const gbPulse = 0.75 + 0.25 * Math.sin(time * Math.PI + 0.8);
+        ctx.save();
+        ctx.globalAlpha = gbPulse;
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.34)';
+        ctx.beginPath();
+        ctx.ellipse(13.8, -4.5, 4.6, 3.4, -0.35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#d1fae5';
+        ctx.beginPath();
+        ctx.ellipse(13.4, -5.0, 1.3, 0.75, -0.35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        [
+            { x0: -12.5, y0: -7.2, cx: -8.0, cy: -2.0, x1: -3.8, y1: 1.5, c: '#c084fc' },
+            { x0: -4.2, y0: -6.5, cx: 0.5, cy: -1.8, x1: 5.0, y1: -5.5, c: '#34d399' },
+            { x0: -10.5, y0: 3.5, cx: -6.0, cy: 7.5, x1: -1.5, y1: 4.2, c: '#e9d5ff' },
+            { x0: 1.2, y0: 2.5, cx: 5.5, cy: 6.2, x1: 9.8, y1: 3.5, c: '#34d399' }
+        ].forEach((v, idx) => {
+            ctx.save();
+            ctx.globalAlpha = 0.75 + 0.25 * Math.sin(time * Math.PI + idx * 0.7);
+            ctx.strokeStyle = v.c;
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            ctx.moveTo(v.x0, v.y0);
+            ctx.quadraticCurveTo(v.cx, v.cy, v.x1, v.y1);
+            ctx.stroke();
+            ctx.restore();
+        });
+    }
+
+    ctx.restore();
+}
+
+function drawWestAutopsyTray(ctx, cx, cy, trayKind, time = 0) {
+    drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind);
+    drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time);
+}
+
+function getWestAutopsyTableObstacle(cx, cy) {
+    const W = 140;
+    const H = 45;
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        x: cx - W / 2,
+        y: cy - H / 2,
+        w: W,
+        h: H,
+        label: 'WEST AUTOPSY TABLE',
+        displayName: 'FORENSIC AUTOPSY TABLE',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 180 < camX || cx - 120 > camX + vw || cy + 80 < camY || cy - 80 > camY + vh) return;
+
+            const SS = 4;
+            const cw = 340, ch = 120;
+
+            const deckKey = '__westAutopsyDeckV5_' + cx + '_' + cy;
+            if (!window[deckKey]) {
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestAutopsyTableDeckStatic(octx, cx, cy);
+                octx.restore();
+                window[deckKey] = { canvas: off, w: cw, h: ch };
+            }
+
+            const corpseKey = '__westAutopsyCorpseV5_' + cx + '_' + cy;
+            if (!window[corpseKey]) {
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestAutopsyCorpseLayerStatic(octx, cx, cy);
+                octx.restore();
+                window[corpseKey] = { canvas: off, w: cw, h: ch };
+            }
+
+            const time = Date.now() * 0.001;
+            const dCache = window[deckKey];
+            const cCache = window[corpseKey];
+
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(dCache.canvas, cx - dCache.w / 2, cy - dCache.h / 2, dCache.w, dCache.h);
+            drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time);
+            ctx.drawImage(cCache.canvas, cx - cCache.w / 2, cy - cCache.h / 2, cCache.w, cCache.h);
+            drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time);
+            ctx.restore();
+        }
+    };
+}
+
+function getWestAutopsyTrayObstacle(cx, cy, trayKind, label) {
+    const W = 30;
+    const H = 20;
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        x: cx - W / 2,
+        y: cy - H / 2,
+        w: W,
+        h: H,
+        label: label,
+        displayName: label,
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 40 < camX || cx - 40 > camX + vw || cy + 30 < camY || cy - 30 > camY + vh) return;
+
+            const cacheKey = '__westAutopsyTrayV5_' + trayKind + '_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 48, ch = 38;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestAutopsyTrayStatic(octx, cx, cy, trayKind);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// 解剖室地面设施：水桶 (14x14 solid)、踏凳 (20x14 solid)、盘管 (Ø24 无碰撞)、器械推车 + 4 培养皿 (50x36 solid)
+// =========================================================================
+function drawWestBucketStatic(ctx, cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    // 地面投影
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.52)';
+    ctx.beginPath();
+    ctx.ellipse(0.6, 1.2, 7.6, 7.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 桶身 (Ø14 -> r = 7)
+    const bGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 7);
+    bGrad.addColorStop(0, '#e2e8f0');
+    bGrad.addColorStop(0.65, '#94a3b8');
+    bGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = bGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 桶内浑浊清洗水
+    ctx.fillStyle = '#0f3d3e';
+    ctx.beginPath();
+    ctx.arc(0, 0, 5.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(186, 230, 253, 0.45)';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-0.5, -0.5, 3.6, -2.5, -1.0);
+    ctx.stroke();
+    // 不锈钢提手弧
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+    ctx.arc(0, 0, 7.3, -Math.PI * 0.85, -Math.PI * 0.15);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function getWestBucketObstacle(cx, cy) {
+    return {
+        type: 'solid',
+        cx: cx, cy: cy, x: cx - 7, y: cy - 7, w: 14, h: 14,
+        label: 'WEST MOP BUCKET',
+        displayName: 'CLEANING BUCKET',
+        hideLabel: true,
+        draw: (ctx) => {
+            const k = '__westBucketV5_' + cx + '_' + cy;
+            if (!window[k]) {
+                const SS = 4, cw = 30, ch = 30;
+                const off = document.createElement('canvas');
+                off.width = cw * SS; off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBucketStatic(octx, cx, cy);
+                octx.restore();
+                window[k] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[k];
+            ctx.save();
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            ctx.restore();
+        }
+    };
+}
+
+function drawWestStepStoolStatic(ctx, cx, cy) {
+    // 20x14 两级不锈钢踏凳
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.52)';
+    ctx.fillRect(-10.5, -6.5, 21, 14.5);
+    // 4 支脚胶垫
+    [[-9.5, -6.5], [7.5, -6.5], [-9.5, 4.5], [7.5, 4.5]].forEach(([lx, ly]) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(lx, ly, 2.2, 2.2);
+    });
+    // 下级踏板 (19x6.5 @ y ∈ [0.5, +7])
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-9.5, 0.4, 19, 6.4);
+    ctx.strokeRect(-9.5, 0.4, 19, 6.4);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-8.0, 1.5, 16, 4.0);
+    // 上级踏板 (19x7 @ y ∈ [-7, 0])
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-9.5, -7.0, 19, 7.0);
+    ctx.strokeRect(-9.5, -7.0, 19, 7.0);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-8.0, -5.8, 16, 4.6);
+    // 防滑凹槽纹理
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.5;
+    [-4.4, -3.1, 2.8, 4.1].forEach(ry => {
+        ctx.beginPath(); ctx.moveTo(-7.2, ry); ctx.lineTo(7.2, ry); ctx.stroke();
+    });
+    ctx.restore();
+}
+
+function getWestStepStoolObstacle(cx, cy) {
+    return {
+        type: 'solid',
+        cx: cx, cy: cy, x: cx - 10, y: cy - 7, w: 20, h: 14,
+        label: 'WEST STEP STOOL',
+        displayName: 'TWO-STEP STOOL',
+        hideLabel: true,
+        draw: (ctx) => {
+            const k = '__westStepStoolV5_' + cx + '_' + cy;
+            if (!window[k]) {
+                const SS = 4, cw = 34, ch = 28;
+                const off = document.createElement('canvas');
+                off.width = cw * SS; off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestStepStoolStatic(octx, cx, cy);
+                octx.restore();
+                window[k] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[k];
+            ctx.save();
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            ctx.restore();
+        }
+    };
+}
+
+function drawWestCoiledHoseProp(ctx, cx, cy) {
+    // 地面一卷盘管 (直径 24 @ 680,1330，无碰撞)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.42)';
+    ctx.beginPath();
+    ctx.arc(0.8, 1.2, 12.2, 0, Math.PI * 2);
+    ctx.fill();
+    [11.0, 8.6, 6.2, 4.0].forEach((r, idx) => {
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, idx * 0.4, idx * 0.4 + Math.PI * 1.85);
+        ctx.stroke();
+
+        ctx.strokeStyle = (idx % 2 === 0) ? '#047857' : '#10b981';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, idx * 0.4, idx * 0.4 + Math.PI * 1.85);
+        ctx.stroke();
+    });
+    // 铜制快接头与喷嘴末端
+    ctx.fillStyle = '#f59e0b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(8.5, 4.0, 4.0, 2.4);
+    ctx.strokeRect(8.5, 4.0, 4.0, 2.4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(12.2, 4.3, 3.0, 1.8);
+    ctx.restore();
+}
+
+function getWestCoiledHoseProp(cx, cy) {
+    return {
+        x: cx - 14, y: cy - 14, w: 28, h: 28,
+        noCollision: true,
+        hideLabel: true,
+        draw: (ctx) => {
+            const k = '__westCoiledHoseV5_' + cx + '_' + cy;
+            if (!window[k]) {
+                const SS = 4, cw = 44, ch = 44;
+                const off = document.createElement('canvas');
+                off.width = cw * SS; off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestCoiledHoseProp(octx, cx, cy);
+                octx.restore();
+                window[k] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[k];
+            ctx.save();
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            ctx.restore();
+        }
+    };
+}
+
+function drawWestToolCartStatic(ctx, cx, cy) {
+    // 器械推车 50x36 @ (420, 1300)：4脚轮(Ø5) + 下层搁板(试剂瓶x2+叠布x1) + 上层不锈钢台面 + 西侧推把 + 侧栏杆 + 4 培养皿
+    const W = 50, H = 36;
+    const hw = W / 2, hh = H / 2; // 25, 18
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 1) 地面阴影 + 4 个脚轮 (直径 5 -> r=2.5，探出四角)
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-hw - 2, -hh + 1.5, W + 4, H + 5, 3) : ctx.rect(-hw - 2, -hh + 1.5, W + 4, H + 5);
+    ctx.fill();
+    [[-22.5, -17.5], [22.5, -17.5], [-22.5, 17.5], [22.5, 17.5]].forEach(([wx, wy]) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(wx, wy, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#94a3b8';
+        ctx.beginPath();
+        ctx.arc(wx, wy, 1.1, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 2) 下层搁板（略微南错立体展现：试剂瓶 2 个 + 叠布 1 叠）
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-hw + 3, hh - 1.5, W - 6, 4.8);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-hw + 3, hh - 1.5, W - 6, 4.8);
+    // 2 个试剂瓶
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-17, hh - 0.6, 3.6, 3.4);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-11.5, hh - 0.6, 3.6, 3.4);
+    // 1 叠白蓝外科布
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(8, hh - 0.5, 11, 3.0);
+    ctx.fillStyle = '#7dd3fc';
+    ctx.fillRect(9, hh - 1.2, 9, 1.3);
+
+    // 3) 西侧推把 (U 形不锈钢推手)
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(-hw, -12);
+    ctx.lineTo(-hw - 5.2, -12);
+    ctx.lineTo(-hw - 5.2, 12);
+    ctx.lineTo(-hw, 12);
+    ctx.stroke();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath();
+    ctx.moveTo(-hw, -12);
+    ctx.lineTo(-hw - 5.2, -12);
+    ctx.lineTo(-hw - 5.2, 12);
+    ctx.lineTo(-hw, 12);
+    ctx.stroke();
+
+    // 4) 上层不锈钢台面 (50x36) + 蓝色点缀边缘线
+    const cartGrad = ctx.createLinearGradient(-hw, -hh, hw, hh);
+    cartGrad.addColorStop(0, '#cbd5e1');
+    cartGrad.addColorStop(0.5, '#f1f5f9');
+    cartGrad.addColorStop(1, '#94a3b8');
+    ctx.fillStyle = cartGrad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-hw, -hh, W, H, 2.5) : ctx.rect(-hw, -hh, W, H);
+    ctx.fill();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-hw + 1.6, -hh + 1.6, W - 3.2, H - 3.2);
+
+    // 侧栏杆（南北两条金属栏杆 + 固定柱）
+    [-hh + 1.2, hh - 1.2].forEach(ry => {
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(-hw + 4, ry);
+        ctx.lineTo(hw - 4, ry);
+        ctx.stroke();
+        [-hw + 4, 0, hw - 4].forEach(px => {
+            ctx.fillStyle = '#334155';
+            ctx.beginPath();
+            ctx.arc(px, ry, 1.0, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    });
+
+    // 5) 4 个培养皿 (直径 12-16，2x2 摆放，淡黄/淡粉/淡绿/淡蓝琼脂 + 菌落 + 1 个半开皿盖 + A1/A2/B1/B2)
+    const dishes = [
+        { dx: -10.5, dy: -7.2, r: 6.5, agar: '#fef9c3', col: '#eab308', id: 'A1', halfOpen: false, dots: [[-2,-1.5],[1.8,-2.2],[0.5,1.8],[-2.5,2.2]] },
+        { dx: 10.5, dy: -7.2, r: 7.0, agar: '#fce7f3', col: '#ec4899', id: 'A2', halfOpen: false, dots: [[-2.2,-1.2],[2.0,0.4],[-0.5,2.4],[2.4,-2.0],[0.2,-0.5]] },
+        { dx: -10.5, dy: 7.2, r: 6.5, agar: '#dcfce7', col: '#10b981', id: 'B1', halfOpen: false, dots: [[-1.8,-2.0],[2.2,1.6],[-0.8,2.0],[1.5,-1.8]] },
+        { dx: 10.5, dy: 7.2, r: 7.2, agar: '#e0f2fe', col: '#0284c7', id: 'B2', halfOpen: true, dots: [[-2.4,-0.8],[1.8,-1.8],[0.6,2.1],[-1.0,2.5],[2.6,0.9],[0.0,-0.2]] }
+    ];
+    dishes.forEach(d => {
+        // 玻璃皿外圈与内琼脂面
+        ctx.fillStyle = '#cbd5e1';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.arc(d.dx, d.dy, d.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = d.agar;
+        ctx.beginPath();
+        ctx.arc(d.dx, d.dy, d.r - 1.0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 菌落小点簇
+        d.dots.forEach(([ox, oy], k) => {
+            ctx.fillStyle = d.col;
+            ctx.beginPath();
+            ctx.arc(d.dx + ox, d.dy + oy, 0.75 + (k % 2) * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // 皿底小标签 (A1/A2/B1/B2，>= 2.4px)
+        ctx.font = 'bold 2.4px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#0f172a';
+        ctx.fillText(d.id, d.dx, d.dy + d.r - 2.2);
+
+        // 玻璃圆弧反光高光
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.arc(d.dx, d.dy, d.r - 1.5, -2.5, -1.1);
+        ctx.stroke();
+
+        // 1 个皿盖半开（斜靠在皿边）
+        if (d.halfOpen) {
+            ctx.save();
+            ctx.translate(d.dx + 4.8, d.dy - 2.4);
+            ctx.rotate(0.45);
+            ctx.fillStyle = 'rgba(224, 242, 254, 0.38)';
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, d.r * 0.96, d.r * 0.52, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+    });
+
+    ctx.restore();
+}
+
+function getWestToolCartObstacle(cx, cy) {
+    const W = 50, H = 36;
+    return {
+        type: 'solid',
+        cx: cx, cy: cy, x: cx - W / 2, y: cy - H / 2, w: W, h: H,
+        label: 'WEST TOOL CART',
+        displayName: 'SPECIMEN TOOL CART',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 45 < camX || cx - 45 > camX + vw || cy + 40 < camY || cy - 40 > camY + vh) return;
+            const k = '__westToolCartV5_' + cx + '_' + cy;
+            if (!window[k]) {
+                const SS = 4, cw = 84, ch = 64;
+                const off = document.createElement('canvas');
+                off.width = cw * SS; off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestToolCartStatic(octx, cx, cy);
+                octx.restore();
+                window[k] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[k];
+            ctx.save();
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// Level 8 西侧三角房 · 0.7x 四联胶囊型培养舱系统 (182x114 @ 612,959)
+// 单舱 42x114：6px 厚不锈钢外壳(r=21) -> 玻璃(r=15) -> 液体(r=14)，三层同轴胶囊型
+// 屏内置于胶囊南端壳内 (20x8 @ ly=+42)，颈部倒 C 释放闸，短接墙管总高 <= 12px
+// =========================================================================
+function traceStadiumPath(ctx, cx, ycTop, ycBot, r) {
+    ctx.beginPath();
+    ctx.arc(cx, ycTop, r, Math.PI, 0, false);
+    ctx.lineTo(cx + r, ycBot);
+    ctx.arc(cx, ycBot, r, 0, Math.PI, false);
+    ctx.closePath();
+}
+
+function drawQuadPodDemonFull(ctx, time, seed) {
+    // 复用恶魔结构，按 ~68px 等比体量（对齐 Cerberus 68px，翼收拢漂浮于 34x80 胶囊液中）
+    const floatY = Math.sin(time * 1.15 + seed) * 1.2;
+    const swayA = Math.sin(time * 0.75 + seed) * 0.03;
+    const wingPulse = Math.sin(time * 1.3 + seed) * 0.9;
+
+    ctx.save();
+    ctx.translate(0, 2.5 + floatY);
+    ctx.rotate(swayA);
+    ctx.scale(0.69, 0.71); // ~68px 高, ~30px 宽
+
+    // 1) 生物周围渗色微光晕
+    const auraAlpha = 0.20 + 0.08 * Math.sin(time * 2.0 + seed);
+    const auraGrad = ctx.createRadialGradient(0, 4, 2, 0, 4, 24);
+    auraGrad.addColorStop(0, `rgba(249, 115, 22, ${auraAlpha.toFixed(2)})`);
+    auraGrad.addColorStop(0.6, `rgba(220, 38, 38, ${(auraAlpha * 0.45).toFixed(2)})`);
+    auraGrad.addColorStop(1, 'rgba(220, 38, 38, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(0, 4, 24, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2) 收拢双翼
+    [-1, 1].forEach(side => {
+        const wGrad = ctx.createLinearGradient(side * 4, -38, side * 20, 34);
+        wGrad.addColorStop(0, '#450a0a');
+        wGrad.addColorStop(0.55, '#2b0404');
+        wGrad.addColorStop(1, '#180202');
+        ctx.fillStyle = wGrad;
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(side * 5, -18);
+        ctx.quadraticCurveTo(side * (21 + wingPulse), -40, side * (20 + wingPulse), -12);
+        ctx.quadraticCurveTo(side * (19 + wingPulse * 0.6), 14, side * 14, 34);
+        ctx.quadraticCurveTo(side * 9, 18, side * 5, 10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(side * 5, -16); ctx.lineTo(side * (19 + wingPulse), -34);
+        ctx.moveTo(side * 5, -10); ctx.lineTo(side * (19 + wingPulse), -8);
+        ctx.moveTo(side * 6, 0); ctx.lineTo(side * 15, 26);
+        ctx.stroke();
+
+        ctx.fillStyle = '#fb923c';
+        ctx.beginPath();
+        ctx.arc(side * (17 + wingPulse), -40, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 3) 尾棘与四肢
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, -18);
+    ctx.quadraticCurveTo(-5, -32, 2, -41);
+    ctx.stroke();
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.moveTo(2, -41); ctx.lineTo(-1.5, -46); ctx.lineTo(5.2, -44);
+    ctx.closePath();
+    ctx.fill();
+
+    [
+        { x: -9.5, y: -21, r: 4.8, cx: -12, cy: -30 },
+        { x: 9.5, y: -21, r: 4.8, cx: 12, cy: -30 },
+        { x: -11.5, y: 14, r: 5.4, cx: -14, cy: 25 },
+        { x: 11.5, y: 14, r: 5.4, cx: 14, cy: 25 }
+    ].forEach(limb => {
+        ctx.fillStyle = '#180202';
+        ctx.strokeStyle = '#991b1b';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.ellipse(limb.x, limb.y, limb.r * 0.9, limb.r * 1.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#290404';
+        ctx.beginPath();
+        ctx.arc(limb.cx, limb.cy, limb.r * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.strokeStyle = '#ff3300';
+        ctx.lineWidth = 1.2;
+        const dirY = limb.cy > 0 ? 1 : -1;
+        ctx.beginPath();
+        ctx.moveTo(limb.cx - 1.6, limb.cy + dirY * 2);
+        ctx.lineTo(limb.cx - 2.3, limb.cy + dirY * 7);
+        ctx.moveTo(limb.cx + 1.6, limb.cy + dirY * 2);
+        ctx.lineTo(limb.cx + 2.3, limb.cy + dirY * 7);
+        ctx.stroke();
+    });
+
+    // 4) 躯干与发光核心
+    const torsoGrad = ctx.createLinearGradient(-12, -22, 12, 18);
+    torsoGrad.addColorStop(0, '#090101');
+    torsoGrad.addColorStop(0.5, '#2b0606');
+    torsoGrad.addColorStop(1, '#120202');
+    ctx.fillStyle = torsoGrad;
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, -1, 13.0, 21.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 0.8;
+    [-11, -4, 3, 10].forEach(ry => {
+        ctx.beginPath();
+        ctx.moveTo(-8, ry);
+        ctx.quadraticCurveTo(0, ry + 2.2, 8, ry);
+        ctx.stroke();
+    });
+
+    const coreGlow = 0.55 + 0.35 * Math.sin(time * 2.4 + seed);
+    ctx.fillStyle = `rgba(249, 115, 22, ${coreGlow.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.ellipse(0, 3, 6.2, 9.0, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.arc(0, 3, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5) 头颅、双角、炽红双目、獠牙血口
+    ctx.fillStyle = '#080101';
+    ctx.strokeStyle = '#ff2200';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.arc(0, 23.5, 10.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    [-1, 1].forEach(side => {
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(side * 5.8, 19.5);
+        ctx.quadraticCurveTo(side * 20, 12, side * 17.5, -2);
+        ctx.stroke();
+        ctx.fillStyle = '#ff2200';
+        ctx.beginPath();
+        ctx.arc(side * 17.5, -2, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.fillStyle = '#ff0000';
+    ctx.fillRect(-5.2, 24.5, 3.4, 2.3);
+    ctx.fillRect(1.8, 24.5, 3.4, 2.3);
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(-4.1, 25.0, 1.2, 1.2);
+    ctx.fillRect(2.9, 25.0, 1.2, 1.2);
+
+    ctx.fillStyle = '#991b1b';
+    ctx.beginPath();
+    ctx.moveTo(-4.5, 29.8); ctx.lineTo(0, 37.5); ctx.lineTo(4.5, 29.8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.moveTo(-3.4, 29.8); ctx.lineTo(-2.1, 33.2); ctx.lineTo(-0.9, 29.8);
+    ctx.moveTo(0.9, 29.8); ctx.lineTo(2.1, 33.2); ctx.lineTo(3.4, 29.8);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawQuadPodCerberusFull(ctx, time, seed) {
+    // 复用 engine.js Cerberus 模型，严格 68px 长漂浮舒展姿态，结构齐全
+    const floatY = Math.sin(time * 1.05 + seed) * 1.2;
+    const swayA = Math.sin(time * 0.72 + seed) * 0.025;
+
+    ctx.save();
+    ctx.translate(0, 3 + floatY);
+    ctx.rotate(Math.PI / 2 + swayA); // +x 指向南端观察面 (+y)
+    ctx.scale(0.695, 0.64); // 长 98 * 0.695 ≈ 68.1px，宽 46 * 0.64 ≈ 29.4px (稳在 34px 液宽内)
+
+    // 1) 生物周围熔岩渗光微晕
+    const auraAlpha = 0.22 + 0.08 * Math.sin(time * 1.8 + seed);
+    const auraGrad = ctx.createRadialGradient(8, 0, 2, 8, 0, 26);
+    auraGrad.addColorStop(0, `rgba(249, 115, 22, ${auraAlpha.toFixed(2)})`);
+    auraGrad.addColorStop(1, 'rgba(249, 115, 22, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(8, 0, 26, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2) 四肢与利爪
+    [-1, 1].forEach(side => {
+        ctx.fillStyle = '#1c1917';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.ellipse(-15, side * 13.5, 7.6, 4.6, side * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#292524';
+        ctx.beginPath();
+        ctx.arc(-19.5, side * 16.5, 4.0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(-21, side * 16.0); ctx.lineTo(-25, side * 17.2);
+        ctx.moveTo(-20.5, side * 17.6); ctx.lineTo(-24, side * 18.8);
+        ctx.stroke();
+
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.ellipse(11, side * 14.5, 8.2, 5.0, -side * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#292524';
+        ctx.beginPath();
+        ctx.arc(17, side * 16.8, 4.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ea580c';
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.moveTo(19, side * 16.0); ctx.lineTo(24, side * 16.8);
+        ctx.moveTo(18.5, side * 18.0); ctx.lineTo(23, side * 19.2);
+        ctx.stroke();
+    });
+
+    // 3) 分节龙尾与蛇首
+    const tailPts = [
+        { x: -19, y: 0, r: 3.1 },
+        { x: -25, y: 2.6, r: 2.6 },
+        { x: -31, y: 4.0, r: 2.2 },
+        { x: -37, y: 2.2, r: 1.8 },
+        { x: -42.5, y: -1.4, r: 1.5 },
+        { x: -46.5, y: -4.2, r: 1.2 }
+    ];
+    for (let i = 0; i < tailPts.length - 1; i++) {
+        const p1 = tailPts[i], p2 = tailPts[i + 1];
+        ctx.fillStyle = (i % 2 === 0) ? '#18181b' : '#27272a';
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.ellipse((p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5, 4.0, p1.r, Math.atan2(p2.y - p1.y, p2.x - p1.x), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#b91c1c';
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y - 0.8);
+        ctx.lineTo(p1.x - 1.5, p1.y - p1.r - 1.6);
+        ctx.lineTo(p1.x - 2.8, p1.y - 0.6);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.save();
+    ctx.translate(-47.5, -5.0);
+    ctx.rotate(Math.PI + 0.6);
+    ctx.fillStyle = '#450a0a';
+    ctx.beginPath();
+    ctx.moveTo(0, -3.0); ctx.lineTo(7.2, 0); ctx.lineTo(0, 3.0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(2.8, -1.2, 0.9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 4) 黑曜石躯干 + 熔岩肋脉 + 骨脊
+    ctx.fillStyle = '#18181b';
+    ctx.beginPath();
+    ctx.ellipse(2, 0, 22, 13.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const tGrad = ctx.createLinearGradient(-16, 0, 18, 0);
+    tGrad.addColorStop(0, '#09090b');
+    tGrad.addColorStop(0.45, '#27272a');
+    tGrad.addColorStop(1, '#18181b');
+    ctx.fillStyle = tGrad;
+    ctx.beginPath();
+    ctx.ellipse(3, 0, 19.5, 11.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#f97316';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath();
+    [-8, -2, 4, 10].forEach(vx => {
+        ctx.moveTo(vx, -7.2); ctx.lineTo(vx + 2.6, 0); ctx.lineTo(vx, 7.2);
+    });
+    ctx.stroke();
+
+    ctx.fillStyle = '#52525b';
+    for (let sx = -13; sx <= 11; sx += 6) {
+        ctx.beginPath();
+        ctx.moveTo(sx, -2.2); ctx.lineTo(sx + 3.0, 0); ctx.lineTo(sx, 2.2); ctx.lineTo(sx - 1.3, 0);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // 5) 颈肩蛇毛
+    [
+        { bx: 7, by: -9.5, ex: 13, ey: -16 },
+        { bx: 11, by: -7.5, ex: 17.5, ey: -14 },
+        { bx: 7, by: 9.5, ex: 13, ey: 16 },
+        { bx: 11, by: 7.5, ex: 17.5, ey: 14 }
+    ].forEach((sn, idx) => {
+        ctx.strokeStyle = (idx % 2 === 0) ? '#18181b' : '#450a0a';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.moveTo(sn.bx, sn.by);
+        ctx.quadraticCurveTo((sn.bx + sn.ex) * 0.5, sn.by * 1.15, sn.ex, sn.ey);
+        ctx.stroke();
+        ctx.fillStyle = '#3b0f0f';
+        ctx.beginPath();
+        ctx.arc(sn.ex, sn.ey, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(sn.ex + 0.6, sn.ey, 0.6, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 6) 三颗地狱犬首
+    [
+        { hx: 16, hy: -11.5, ang: -0.46, isAlpha: false },
+        { hx: 16, hy: 11.5, ang: 0.46, isAlpha: false },
+        { hx: 21.5, hy: 0, ang: 0, isAlpha: true }
+    ].forEach(h => {
+        ctx.save();
+        ctx.translate(h.hx, h.hy);
+        ctx.rotate(h.ang);
+        ctx.scale(h.isAlpha ? 1.18 : 0.94, h.isAlpha ? 1.18 : 0.94);
+
+        ctx.fillStyle = '#18181b';
+        ctx.beginPath();
+        ctx.ellipse(-5, 0, 7.2, 5.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#1c1917';
+        ctx.strokeStyle = '#991b1b';
+        ctx.lineWidth = 0.8;
+        [-1, 1].forEach(s => {
+            ctx.beginPath();
+            ctx.moveTo(-2, s * 4.5);
+            ctx.quadraticCurveTo(-7, s * 10, -12, s * 12);
+            ctx.quadraticCurveTo(-6, s * 7, 0, s * 3.6);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        });
+
+        ctx.fillStyle = '#27272a';
+        ctx.beginPath();
+        ctx.moveTo(-4, -4.5); ctx.lineTo(8, -3.5); ctx.lineTo(14, 0); ctx.lineTo(8, 3.5); ctx.lineTo(-4, 4.5);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#09090b';
+        ctx.beginPath();
+        ctx.ellipse(8.5, 0, 5.2, 2.8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#7f1d1d';
+        ctx.beginPath();
+        ctx.ellipse(9.5, 0, 3.8, 1.8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.moveTo(8.2, -2.3); ctx.lineTo(10.0, -2.3); ctx.lineTo(9.1, -0.5); ctx.closePath();
+        ctx.moveTo(8.2, 2.3); ctx.lineTo(10.0, 2.3); ctx.lineTo(9.1, 0.5); ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(3.8, -2.8, h.isAlpha ? 1.5 : 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(3.5, -3.5, 0.5, 1.5);
+        ctx.restore();
+    });
+
+    ctx.restore();
+}
+
+function drawQuadPodSmallValve(ctx, hx, hy) {
+    // 管道手轮阀门（直径 8 -> r = 4，圆环 + 4 辐 + 阀杆，区别于大型拉杆释放闸）
+    const r = 4.0;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.arc(hx, hy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.arc(hx, hy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(hx - r + 0.6, hy); ctx.lineTo(hx + r - 0.6, hy);
+    ctx.moveTo(hx, hy - r + 0.6); ctx.lineTo(hx, hy + r - 0.6);
+    ctx.stroke();
+
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(hx, hy, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+}
+
+function drawQuadPodReleaseGate(ctx, bx, gy) {
+    // 手动释放闸（非阀门！）：12x5 横闸槽 + 闸板 + PULL 小牌 + 倒扣弧形把手（逆时针旋转90°：弧顶朝向北墙 -y，开口朝向下方培养舱玻璃 +y）
+    // 1) 闸槽 12x5 横于胶囊颈部
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(bx - 6, gy - 2.5, 12, 5);
+    ctx.strokeRect(bx - 6, gy - 2.5, 12, 5);
+
+    // 2) 闸板（带橙红锁止条的机械挡板）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(bx - 5.0, gy - 1.7, 10, 3.4);
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(bx - 4.4, gy - 0.85, 3.4, 1.7);
+
+    // 3) PULL 小牌（>= 2.4px 清晰字体，位于闸槽西侧）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(bx - 15.8, gy - 2.4, 8.8, 4.6);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(bx - 15.8, gy - 2.4, 8.8, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fde68a';
+    ctx.fillText('PULL', bx - 11.4, gy - 0.1);
+
+    // 4) 弧形释放把手（粗 3px 金属杆弯成拱门形 ∩：弧顶朝北 -y 指向北墙，开口朝南 +y 指向培养舱玻璃，外框约 10x12）
+    // 两端锚座固定在闸板北沿，中间留出 4x5 抓握空隙
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(bx - 5.2, gy - 3.2, 10.4, 3.0);
+    ctx.strokeRect(bx - 5.2, gy - 3.2, 10.4, 3.0);
+
+    // 拱形主杆轮廓（外弧半径 5.0，内弧半径 2.0 -> 实体杆厚 3.0px，外宽 10px，外伸至 gy - 12.0）
+    const cGrad = ctx.createLinearGradient(bx - 5.0, gy - 12.0, bx + 5.0, gy - 2.0);
+    cGrad.addColorStop(0, '#cbd5e1');
+    cGrad.addColorStop(0.45, '#f8fafc');
+    cGrad.addColorStop(0.85, '#94a3b8');
+    cGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = cGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(bx - 5.0, gy - 2.0);
+    ctx.lineTo(bx - 5.0, gy - 7.0);
+    ctx.arc(bx, gy - 7.0, 5.0, Math.PI, 0, false);
+    ctx.lineTo(bx + 5.0, gy - 2.0);
+    ctx.lineTo(bx + 2.0, gy - 2.0);
+    ctx.lineTo(bx + 2.0, gy - 7.0);
+    ctx.arc(bx, gy - 7.0, 2.0, 0, Math.PI, true);
+    ctx.lineTo(bx - 2.0, gy - 2.0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 弧顶安全警示红橙防滑套段与高光
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(bx, gy - 7.0, 3.5, Math.PI + 0.72, -0.72, false);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(bx - 3.9, gy - 2.6);
+    ctx.lineTo(bx - 3.9, gy - 7.0);
+    ctx.arc(bx, gy - 7.0, 3.9, Math.PI, -Math.PI * 0.45, false);
+    ctx.stroke();
+
+    // 左右固定销钉（连接闸板锚座与把手两端）
+    [-3.5, 3.5].forEach(ox => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.arc(bx + ox, gy - 2.0, 0.95, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+    });
+}
+
+const WEST_QUAD_POD_BAYS = [
+    { idx: 1, bx: -69, worldCx: 558, worldCy: 1002, creature: 'demon', spec: 'SPEC-01', name: '样本-01 · 恶魔', hr: 62, o2: 98, seed: 0.0, fillPct: 0.84 },
+    { idx: 2, bx: -23, worldCx: 594, worldCy: 973, creature: 'cerberus', spec: 'SPEC-02', name: '样本-02 · 地狱三头犬', hr: 74, o2: 96, seed: 1.6, fillPct: 0.90 },
+    { idx: 3, bx: 23, worldCx: 630, worldCy: 945, creature: 'demon', spec: 'SPEC-03', name: '样本-03 · 恶魔', hr: 58, o2: 99, seed: 3.1, fillPct: 0.78 },
+    { idx: 4, bx: 69, worldCx: 666, worldCy: 916, creature: 'cerberus', spec: 'SPEC-04', name: '样本-04 · 地狱三头犬', hr: 81, o2: 95, seed: 4.7, fillPct: 0.88 }
+];
+
+function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
+    // 0.7x 四联胶囊连体单元 182x114 @ (612, 959)，x ∈ [-91, +91], y ∈ [-57, +57]
+    // 胶囊三层同轴参数：
+    //   外壳 r=21 (ycTop=-27.5, ycBotOuter=29.5 -> y ∈ [-48.5, +50.5], 壁厚 6px 实心倒角不锈钢)
+    //   玻璃 r=15 (ycTop=-27.5, ycBotGlass=22.0 -> y ∈ [-42.5, +37.0], 内缩 6px)
+    //   液体 r=14 (ycTop=-27.5, ycBotGlass=22.0 -> y ∈ [-41.5, +36.0], 再内缩 1px)
+    //   内置蓝屏 20x8 置于玻璃南端(+37)之下、外壳南端半圆盖内，居中 @ ly=+42.0 (y ∈ [38, 46])
+    const ycTop = -27.5;
+    const ycBotOuter = 29.5;
+    const ycBotGlass = 22.0;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面淡淡的溅洒渍 + 阴影 + Ø10 地漏 (556,1035 -> 局部 -90.96, 25.26) + 短排水管
+    [
+        { x: -94, y: 26, rx: 11, ry: 7.5 },
+        { x: -34, y: 63, rx: 13, ry: 4.5 },
+        { x: 48, y: 62, rx: 9, ry: 3.8 }
+    ].forEach(sp => {
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+        ctx.beginPath();
+        ctx.ellipse(sp.x, sp.y, sp.rx, sp.ry, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-93, -58, 186, 118, 3) : ctx.rect(-93, -58, 186, 118);
+    ctx.fill();
+
+    // 地漏 Ø10 + 周围格栅 (中心 (556, 1035) -> 局部 (-90.96, 25.26))
+    const drainX = -90.96, drainY = 25.26;
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(drainX - 6.5, drainY - 6.5, 13, 13);
+    ctx.strokeRect(drainX - 6.5, drainY - 6.5, 13, 13);
+    for (let gx = -4; gx <= 4; gx += 2.6) {
+        ctx.beginPath();
+        ctx.moveTo(drainX + gx, drainY - 5.5); ctx.lineTo(drainX + gx, drainY + 5.5);
+        ctx.stroke();
+    }
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.arc(drainX, drainY, 5.0, 0, Math.PI * 2); // Ø10
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.arc(drainX, drainY, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 排水管（基座西端向南/西接地漏）
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(-90, 50); ctx.lineTo(-96.5, 50); ctx.lineTo(-96.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.stroke();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(-90, 50); ctx.lineTo(-96.5, 50); ctx.lineTo(-96.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.stroke();
+
+    // 2. 大幅缩短的顶部接墙短管区（总管 y ∈ [-56, -52] + 向北短管 y ∈ [-63.5, -56] + 墙法兰 [-64, -61.5]，总高 12px <= 12px）
+    [
+        { x: 78, w: 5.0, c1: '#475569', c2: '#e2e8f0' },
+        { x: 85.5, w: 3.6, c1: '#334155', c2: '#94a3b8' }
+    ].forEach(p => {
+        ctx.fillStyle = p.c1;
+        ctx.fillRect(p.x - p.w / 2, -63.0, p.w, 7.0); // 7px <= 8px
+        ctx.fillStyle = p.c2;
+        ctx.fillRect(p.x - p.w * 0.25, -63.0, p.w * 0.5, 7.0);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.65;
+        ctx.strokeRect(p.x - p.w / 2, -63.0, p.w, 7.0);
+    });
+    // 短管卡箍 + 墙接口法兰（紧凑贴合总管北侧）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(74.5, -60.2, 14, 2.0);
+    ctx.strokeRect(74.5, -60.2, 14, 2.0);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(73.5, -64.0, 22.0, 2.8);
+    ctx.strokeRect(73.5, -64.0, 22.0, 2.8);
+
+    // 3. 调平脚 (4个) + 共用基座条 (182x16 @ x ∈ [-91, +91], y ∈ [+41, +57]，画在胶囊之下作承托底座)
+    [[-88, -56], [82, -56], [-88, 56], [82, 56]].forEach(([fx, fy]) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx, fy, 6, 2.5);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(fx + 1, fy + 0.5, 4, 1.5);
+    });
+
+    const baseGrad = ctx.createLinearGradient(0, 41, 0, 57);
+    baseGrad.addColorStop(0, '#475569');
+    baseGrad.addColorStop(0.55, '#94a3b8');
+    baseGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = baseGrad;
+    ctx.fillRect(-91, 41, 182, 16);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.0;
+    ctx.strokeRect(-91, 41, 182, 16);
+
+    // 基座条南沿警示斜纹 (y ∈ [53.8, 56.6]，位于胶囊南端 +50.5 之外，清晰可见)
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-89, 53.8, 178, 2.8);
+    ctx.clip();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-89, 53.8, 178, 2.8);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.2;
+    for (let sx = -92; sx <= 92; sx += 5) {
+        ctx.beginPath();
+        ctx.moveTo(sx, 56.8); ctx.lineTo(sx + 3.2, 53.6);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    // 基座南沿线缆束（2 根 1px 线 + 卡扣 + 格兰头，东端北折至紧凑接线法兰，不再挂一排屏）
+    [57.8, 59.4].forEach((cyLine, idx) => {
+        const ox = idx === 0 ? 92.2 : 93.8;
+        ctx.strokeStyle = idx === 0 ? '#334155' : '#0284c7';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.moveTo(-84, cyLine);
+        ctx.lineTo(ox, cyLine);
+        ctx.lineTo(ox, -62.5);
+        ctx.stroke();
+    });
+    [
+        { x: -56, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 46, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 91.2, y: 4, w: 3.4, h: 4.5 }
+    ].forEach(cl => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(cl.x, cl.y, cl.w, cl.h);
+        ctx.strokeRect(cl.x, cl.y, cl.w, cl.h);
+    });
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(89.5, 55.2, 3.2, 3.6);
+
+    // 4. 顶部总管 (y ∈ [-56, -52]，紧贴顶板上方，距胶囊北端 -48.5 仅 3.5px <= 4px)
+    const hdrGrad = ctx.createLinearGradient(0, -56, 0, -52);
+    hdrGrad.addColorStop(0, '#64748b');
+    hdrGrad.addColorStop(0.45, '#f1f5f9');
+    hdrGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = hdrGrad;
+    ctx.fillRect(-79, -56, 166, 4.0);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(-79, -56, 166, 4.0);
+
+    // 保温带（总管左/右条纹段）
+    [-35, 35].forEach(ix => {
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(ix - 5, -56.4, 10, 4.8);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.5;
+        for (let sx = ix - 4; sx <= ix + 4; sx += 2) {
+            ctx.beginPath(); ctx.moveTo(sx, -56.4); ctx.lineTo(sx - 1, -51.6); ctx.stroke();
+        }
+    });
+
+    // 西端压力表 (Ø10 -> r=5 @ -86, -45，短弯管连总管) + 竖向液位条 (3x9.5 @ -90, -37.5)
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-79, -54); ctx.lineTo(-86, -54); ctx.lineTo(-86, -45);
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.arc(-86, -45, 5.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-86, -45, 3.5, -0.4, 0.9);
+    ctx.stroke();
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('PRS', -86, -42.6);
+
+    ctx.fillStyle = '#041f18';
+    ctx.fillRect(-90, -37.5, 3, 9.5);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-90, -37.5, 3, 9.5);
+
+    // 5. 三道舱间 3px 隔断 + 3 个小手轮阀门 (Ø8 @ x = -46, 0, +46) + 流量计
+    [-46, 0, 46].forEach(dx => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(dx - 1.5, -44, 3.0, 85);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.7;
+        ctx.strokeRect(dx - 1.5, -44, 3.0, 85);
+
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.moveTo(dx - 4.5, 41); ctx.lineTo(dx + 4.5, 41); ctx.lineTo(dx, 35); ctx.closePath();
+        ctx.fill();
+
+        [-30, -14, 2, 18, 34].forEach(ry => {
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(dx, ry, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // 隔断上的小流量计（玻璃管静态底衬，浮标与顶灯由动态层驱动）
+        ctx.fillStyle = '#082f49';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(dx - 1.5, -40, 3.0, 9);
+        ctx.strokeRect(dx - 1.5, -40, 3.0, 9);
+
+        // Ø8 小手轮阀门
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(dx - 2.5, -56.5, 5, 5.5);
+        drawQuadPodSmallValve(ctx, dx, -54);
+    });
+
+    // 6. 四舱胶囊主体（加厚 6px 实心不锈钢外壳 r=21 -> 玻璃 r=15 -> 液体 r=14，三层同轴胶囊型）
+    WEST_QUAD_POD_BAYS.forEach(bay => {
+        const bx = bay.bx;
+
+        // 3px 短支管（总管 -52 -> 北端 -48.5）+ 接口环 + 泄压阀 + 加液口
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(bx - 1.5, -52.5, 3, 5.0);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.6;
+        ctx.strokeRect(bx - 1.5, -52.5, 3, 5.0);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(bx - 3.5, -49.6, 7, 2.0);
+        ctx.strokeRect(bx - 3.5, -49.6, 7, 2.0);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(bx - 14.5, -50.2, 2.2, 3.8);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(bx - 15.0, -51.2, 3.2, 1.4);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(bx + 12.2, -49.5, 2.6, 2.8);
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(bx + 13.5, -50.2, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 6A) 第 1 层：6px 厚实心不锈钢外壳胶囊 (width=42 -> r=21, ycTop=-27.5, ycBotOuter=29.5)
+        const shellGrad = ctx.createLinearGradient(bx - 21, 0, bx + 21, 0);
+        shellGrad.addColorStop(0, '#334155');
+        shellGrad.addColorStop(0.16, '#94a3b8');
+        shellGrad.addColorStop(0.32, '#e2e8f0');
+        shellGrad.addColorStop(0.68, '#94a3b8');
+        shellGrad.addColorStop(0.86, '#475569');
+        shellGrad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = shellGrad;
+        traceStadiumPath(ctx, bx, ycTop, ycBotOuter, 21);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.15;
+        ctx.stroke();
+
+        // 外壳外倒角明暗环 (r=19.8：左上亮倒角 + 右下暗倒角，凸显 6px 实心厚壳质感)
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.48)';
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 19.7, Math.PI * 0.96, Math.PI * 1.75, false);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(bx - 19.7, ycTop); ctx.lineTo(bx - 19.7, ycBotOuter);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(15, 23, 42, 0.55)';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(bx + 19.7, ycTop); ctx.lineTo(bx + 19.7, ycBotOuter);
+        ctx.arc(bx, ycBotOuter, 19.7, 0, Math.PI * 0.85, false);
+        ctx.stroke();
+
+        // 6px 厚壳内阶梯加工线 & 侧壁加强筋/沉头螺钉（沿 ±18px 壁厚中线分布）
+        [-14, 4, 20].forEach(ribY => {
+            [-18.0, 18.0].forEach(rx => {
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(bx + rx, ribY, 0.85, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#cbd5e1';
+                ctx.beginPath();
+                ctx.arc(bx + rx - 0.25, ribY - 0.25, 0.35, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        });
+
+        // 顶板（北端半圆厚壳盖板 + 6 颗螺栓环）
+        ctx.save();
+        traceStadiumPath(ctx, bx, ycTop, ycBotOuter, 20.4);
+        ctx.clip();
+        const capGrad = ctx.createLinearGradient(0, -48.5, 0, -40);
+        capGrad.addColorStop(0, '#f1f5f9');
+        capGrad.addColorStop(0.55, '#94a3b8');
+        capGrad.addColorStop(1, '#475569');
+        ctx.fillStyle = capGrad;
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 20.5, Math.PI, 0, false);
+        ctx.quadraticCurveTo(bx, -41.0, bx - 20.5, -42.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.65;
+        ctx.stroke();
+        for (let b = 0; b < 6; b++) {
+            const ba = Math.PI * (1.14 + b * 0.144);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(bx + Math.cos(ba) * 18.2, ycTop + Math.sin(ba) * 18.2, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // 玻璃窗周圈内斜倒角（厚 6px 壳体向内缩至 r=15 的机械内倒角环）
+        ctx.fillStyle = '#1e293b';
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.8);
+        ctx.fill();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.65;
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.0);
+        ctx.stroke();
+
+        // 6B) 第 2 层：玻璃胶囊（同轴内缩 6px -> width=30, radius = 15）
+        ctx.fillStyle = '#031712';
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
+        ctx.fill();
+        ctx.strokeStyle = '#6ee7b7';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+
+        // 6C) 第 3 层：液体胶囊底衬（同轴再内缩 1px -> width=28, radius = 14）
+        const liqGrad = ctx.createLinearGradient(0, -41.5, 0, 36);
+        liqGrad.addColorStop(0, '#065f46');
+        liqGrad.addColorStop(0.5, '#044736');
+        liqGrad.addColorStop(1, '#02221a');
+        ctx.fillStyle = liqGrad;
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+        ctx.fill();
+
+        // 舱内背景标尺刻线
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.18)';
+        ctx.lineWidth = 0.5;
+        for (let ty = -24; ty <= 18; ty += 10.5) {
+            ctx.beginPath();
+            ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
+            ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
+            ctx.stroke();
+        }
+
+        // 侧取样阀（位于 6px 厚壳右侧壁）+ 温度探头（顶部表盘 + 细杆）
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(bx + 17.5, 6, 4.2, 2.0);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(bx + 20.4, 4.6, 1.4, 1.4);
+
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(bx - 9.5, -44.2); ctx.lineTo(bx - 9.5, -27);
+        ctx.stroke();
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.arc(bx - 9.5, -44.6, 1.85, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 6D) 内置底部蓝屏 20x8（位于玻璃南端 +37 之下、外壳南端半圆盖内，中心 @ (bx, +42.0) -> 世界 (584,1035)...(692,949)）
+        const sx = bx - 10.0, sy = 38.0; // 20x8: x ∈ [bx-10, bx+10], y ∈ [38, 46]
+        // 沉头屏幕金属护框 (21.6 x 9.6，不压玻璃、不超出外壳半圆)
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
+        ctx.strokeRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
+
+        // 蓝屏本体 20x8
+        ctx.fillStyle = '#06263d';
+        ctx.fillRect(sx, sy, 20, 8);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 0.7;
+        ctx.strokeRect(sx, sy, 20, 8);
+
+        ctx.font = 'bold 2.4px monospace';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#bae6fd';
+        ctx.fillText(bay.spec, sx + 0.9, sy + 1.85);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#34d399';
+        ctx.fillText('STABLE', bx, sy + 6.55);
+
+        // 6E) 胶囊颈部倒 C 手动释放闸（中心 @ (bx, -51.6) -> 世界 (526,961)...(634,876)）
+        drawQuadPodReleaseGate(ctx, bx, -51.6);
+    });
+
+    // 7. UNIT-04 框架小标牌（嵌于 2/3 号舱南肩之间空隙）+ 中央总控屏 (40x12，随整机北移 15px)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-11.5, 48.2, 23, 3.8);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText('UNIT-04', 0, 50.1);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-21.5, 52.4, 43, 14.0);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-21.5, 52.4, 43, 14.0);
+
+    ctx.fillStyle = '#062033';
+    ctx.fillRect(-20, 53.6, 40, 11.6);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.75;
+    ctx.strokeRect(-20, 53.6, 40, 11.6);
+
+    // 主控屏内部分区网格线（真实遥测文本、波形与实时状态由动态层绘制）
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath();
+    ctx.moveTo(-19.5, 56.6); ctx.lineTo(19.5, 56.6);
+    ctx.moveTo(10.6, 54.0); ctx.lineTo(10.6, 64.8);
+    ctx.stroke();
+
+    // 生物危害标志（三叶形 + BIO-4 标签，位于总控屏右侧监控栏）
+    const bhX = 15.2, bhY = 59.3;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.65;
+    [0, 1, 2].forEach(k => {
+        const a = -Math.PI / 2 + k * (Math.PI * 2 / 3);
+        ctx.beginPath();
+        ctx.arc(bhX + Math.cos(a) * 1.35, bhY + Math.sin(a) * 1.35, 1.45, 0, Math.PI * 2);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#062033';
+    ctx.beginPath();
+    ctx.arc(bhX, bhY, 0.85, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('BIO-4', 15.2, 63.7);
+
+    ctx.restore();
+}
+
+function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
+    // 动态层：68px 生物漂浮 + 液体多层次效果（严格裁剪在 r=14 液体胶囊内）
+    // + 沿 r=15 玻璃左侧弧线弯曲的高光带 + 各类指示灯呼吸/闪烁动态 + 内置 20x8 蓝屏动态波形 + 主控屏真实实时遥测与波形
+    const ycTop = -27.5;
+    const ycBotGlass = 22.0;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 西端压力表指针 (@ -86, -45) + 表盘运行指示灯 + 竖向液位条 (@ -90, -37.5)
+    const prsAngle = -0.5 + 0.16 * Math.sin(time * 1.8);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(-86, -45);
+    ctx.lineTo(-86 + Math.cos(prsAngle) * 3.4, -45 + Math.sin(prsAngle) * 3.4);
+    ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.arc(-86, -45, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+
+    const prsLedAlpha = 0.5 + 0.45 * Math.sin(time * 2.2);
+    ctx.fillStyle = `rgba(52, 211, 153, ${prsLedAlpha.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(-82.8, -48.3, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    const lvlRatio = 0.68 + 0.12 * Math.sin(time * 1.2);
+    const lvlH = 8.0 * lvlRatio;
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-89.4, -28.6 - lvlH, 1.8, lvlH);
+
+    // 1B. 三道隔断上的流量计动态浮标 + 顶部联机指示灯
+    [-46, 0, 46].forEach((dx, fIdx) => {
+        const bobY = -35.5 + Math.sin(time * 1.9 + fIdx * 1.1) * 2.1;
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(dx, bobY, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+
+        const partPulse = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(time * 2.4 + fIdx * 1.8));
+        ctx.fillStyle = `rgba(56, 189, 248, ${partPulse.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(dx, -42.4, 0.75, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 2. 四舱胶囊玻璃液体动态层（严格裁剪在半径 14 同轴液体胶囊内）
+    WEST_QUAD_POD_BAYS.forEach((bay, bIdx) => {
+        const bx = bay.bx;
+
+        ctx.save();
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+        ctx.clip();
+
+        ctx.save();
+        ctx.translate(bx, 0);
+
+        // 2A) 底部沉积层（深色半圆弧底 + 沉降颗粒）
+        ctx.fillStyle = 'rgba(2, 24, 18, 0.72)';
+        ctx.beginPath();
+        ctx.arc(0, ycBotGlass, 14, 0.15, Math.PI - 0.15);
+        ctx.closePath();
+        ctx.fill();
+        [-7, -2.5, 2, 6, 9].forEach((gx, k) => {
+            ctx.fillStyle = (k % 2 === 0) ? '#064e3b' : '#115e59';
+            ctx.beginPath();
+            ctx.arc(gx, 31.2 + (k % 3) * 0.7, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // 2B) 底部缓慢旋转磁力搅拌子
+        ctx.save();
+        ctx.translate(0, 31.5);
+        ctx.rotate(time * 1.2 + bay.seed);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(-2.2, -0.65, 4.4, 1.3, 0.65) : ctx.rect(-2.2, -0.65, 4.4, 1.3);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // 2C) 68px 正常尺寸漂浮恶魔 / 三头犬（完全保留原模型与 68px 比例）
+        ctx.save();
+        ctx.translate(0, -1.5);
+        if (bay.creature === 'demon') {
+            drawQuadPodDemonFull(ctx, time, bay.seed);
+        } else {
+            drawQuadPodCerberusFull(ctx, time, bay.seed);
+        }
+        ctx.restore();
+
+        // 2D) 翡翠液体半透染色（纵向渐变）
+        const fluidAlpha = 0.17 + 0.03 * Math.sin(time * 1.4 + bay.seed);
+        const fGrad = ctx.createLinearGradient(0, -34, 0, 36);
+        fGrad.addColorStop(0, `rgba(52, 211, 153, ${(fluidAlpha * 0.8).toFixed(3)})`);
+        fGrad.addColorStop(0.55, `rgba(16, 185, 129, ${(fluidAlpha * 1.1).toFixed(3)})`);
+        fGrad.addColorStop(1, `rgba(4, 47, 46, ${(fluidAlpha * 1.65).toFixed(3)})`);
+        ctx.fillStyle = fGrad;
+        ctx.fillRect(-15, -34, 30, 72);
+
+        // 2E) 顶部气隙 + 弯月线（弧线）+ 液面微光
+        const menY = -33.0 + Math.sin(time * 1.5 + bay.seed) * 0.6;
+        ctx.fillStyle = 'rgba(209, 250, 229, 0.22)';
+        ctx.fillRect(-15, -43, 30, menY + 43);
+        ctx.strokeStyle = 'rgba(167, 243, 208, 0.72)';
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.moveTo(-13.5, menY - 0.9);
+        ctx.quadraticCurveTo(0, menY + 1.6, 13.5, menY - 0.9);
+        ctx.stroke();
+
+        // 2F) 2-3 条循环流线
+        ctx.strokeStyle = 'rgba(110, 231, 183, 0.24)';
+        ctx.lineWidth = 0.65;
+        [0, 1, 2].forEach(sIdx => {
+            const flowY = ((time * 5.5 + sIdx * 22 + bay.seed * 7) % 60) - 28;
+            ctx.beginPath();
+            ctx.moveTo(-9 + sIdx * 4.5, flowY + 8);
+            ctx.quadraticCurveTo(-5.5 + sIdx * 5.0, flowY, -8.5 + sIdx * 4.5, flowY - 8);
+            ctx.stroke();
+        });
+
+        // 2G) 底部焦散微光
+        ctx.strokeStyle = `rgba(167, 243, 208, ${(0.22 + 0.12 * Math.sin(time * 1.7 + bay.seed)).toFixed(2)})`;
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.arc(Math.sin(time * 1.1 + bay.seed) * 2.0, 25, 8.2, 0.35, Math.PI - 0.35);
+        ctx.stroke();
+
+        // 2H) 贴壁微气泡
+        [[-12.6, -12], [-12.8, 6], [12.6, -4], [12.7, 14], [-9, 27], [8.5, 28]].forEach(([wx, wy]) => {
+            ctx.fillStyle = 'rgba(209, 250, 229, 0.45)';
+            ctx.beginPath();
+            ctx.arc(wx, wy, 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // 2I) 悬浮微粒
+        for (let p = 0; p < 6; p++) {
+            const px = Math.sin(time * 0.45 + p * 1.7 + bay.seed) * 10;
+            const py = -25 + ((time * 3.2 + p * 11 + bay.seed * 5) % 56);
+            ctx.fillStyle = 'rgba(167, 243, 208, 0.42)';
+            ctx.fillRect(px, py, 1.0, 1.0);
+        }
+
+        // 2J) 6 个缓慢上升气泡 + 口鼻呼出气泡
+        [
+            { ox: -9.0, r: 1.8, off: 0.05 },
+            { ox: 9.5, r: 1.3, off: 0.22 },
+            { ox: -4.0, r: 2.1, off: 0.41 },
+            { ox: 6.5, r: 1.1, off: 0.58 },
+            { ox: -10.5, r: 1.25, off: 0.74 },
+            { ox: 3.5, r: 1.5, off: 0.89 }
+        ].forEach((b, idx) => {
+            const prog = ((time / 6.0) + b.off + bay.seed * 0.1) % 1;
+            const by = 32 - prog * 63;
+            const bxWob = b.ox + Math.sin(time * 1.8 + idx * 1.3) * 1.1;
+            ctx.fillStyle = 'rgba(167, 243, 208, 0.48)';
+            ctx.strokeStyle = 'rgba(236, 253, 245, 0.78)';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.arc(bxWob, by, b.r * 0.62, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        });
+        for (let eb = 0; eb < 2; eb++) {
+            const eProg = ((time / 4.8) + eb * 0.5 + bay.seed * 0.2) % 1;
+            const ey = 21 - eProg * 52;
+            const ex = Math.sin(time * 2.1 + eb * 2.0) * 1.4;
+            ctx.fillStyle = 'rgba(254, 240, 138, 0.52)';
+            ctx.beginPath();
+            ctx.arc(ex, ey, 1.0 - eProg * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+        ctx.restore();
+
+        // 2K) 玻璃高光带（沿 r=15 玻璃胶囊左侧弧线跟着弯：上圆弧 -> 左侧直边 -> 下圆弧）+ 玻璃胶囊亮描边
+        ctx.strokeStyle = 'rgba(224, 242, 254, 0.38)';
+        ctx.lineWidth = 1.3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 12.4, Math.PI * 1.20, Math.PI, true);
+        ctx.lineTo(bx - 12.4, ycBotGlass);
+        ctx.arc(bx, ycBotGlass, 12.4, Math.PI, Math.PI * 0.78, true);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(167, 243, 208, 0.62)';
+        ctx.lineWidth = 0.75;
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
+        ctx.stroke();
+
+        // 2L) 顶板状态主灯（柔和呼吸光晕）+ 副遥测小蓝灯（错相轻闪）
+        const ledAmber = (bIdx === 3 && Math.sin(time * 1.6) > 0.25);
+        const ledPulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(time * 2.1 + bay.seed));
+        ctx.fillStyle = ledAmber
+            ? `rgba(245, 158, 11, ${(0.26 * ledPulse).toFixed(2)})`
+            : `rgba(16, 185, 129, ${(0.26 * ledPulse).toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = ledAmber
+            ? (ledPulse > 0.75 ? '#fbbf24' : '#f59e0b')
+            : (ledPulse > 0.75 ? '#34d399' : '#059669');
+        ctx.beginPath();
+        ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        ctx.beginPath();
+        ctx.arc(bx - 0.35, -45.85, 0.35, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 副遥测小蓝灯
+        const linkOn = Math.sin(time * 2.8 + bIdx * 1.55) > -0.1;
+        ctx.fillStyle = linkOn ? '#38bdf8' : '#0c4a6e';
+        ctx.beginPath();
+        ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 2M) 内置 20x8 蓝屏动态生命体征波形 + 脉动状态灯 (sx = bx - 10, sy = 38.0)
+        const sx = bx - 10.0, sy = 38.0;
+        const scrPulse = 0.5 + 0.5 * Math.sin(time * 3.2 - bay.seed);
+        ctx.fillStyle = ledAmber
+            ? (scrPulse > 0.5 ? '#fbbf24' : '#b45309')
+            : (scrPulse > 0.4 ? '#34d399' : '#065f46');
+        ctx.beginPath();
+        ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        for (let wx = 1.2; wx <= 18.8; wx += 1.1) {
+            const phase = (wx * 0.55 - time * 3.2 + bay.seed) % (Math.PI * 2);
+            const spike = Math.exp(-Math.pow(Math.sin(phase), 2) * 12) * 1.25 * Math.cos(phase);
+            const wy = sy + 4.35 - spike;
+            if (wx === 1.2) ctx.moveTo(sx + wx, wy);
+            else ctx.lineTo(sx + wx, wy);
+        }
+        ctx.stroke();
+    });
+
+    // 3. 中央主控屏真实实时遥测内容 + 动态效果 (屏幕区域 x ∈ [-20, +20], y ∈ [53.6, 65.2])
+    const pressKpa = Math.round(104 + 2 * Math.sin(time * 0.9));
+    const avgHr = Math.round(69 + 2.2 * Math.sin(time * 0.85));
+    const avgO2 = Math.round(97 + 0.8 * Math.sin(time * 0.45));
+    const tempC = (3.8 + 0.14 * Math.sin(time * 0.55)).toFixed(1);
+
+    // Row 1 (y = 55.2): 运行状态灯 + ABYSS-04 OK + 实时舱压 kPa
+    const mainBeacon = 0.5 + 0.5 * Math.sin(time * 2.3);
+    ctx.fillStyle = `rgba(16, 185, 129, ${(0.25 + 0.35 * mainBeacon).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(-18.2, 55.2, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = mainBeacon > 0.4 ? '#34d399' : '#059669';
+    ctx.beginPath();
+    ctx.arc(-18.2, 55.2, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillText('ABYSS-04 OK', -16.6, 55.25);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${pressKpa}kPa`, 9.8, 55.25);
+
+    // Row 2 (y = 58.15): 实时平均心率/血氧 + 维生液温
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#6ee7b7';
+    ctx.fillText(`HR:${avgHr} O2:${avgO2}%`, -18.8, 58.15);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fde68a';
+    ctx.fillText(`${tempC}C`, 9.8, 58.15);
+
+    // Row 3 (y = 60.8): 实时滚动双路遥测波形 + 扫描游标点
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    for (let lx = -18.6; lx <= 9.2; lx += 1.0) {
+        const ph = (lx * 0.45 - time * 3.0) % (Math.PI * 2);
+        const amp = Math.exp(-Math.pow(Math.sin(ph), 2) * 10) * 1.15 * Math.cos(ph);
+        const ly = 60.85 - amp;
+        if (lx === -18.6) ctx.moveTo(lx, ly);
+        else ctx.lineTo(lx, ly);
+    }
+    ctx.stroke();
+
+    const scanProg = (time * 0.42) % 1;
+    const scanX = -18.6 + scanProg * 27.8;
+    ctx.fillStyle = 'rgba(167, 243, 208, 0.85)';
+    ctx.beginPath();
+    ctx.arc(scanX, 60.85, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Row 4 (y = 63.6): 密闭锁定文字 + 4 舱实时独立微指示灯
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('SEAL:LOCK', -18.8, 63.65);
+
+    WEST_QUAD_POD_BAYS.forEach((bay, bIdx) => {
+        const lx = -1.8 + bIdx * 3.1;
+        const p = 0.5 + 0.5 * Math.sin(time * 2.5 + bay.seed);
+        const isWarn = (bIdx === 3 && Math.sin(time * 1.6) > 0.25);
+        ctx.fillStyle = isWarn ? '#f59e0b' : (p > 0.45 ? '#34d399' : '#047857');
+        ctx.beginPath();
+        ctx.arc(lx, 63.55, 0.78, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 右侧生物危害警戒环呼吸光圈 + 右上角锁定指示点
+    const bioAlpha = 0.24 + 0.24 * Math.sin(time * 2.2);
+    ctx.strokeStyle = `rgba(245, 158, 11, ${bioAlpha.toFixed(2)})`;
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(15.2, 59.3, 3.6, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = Math.sin(time * 2.6) > 0 ? '#f59e0b' : '#78350f';
+    ctx.beginPath();
+    ctx.arc(18.5, 55.2, 0.65, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawWestQuadIncubationUnit(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle);
+    drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+}
+
+function getWestQuadIncubationUnitObstacle() {
+    const cx = 612, cy = 959;
+    const unitAngle = Math.atan2(-0.617, 0.787);
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 91; // 182 / 2
+    const halfH = 57; // 114 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST QUAD INCUBATION UNIT',
+        displayName: 'ABYSS SPECIMEN QUAD-INCUBATOR',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 200 < camX || cx - 200 > camX + vw || cy + 200 < camY || cy - 200 > camY + vh) return;
+
+            const cacheKey = '__westQuadIncubationUnitV7_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 340, ch = 340;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestQuadIncubationUnitStatic(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
 const LEVEL_7_TEST = {
     id: "level7_test",
     name: "第 8 关 · 测试关卡",
@@ -2644,6 +5953,19 @@ const LEVEL_7_TEST = {
             // (已删除 R2-L，替换为圆形控制台)
             // (已删除 R2-R，替换为圆形控制台)
             // (已删除 R3-L/R3-R，替换为三联方形隔间控制台，2026-11-05)
+
+            // J. 西侧三角房 · 0.7x 法医解剖室设施：解剖台 (140x45 @ 550,1300) + 4 托盘 (30x20，边距 ~4px) + 推车/水桶/踏凳
+            getWestAutopsyTableObstacle(550, 1300),
+            getWestAutopsyTrayObstacle(495, 1264, 'hearts', 'AUTOPSY TRAY NW (HEARTS)'),
+            getWestAutopsyTrayObstacle(605, 1264, 'tools', 'AUTOPSY TRAY NE (TOOLS)'),
+            getWestAutopsyTrayObstacle(495, 1337, 'organs', 'AUTOPSY TRAY SW (ORGANS)'),
+            getWestAutopsyTrayObstacle(605, 1337, 'intestines', 'AUTOPSY TRAY SE (INTESTINES)'),
+            getWestToolCartObstacle(420, 1300),
+            getWestBucketObstacle(470, 1365),
+            getWestStepStoolObstacle(640, 1360),
+
+            // K. 西侧三角房 · 0.7x 四联胶囊型培养舱 (182x114 旋转矩形 solid @ 612,959)
+            getWestQuadIncubationUnitObstacle()
         ];
 
         // =====================================================================
@@ -3745,7 +7067,9 @@ const LEVEL_7_TEST = {
             c2DeconLiqN,
             c2DeconLiqS,
             getAirtightBlastDoor('airtight_door_3', c2Door3Pos.x, c2Door3Pos.y, c2Angle, false),
-            getAirtightBlastDoor('airtight_door_4', c2Door4Pos.x, c2Door4Pos.y, c2Angle, true)
+            getAirtightBlastDoor('airtight_door_4', c2Door4Pos.x, c2Door4Pos.y, c2Angle, true),
+            // 12. 西侧三角房无碰撞地面盘管 (直径 24 @ 680,1330)
+            getWestCoiledHoseProp(680, 1330)
         );
 
         // =====================================================================
