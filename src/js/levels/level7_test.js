@@ -4688,8 +4688,16 @@ function drawQuadPodSmallValve(ctx, hx, hy) {
     ctx.stroke();
 }
 
-function drawQuadPodReleaseGate(ctx, bx, gy) {
-    // 手动释放闸（非阀门！）：12x5 横闸槽 + 闸板 + PULL 小牌 + 倒扣弧形把手（逆时针旋转90°：弧顶朝向北墙 -y，开口朝向下方培养舱玻璃 +y）
+function drawQuadPodReleaseGate(ctx, bx, gy, flipped = false) {
+    // 手动释放闸（非阀门！）：12x5 横闸槽 + 闸板 + PULL 小牌 + 倒扣弧形把手
+    // flipped=false 时弧顶朝向北墙 -y；flipped=true 时上下颠倒，弧顶朝向 +y 舱体一侧（PULL 文字保持正立）
+    ctx.save();
+    if (flipped) {
+        ctx.translate(bx, gy);
+        ctx.scale(1, -1);
+        ctx.translate(-bx, -gy);
+    }
+
     // 1) 闸槽 12x5 横于胶囊颈部
     ctx.fillStyle = '#1e293b';
     ctx.strokeStyle = '#0f172a';
@@ -4703,27 +4711,20 @@ function drawQuadPodReleaseGate(ctx, bx, gy) {
     ctx.fillStyle = '#ea580c';
     ctx.fillRect(bx - 4.4, gy - 0.85, 3.4, 1.7);
 
-    // 3) PULL 小牌（>= 2.4px 清晰字体，位于闸槽西侧）
+    // 3) PULL 小牌底框（文字在下方正立绘制）
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(bx - 15.8, gy - 2.4, 8.8, 4.6);
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 0.5;
     ctx.strokeRect(bx - 15.8, gy - 2.4, 8.8, 4.6);
-    ctx.font = 'bold 2.4px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#fde68a';
-    ctx.fillText('PULL', bx - 11.4, gy - 0.1);
 
-    // 4) 弧形释放把手（粗 3px 金属杆弯成拱门形 ∩：弧顶朝北 -y 指向北墙，开口朝南 +y 指向培养舱玻璃，外框约 10x12）
-    // 两端锚座固定在闸板北沿，中间留出 4x5 抓握空隙
+    // 4) 弧形释放把手（粗 3px 金属杆弯成拱门形）
     ctx.fillStyle = '#475569';
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 0.65;
     ctx.fillRect(bx - 5.2, gy - 3.2, 10.4, 3.0);
     ctx.strokeRect(bx - 5.2, gy - 3.2, 10.4, 3.0);
 
-    // 拱形主杆轮廓（外弧半径 5.0，内弧半径 2.0 -> 实体杆厚 3.0px，外宽 10px，外伸至 gy - 12.0）
     const cGrad = ctx.createLinearGradient(bx - 5.0, gy - 12.0, bx + 5.0, gy - 2.0);
     cGrad.addColorStop(0, '#cbd5e1');
     cGrad.addColorStop(0.45, '#f8fafc');
@@ -4745,7 +4746,6 @@ function drawQuadPodReleaseGate(ctx, bx, gy) {
     ctx.fill();
     ctx.stroke();
 
-    // 弧顶安全警示红橙防滑套段与高光
     ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 1.6;
     ctx.lineCap = 'round';
@@ -4761,7 +4761,6 @@ function drawQuadPodReleaseGate(ctx, bx, gy) {
     ctx.arc(bx, gy - 7.0, 3.9, Math.PI, -Math.PI * 0.45, false);
     ctx.stroke();
 
-    // 左右固定销钉（连接闸板锚座与把手两端）
     [-3.5, 3.5].forEach(ox => {
         ctx.fillStyle = '#e2e8f0';
         ctx.strokeStyle = '#0f172a';
@@ -4771,22 +4770,28 @@ function drawQuadPodReleaseGate(ctx, bx, gy) {
         ctx.fill();
         ctx.stroke();
     });
+
+    ctx.restore();
+
+    // PULL 小牌文字始终保持正立可读
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fde68a';
+    ctx.fillText('PULL', bx - 11.4, gy - 0.1);
 }
 
-const WEST_QUAD_POD_BAYS = [
-    { idx: 1, bx: -69, worldCx: 558, worldCy: 1002, creature: 'demon', spec: 'SPEC-01', name: '样本-01 · 恶魔', hr: 62, o2: 98, seed: 0.0, fillPct: 0.84 },
-    { idx: 2, bx: -23, worldCx: 594, worldCy: 973, creature: 'cerberus', spec: 'SPEC-02', name: '样本-02 · 地狱三头犬', hr: 74, o2: 96, seed: 1.6, fillPct: 0.90 },
-    { idx: 3, bx: 23, worldCx: 630, worldCy: 945, creature: 'demon', spec: 'SPEC-03', name: '样本-03 · 恶魔', hr: 58, o2: 99, seed: 3.1, fillPct: 0.78 },
-    { idx: 4, bx: 69, worldCx: 666, worldCy: 916, creature: 'cerberus', spec: 'SPEC-04', name: '样本-04 · 地狱三头犬', hr: 81, o2: 95, seed: 4.7, fillPct: 0.88 }
+const WEST_PENTA_POD_BAYS = [
+    { idx: 1, bx: -92, creature: null, spec: 'SPEC-01', name: '样本-01 · 空舱', hr: 0, o2: 0, seed: 0.0, fillPct: 0.0, empty: true },
+    { idx: 2, bx: -46, creature: 'demon', spec: 'SPEC-02', name: '样本-02 · 恶魔', hr: 62, o2: 98, seed: 0.0, fillPct: 0.84, empty: false },
+    { idx: 3, bx: 0, creature: 'cerberus', spec: 'SPEC-03', name: '样本-03 · 地狱三头犬', hr: 74, o2: 96, seed: 1.6, fillPct: 0.90, empty: false },
+    { idx: 4, bx: 46, creature: 'demon', spec: 'SPEC-04', name: '样本-04 · 恶魔', hr: 58, o2: 99, seed: 3.1, fillPct: 0.78, empty: false },
+    { idx: 5, bx: 92, creature: 'cerberus', spec: 'SPEC-05', name: '样本-05 · 地狱三头犬', hr: 81, o2: 95, seed: 4.7, fillPct: 0.88, empty: false }
 ];
 
-function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
-    // 0.7x 四联胶囊连体单元 182x114 @ (612, 959)，x ∈ [-91, +91], y ∈ [-57, +57]
-    // 胶囊三层同轴参数：
-    //   外壳 r=21 (ycTop=-27.5, ycBotOuter=29.5 -> y ∈ [-48.5, +50.5], 壁厚 6px 实心倒角不锈钢)
-    //   玻璃 r=15 (ycTop=-27.5, ycBotGlass=22.0 -> y ∈ [-42.5, +37.0], 内缩 6px)
-    //   液体 r=14 (ycTop=-27.5, ycBotGlass=22.0 -> y ∈ [-41.5, +36.0], 再内缩 1px)
-    //   内置蓝屏 20x8 置于玻璃南端(+37)之下、外壳南端半圆盖内，居中 @ ly=+42.0 (y ∈ [38, 46])
+function drawWestPentaIncubationUnitStatic(ctx, cx, cy, unitAngle) {
+    // 0.7x 五联胶囊连体单元 228x114 @ (1024.06, 743.44)，x ∈ [-114, +114], y ∈ [-57, +57]
+    // 最上方 1 号舱 (bx=-92) 为空舱：无液体、无生物、释放闸颠倒、红警单舱屏；2–5 号舱正常；共用主控屏橙色状态
     const ycTop = -27.5;
     const ycBotOuter = 29.5;
     const ycBotGlass = 22.0;
@@ -4795,11 +4800,11 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
 
-    // 1. 地面淡淡的溅洒渍 + 阴影 + Ø10 地漏 (556,1035 -> 局部 -90.96, 25.26) + 短排水管
+    // 1. 地面淡淡的溅洒渍 + 阴影 + Ø10 地漏 + 短排水管 (按半长 114 平移)
     [
-        { x: -94, y: 26, rx: 11, ry: 7.5 },
+        { x: -117, y: 26, rx: 11, ry: 7.5 },
         { x: -34, y: 63, rx: 13, ry: 4.5 },
-        { x: 48, y: 62, rx: 9, ry: 3.8 }
+        { x: 71, y: 62, rx: 9, ry: 3.8 }
     ].forEach(sp => {
         ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
         ctx.beginPath();
@@ -4809,11 +4814,11 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
 
     ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
     ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(-93, -58, 186, 118, 3) : ctx.rect(-93, -58, 186, 118);
+    ctx.roundRect ? ctx.roundRect(-116, -58, 232, 118, 3) : ctx.rect(-116, -58, 232, 118);
     ctx.fill();
 
-    // 地漏 Ø10 + 周围格栅 (中心 (556, 1035) -> 局部 (-90.96, 25.26))
-    const drainX = -90.96, drainY = 25.26;
+    // 地漏 Ø10 + 周围格栅 (按半长 114 平移 -> 局部 (-113.96, 25.26))
+    const drainX = -113.96, drainY = 25.26;
     ctx.fillStyle = '#0f172a';
     ctx.strokeStyle = '#64748b';
     ctx.lineWidth = 0.65;
@@ -4828,7 +4833,7 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 0.75;
     ctx.beginPath();
-    ctx.arc(drainX, drainY, 5.0, 0, Math.PI * 2); // Ø10
+    ctx.arc(drainX, drainY, 5.0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = '#020617';
@@ -4840,42 +4845,41 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 1.6;
     ctx.beginPath();
-    ctx.moveTo(-90, 50); ctx.lineTo(-96.5, 50); ctx.lineTo(-96.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.moveTo(-113, 50); ctx.lineTo(-119.5, 50); ctx.lineTo(-119.5, drainY); ctx.lineTo(drainX, drainY);
     ctx.stroke();
     ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 0.85;
     ctx.beginPath();
-    ctx.moveTo(-90, 50); ctx.lineTo(-96.5, 50); ctx.lineTo(-96.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.moveTo(-113, 50); ctx.lineTo(-119.5, 50); ctx.lineTo(-119.5, drainY); ctx.lineTo(drainX, drainY);
     ctx.stroke();
 
-    // 2. 大幅缩短的顶部接墙短管区（总管 y ∈ [-56, -52] + 向北短管 y ∈ [-63.5, -56] + 墙法兰 [-64, -61.5]，总高 12px <= 12px）
+    // 2. 顶部接墙短管区（移到东端 x = 101, 108.5，总高 12px 以内）
     [
-        { x: 78, w: 5.0, c1: '#475569', c2: '#e2e8f0' },
-        { x: 85.5, w: 3.6, c1: '#334155', c2: '#94a3b8' }
+        { x: 101, w: 5.0, c1: '#475569', c2: '#e2e8f0' },
+        { x: 108.5, w: 3.6, c1: '#334155', c2: '#94a3b8' }
     ].forEach(p => {
         ctx.fillStyle = p.c1;
-        ctx.fillRect(p.x - p.w / 2, -63.0, p.w, 7.0); // 7px <= 8px
+        ctx.fillRect(p.x - p.w / 2, -63.0, p.w, 7.0);
         ctx.fillStyle = p.c2;
         ctx.fillRect(p.x - p.w * 0.25, -63.0, p.w * 0.5, 7.0);
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 0.65;
         ctx.strokeRect(p.x - p.w / 2, -63.0, p.w, 7.0);
     });
-    // 短管卡箍 + 墙接口法兰（紧凑贴合总管北侧）
     ctx.fillStyle = '#94a3b8';
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 0.55;
-    ctx.fillRect(74.5, -60.2, 14, 2.0);
-    ctx.strokeRect(74.5, -60.2, 14, 2.0);
+    ctx.fillRect(97.5, -60.2, 14, 2.0);
+    ctx.strokeRect(97.5, -60.2, 14, 2.0);
 
     ctx.fillStyle = '#1e293b';
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 0.7;
-    ctx.fillRect(73.5, -64.0, 22.0, 2.8);
-    ctx.strokeRect(73.5, -64.0, 22.0, 2.8);
+    ctx.fillRect(96.5, -64.0, 22.0, 2.8);
+    ctx.strokeRect(96.5, -64.0, 22.0, 2.8);
 
-    // 3. 调平脚 (4个) + 共用基座条 (182x16 @ x ∈ [-91, +91], y ∈ [+41, +57]，画在胶囊之下作承托底座)
-    [[-88, -56], [82, -56], [-88, 56], [82, 56]].forEach(([fx, fy]) => {
+    // 3. 调平脚 (4个) + 共用基座条 (228x16 @ x ∈ [-114, +114], y ∈ [+41, +57])
+    [[-111, -56], [105, -56], [-111, 56], [105, 56]].forEach(([fx, fy]) => {
         ctx.fillStyle = '#0f172a';
         ctx.fillRect(fx, fy, 6, 2.5);
         ctx.fillStyle = '#64748b';
@@ -4887,42 +4891,43 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     baseGrad.addColorStop(0.55, '#94a3b8');
     baseGrad.addColorStop(1, '#334155');
     ctx.fillStyle = baseGrad;
-    ctx.fillRect(-91, 41, 182, 16);
+    ctx.fillRect(-114, 41, 228, 16);
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 1.0;
-    ctx.strokeRect(-91, 41, 182, 16);
+    ctx.strokeRect(-114, 41, 228, 16);
 
-    // 基座条南沿警示斜纹 (y ∈ [53.8, 56.6]，位于胶囊南端 +50.5 之外，清晰可见)
+    // 基座条南沿警示斜纹 (y ∈ [53.8, 56.6])
     ctx.save();
     ctx.beginPath();
-    ctx.rect(-89, 53.8, 178, 2.8);
+    ctx.rect(-112, 53.8, 224, 2.8);
     ctx.clip();
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-89, 53.8, 178, 2.8);
+    ctx.fillRect(-112, 53.8, 224, 2.8);
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 1.2;
-    for (let sx = -92; sx <= 92; sx += 5) {
+    for (let sx = -115; sx <= 115; sx += 5) {
         ctx.beginPath();
         ctx.moveTo(sx, 56.8); ctx.lineTo(sx + 3.2, 53.6);
         ctx.stroke();
     }
     ctx.restore();
 
-    // 基座南沿线缆束（2 根 1px 线 + 卡扣 + 格兰头，东端北折至紧凑接线法兰，不再挂一排屏）
+    // 基座南沿线缆束（2 根 1px 线 + 卡扣 + 格兰头，东端北折至接线法兰）
     [57.8, 59.4].forEach((cyLine, idx) => {
-        const ox = idx === 0 ? 92.2 : 93.8;
+        const ox = idx === 0 ? 115.2 : 116.8;
         ctx.strokeStyle = idx === 0 ? '#334155' : '#0284c7';
         ctx.lineWidth = 1.0;
         ctx.beginPath();
-        ctx.moveTo(-84, cyLine);
+        ctx.moveTo(-107, cyLine);
         ctx.lineTo(ox, cyLine);
         ctx.lineTo(ox, -62.5);
         ctx.stroke();
     });
     [
-        { x: -56, y: 56.8, w: 4.5, h: 3.4 },
-        { x: 46, y: 56.8, w: 4.5, h: 3.4 },
-        { x: 91.2, y: 4, w: 3.4, h: 4.5 }
+        { x: -79, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 23, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 69, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 114.2, y: 4, w: 3.4, h: 4.5 }
     ].forEach(cl => {
         ctx.fillStyle = '#cbd5e1';
         ctx.strokeStyle = '#0f172a';
@@ -4931,21 +4936,21 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.strokeRect(cl.x, cl.y, cl.w, cl.h);
     });
     ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(89.5, 55.2, 3.2, 3.6);
+    ctx.fillRect(112.5, 55.2, 3.2, 3.6);
 
-    // 4. 顶部总管 (y ∈ [-56, -52]，紧贴顶板上方，距胶囊北端 -48.5 仅 3.5px <= 4px)
+    // 4. 顶部总管 (y ∈ [-56, -52])
     const hdrGrad = ctx.createLinearGradient(0, -56, 0, -52);
     hdrGrad.addColorStop(0, '#64748b');
     hdrGrad.addColorStop(0.45, '#f1f5f9');
     hdrGrad.addColorStop(1, '#334155');
     ctx.fillStyle = hdrGrad;
-    ctx.fillRect(-79, -56, 166, 4.0);
+    ctx.fillRect(-102, -56, 212, 4.0);
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 0.7;
-    ctx.strokeRect(-79, -56, 166, 4.0);
+    ctx.strokeRect(-102, -56, 212, 4.0);
 
-    // 保温带（总管左/右条纹段）
-    [-35, 35].forEach(ix => {
+    // 保温带
+    [-58, 58].forEach(ix => {
         ctx.fillStyle = '#475569';
         ctx.fillRect(ix - 5, -56.4, 10, 4.8);
         ctx.strokeStyle = '#cbd5e1';
@@ -4955,39 +4960,39 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         }
     });
 
-    // 西端压力表 (Ø10 -> r=5 @ -86, -45，短弯管连总管) + 竖向液位条 (3x9.5 @ -90, -37.5)
+    // 西端压力表 (Ø10 -> r=5 @ -109, -45) + 竖向液位条 (3x9.5 @ -113, -37.5)
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 1.4;
     ctx.beginPath();
-    ctx.moveTo(-79, -54); ctx.lineTo(-86, -54); ctx.lineTo(-86, -45);
+    ctx.moveTo(-102, -54); ctx.lineTo(-109, -54); ctx.lineTo(-109, -45);
     ctx.stroke();
 
     ctx.fillStyle = '#0f172a';
     ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 0.85;
     ctx.beginPath();
-    ctx.arc(-86, -45, 5.0, 0, Math.PI * 2);
+    ctx.arc(-109, -45, 5.0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 0.65;
     ctx.beginPath();
-    ctx.arc(-86, -45, 3.5, -0.4, 0.9);
+    ctx.arc(-109, -45, 3.5, -0.4, 0.9);
     ctx.stroke();
     ctx.font = 'bold 2.4px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText('PRS', -86, -42.6);
+    ctx.fillText('PRS', -109, -42.6);
 
     ctx.fillStyle = '#041f18';
-    ctx.fillRect(-90, -37.5, 3, 9.5);
+    ctx.fillRect(-113, -37.5, 3, 9.5);
     ctx.strokeStyle = '#64748b';
     ctx.lineWidth = 0.55;
-    ctx.strokeRect(-90, -37.5, 3, 9.5);
+    ctx.strokeRect(-113, -37.5, 3, 9.5);
 
-    // 5. 三道舱间 3px 隔断 + 3 个小手轮阀门 (Ø8 @ x = -46, 0, +46) + 流量计
-    [-46, 0, 46].forEach(dx => {
+    // 5. 四道舱间 3px 隔断 + 4 个小手轮阀门 (Ø8 @ x = -69, -23, +23, +69) + 流量计
+    [-69, -23, 23, 69].forEach(dx => {
         ctx.fillStyle = '#cbd5e1';
         ctx.fillRect(dx - 1.5, -44, 3.0, 85);
         ctx.strokeStyle = '#0f172a';
@@ -5006,24 +5011,22 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
             ctx.fill();
         });
 
-        // 隔断上的小流量计（玻璃管静态底衬，浮标与顶灯由动态层驱动）
         ctx.fillStyle = '#082f49';
         ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 0.5;
         ctx.fillRect(dx - 1.5, -40, 3.0, 9);
         ctx.strokeRect(dx - 1.5, -40, 3.0, 9);
 
-        // Ø8 小手轮阀门
         ctx.fillStyle = '#64748b';
         ctx.fillRect(dx - 2.5, -56.5, 5, 5.5);
         drawQuadPodSmallValve(ctx, dx, -54);
     });
 
-    // 6. 四舱胶囊主体（加厚 6px 实心不锈钢外壳 r=21 -> 玻璃 r=15 -> 液体 r=14，三层同轴胶囊型）
-    WEST_QUAD_POD_BAYS.forEach(bay => {
+    // 6. 五舱胶囊主体（1 号最上方为空舱：无液体、无生物、释放闸颠倒、红警单舱屏；2–5 号有液体与生物）
+    WEST_PENTA_POD_BAYS.forEach(bay => {
         const bx = bay.bx;
 
-        // 3px 短支管（总管 -52 -> 北端 -48.5）+ 接口环 + 泄压阀 + 加液口
+        // 3px 短支管 + 接口环 + 泄压阀 + 加液口
         ctx.fillStyle = '#cbd5e1';
         ctx.fillRect(bx - 1.5, -52.5, 3, 5.0);
         ctx.strokeStyle = '#0f172a';
@@ -5039,12 +5042,12 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.fillRect(bx - 15.0, -51.2, 3.2, 1.4);
         ctx.fillStyle = '#94a3b8';
         ctx.fillRect(bx + 12.2, -49.5, 2.6, 2.8);
-        ctx.fillStyle = '#38bdf8';
+        ctx.fillStyle = bay.empty ? '#ef4444' : '#38bdf8';
         ctx.beginPath();
         ctx.arc(bx + 13.5, -50.2, 1.3, 0, Math.PI * 2);
         ctx.fill();
 
-        // 6A) 第 1 层：6px 厚实心不锈钢外壳胶囊 (width=42 -> r=21, ycTop=-27.5, ycBotOuter=29.5)
+        // 6A) 第 1 层：6px 厚实心不锈钢外壳胶囊 (r=21)
         const shellGrad = ctx.createLinearGradient(bx - 21, 0, bx + 21, 0);
         shellGrad.addColorStop(0, '#334155');
         shellGrad.addColorStop(0.16, '#94a3b8');
@@ -5059,7 +5062,6 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.lineWidth = 1.15;
         ctx.stroke();
 
-        // 外壳外倒角明暗环 (r=19.8：左上亮倒角 + 右下暗倒角，凸显 6px 实心厚壳质感)
         ctx.strokeStyle = 'rgba(248, 250, 252, 0.48)';
         ctx.lineWidth = 0.85;
         ctx.beginPath();
@@ -5076,7 +5078,6 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.arc(bx, ycBotOuter, 19.7, 0, Math.PI * 0.85, false);
         ctx.stroke();
 
-        // 6px 厚壳内阶梯加工线 & 侧壁加强筋/沉头螺钉（沿 ±18px 壁厚中线分布）
         [-14, 4, 20].forEach(ribY => {
             [-18.0, 18.0].forEach(rx => {
                 ctx.fillStyle = '#0f172a';
@@ -5090,7 +5091,6 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
             });
         });
 
-        // 顶板（北端半圆厚壳盖板 + 6 颗螺栓环）
         ctx.save();
         traceStadiumPath(ctx, bx, ycTop, ycBotOuter, 20.4);
         ctx.clip();
@@ -5116,7 +5116,6 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         }
         ctx.restore();
 
-        // 玻璃窗周圈内斜倒角（厚 6px 壳体向内缩至 r=15 的机械内倒角环）
         ctx.fillStyle = '#1e293b';
         traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.8);
         ctx.fill();
@@ -5125,34 +5124,51 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.0);
         ctx.stroke();
 
-        // 6B) 第 2 层：玻璃胶囊（同轴内缩 6px -> width=30, radius = 15）
-        ctx.fillStyle = '#031712';
+        // 6B) 第 2 层：玻璃胶囊 (r=15)
+        ctx.fillStyle = bay.empty ? '#04080a' : '#031712';
         traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
         ctx.fill();
-        ctx.strokeStyle = '#6ee7b7';
+        ctx.strokeStyle = bay.empty ? '#64748b' : '#6ee7b7';
         ctx.lineWidth = 0.75;
         ctx.stroke();
 
-        // 6C) 第 3 层：液体胶囊底衬（同轴再内缩 1px -> width=28, radius = 14）
-        const liqGrad = ctx.createLinearGradient(0, -41.5, 0, 36);
-        liqGrad.addColorStop(0, '#065f46');
-        liqGrad.addColorStop(0.5, '#044736');
-        liqGrad.addColorStop(1, '#02221a');
-        ctx.fillStyle = liqGrad;
-        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
-        ctx.fill();
+        // 6C) 第 3 层：空舱无液体（暗色干燥内腔）；其余舱保持翡翠营养液底衬 (r=14)
+        if (bay.empty) {
+            const dryGrad = ctx.createLinearGradient(bx - 14, 0, bx + 14, 0);
+            dryGrad.addColorStop(0, '#020608');
+            dryGrad.addColorStop(0.5, '#0b1215');
+            dryGrad.addColorStop(1, '#020608');
+            ctx.fillStyle = dryGrad;
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.fill();
 
-        // 舱内背景标尺刻线
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.18)';
-        ctx.lineWidth = 0.5;
-        for (let ty = -24; ty <= 18; ty += 10.5) {
-            ctx.beginPath();
-            ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
-            ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
-            ctx.stroke();
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+            ctx.lineWidth = 0.5;
+            for (let ty = -24; ty <= 18; ty += 10.5) {
+                ctx.beginPath();
+                ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
+                ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
+                ctx.stroke();
+            }
+        } else {
+            const liqGrad = ctx.createLinearGradient(0, -41.5, 0, 36);
+            liqGrad.addColorStop(0, '#065f46');
+            liqGrad.addColorStop(0.5, '#044736');
+            liqGrad.addColorStop(1, '#02221a');
+            ctx.fillStyle = liqGrad;
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.18)';
+            ctx.lineWidth = 0.5;
+            for (let ty = -24; ty <= 18; ty += 10.5) {
+                ctx.beginPath();
+                ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
+                ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
+                ctx.stroke();
+            }
         }
 
-        // 侧取样阀（位于 6px 厚壳右侧壁）+ 温度探头（顶部表盘 + 细杆）
         ctx.fillStyle = '#cbd5e1';
         ctx.fillRect(bx + 17.5, 6, 4.2, 2.0);
         ctx.fillStyle = '#ef4444';
@@ -5170,44 +5186,42 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.fill();
         ctx.stroke();
 
-        // 6D) 内置底部蓝屏 20x8（位于玻璃南端 +37 之下、外壳南端半圆盖内，中心 @ (bx, +42.0) -> 世界 (584,1035)...(692,949)）
-        const sx = bx - 10.0, sy = 38.0; // 20x8: x ∈ [bx-10, bx+10], y ∈ [38, 46]
-        // 沉头屏幕金属护框 (21.6 x 9.6，不压玻璃、不超出外壳半圆)
+        // 6D) 内置底部小屏 20x8（空舱显示红警框 + SPEC-01 + EMPTY；其余显示蓝框 + STABLE）
+        const sx = bx - 10.0, sy = 38.0;
         ctx.fillStyle = '#0f172a';
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 0.55;
         ctx.fillRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
         ctx.strokeRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
 
-        // 蓝屏本体 20x8
-        ctx.fillStyle = '#06263d';
+        ctx.fillStyle = bay.empty ? '#26080a' : '#06263d';
         ctx.fillRect(sx, sy, 20, 8);
-        ctx.strokeStyle = '#38bdf8';
+        ctx.strokeStyle = bay.empty ? '#ef4444' : '#38bdf8';
         ctx.lineWidth = 0.7;
         ctx.strokeRect(sx, sy, 20, 8);
 
         ctx.font = 'bold 2.4px monospace';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#bae6fd';
+        ctx.fillStyle = bay.empty ? '#fecaca' : '#bae6fd';
         ctx.fillText(bay.spec, sx + 0.9, sy + 1.85);
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#34d399';
-        ctx.fillText('STABLE', bx, sy + 6.55);
+        ctx.fillStyle = bay.empty ? '#f87171' : '#34d399';
+        ctx.fillText(bay.empty ? 'EMPTY' : 'STABLE', bx, sy + 6.55);
 
-        // 6E) 胶囊颈部倒 C 手动释放闸（中心 @ (bx, -51.6) -> 世界 (526,961)...(634,876)）
-        drawQuadPodReleaseGate(ctx, bx, -51.6);
+        // 6E) 胶囊颈部倒 C 手动释放闸（1 号空舱上下颠倒，弧顶朝向舱体侧）
+        drawQuadPodReleaseGate(ctx, bx, -51.6, !!bay.empty);
     });
 
-    // 7. UNIT-04 框架小标牌（嵌于 2/3 号舱南肩之间空隙）+ 中央总控屏 (40x12，随整机北移 15px)
+    // 7. UNIT-05 框架小标牌 + 中央共用主控屏 (40x12，橙色告警状态：代表一个舱清空、其他正常)
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(-11.5, 48.2, 23, 3.8);
     ctx.font = 'bold 2.4px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#e2e8f0';
-    ctx.fillText('UNIT-04', 0, 50.1);
+    ctx.fillText('UNIT-05', 0, 50.1);
 
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(-21.5, 52.4, 43, 14.0);
@@ -5215,23 +5229,21 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.lineWidth = 0.8;
     ctx.strokeRect(-21.5, 52.4, 43, 14.0);
 
-    ctx.fillStyle = '#062033';
+    ctx.fillStyle = '#1f1203';
     ctx.fillRect(-20, 53.6, 40, 11.6);
-    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 0.75;
     ctx.strokeRect(-20, 53.6, 40, 11.6);
 
-    // 主控屏内部分区网格线（真实遥测文本、波形与实时状态由动态层绘制）
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
     ctx.lineWidth = 0.45;
     ctx.beginPath();
     ctx.moveTo(-19.5, 56.6); ctx.lineTo(19.5, 56.6);
     ctx.moveTo(10.6, 54.0); ctx.lineTo(10.6, 64.8);
     ctx.stroke();
 
-    // 生物危害标志（三叶形 + BIO-4 标签，位于总控屏右侧监控栏）
     const bhX = 15.2, bhY = 59.3;
-    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeStyle = '#fb923c';
     ctx.lineWidth = 0.65;
     [0, 1, 2].forEach(k => {
         const a = -Math.PI / 2 + k * (Math.PI * 2 / 3);
@@ -5239,7 +5251,7 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
         ctx.arc(bhX + Math.cos(a) * 1.35, bhY + Math.sin(a) * 1.35, 1.45, 0, Math.PI * 2);
         ctx.stroke();
     });
-    ctx.fillStyle = '#062033';
+    ctx.fillStyle = '#1f1203';
     ctx.beginPath();
     ctx.arc(bhX, bhY, 0.85, 0, Math.PI * 2);
     ctx.fill();
@@ -5247,15 +5259,13 @@ function drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = 'bold 2.4px monospace';
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillText('BIO-4', 15.2, 63.7);
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText('BIO-5', 15.2, 63.7);
 
     ctx.restore();
 }
 
-function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
-    // 动态层：68px 生物漂浮 + 液体多层次效果（严格裁剪在 r=14 液体胶囊内）
-    // + 沿 r=15 玻璃左侧弧线弯曲的高光带 + 各类指示灯呼吸/闪烁动态 + 内置 20x8 蓝屏动态波形 + 主控屏真实实时遥测与波形
+function drawWestPentaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
     const ycTop = -27.5;
     const ycBotGlass = 22.0;
 
@@ -5263,32 +5273,32 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
 
-    // 1. 西端压力表指针 (@ -86, -45) + 表盘运行指示灯 + 竖向液位条 (@ -90, -37.5)
+    // 1. 西端压力表指针 (@ -109, -45) + 竖向液位条 (@ -113, -37.5)
     const prsAngle = -0.5 + 0.16 * Math.sin(time * 1.8);
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 0.8;
     ctx.beginPath();
-    ctx.moveTo(-86, -45);
-    ctx.lineTo(-86 + Math.cos(prsAngle) * 3.4, -45 + Math.sin(prsAngle) * 3.4);
+    ctx.moveTo(-109, -45);
+    ctx.lineTo(-109 + Math.cos(prsAngle) * 3.4, -45 + Math.sin(prsAngle) * 3.4);
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.beginPath();
-    ctx.arc(-86, -45, 0.75, 0, Math.PI * 2);
+    ctx.arc(-109, -45, 0.75, 0, Math.PI * 2);
     ctx.fill();
 
     const prsLedAlpha = 0.5 + 0.45 * Math.sin(time * 2.2);
     ctx.fillStyle = `rgba(52, 211, 153, ${prsLedAlpha.toFixed(2)})`;
     ctx.beginPath();
-    ctx.arc(-82.8, -48.3, 0.7, 0, Math.PI * 2);
+    ctx.arc(-105.8, -48.3, 0.7, 0, Math.PI * 2);
     ctx.fill();
 
     const lvlRatio = 0.68 + 0.12 * Math.sin(time * 1.2);
     const lvlH = 8.0 * lvlRatio;
     ctx.fillStyle = '#10b981';
-    ctx.fillRect(-89.4, -28.6 - lvlH, 1.8, lvlH);
+    ctx.fillRect(-112.4, -28.6 - lvlH, 1.8, lvlH);
 
-    // 1B. 三道隔断上的流量计动态浮标 + 顶部联机指示灯
-    [-46, 0, 46].forEach((dx, fIdx) => {
+    // 1B. 四道隔断上的流量计动态浮标 + 顶部联机指示灯
+    [-69, -23, 23, 69].forEach((dx, fIdx) => {
         const bobY = -35.5 + Math.sin(time * 1.9 + fIdx * 1.1) * 2.1;
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
@@ -5302,142 +5312,134 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
         ctx.fill();
     });
 
-    // 2. 四舱胶囊玻璃液体动态层（严格裁剪在半径 14 同轴液体胶囊内）
-    WEST_QUAD_POD_BAYS.forEach((bay, bIdx) => {
+    // 2. 五舱胶囊玻璃液体动态层（1 号空舱无液体、无生物；顶灯红警闪烁、单舱屏平直线）
+    WEST_PENTA_POD_BAYS.forEach((bay, bIdx) => {
         const bx = bay.bx;
 
-        ctx.save();
-        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
-        ctx.clip();
+        if (!bay.empty) {
+            ctx.save();
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.clip();
 
-        ctx.save();
-        ctx.translate(bx, 0);
+            ctx.save();
+            ctx.translate(bx, 0);
 
-        // 2A) 底部沉积层（深色半圆弧底 + 沉降颗粒）
-        ctx.fillStyle = 'rgba(2, 24, 18, 0.72)';
-        ctx.beginPath();
-        ctx.arc(0, ycBotGlass, 14, 0.15, Math.PI - 0.15);
-        ctx.closePath();
-        ctx.fill();
-        [-7, -2.5, 2, 6, 9].forEach((gx, k) => {
-            ctx.fillStyle = (k % 2 === 0) ? '#064e3b' : '#115e59';
+            ctx.fillStyle = 'rgba(2, 24, 18, 0.72)';
             ctx.beginPath();
-            ctx.arc(gx, 31.2 + (k % 3) * 0.7, 0.8, 0, Math.PI * 2);
+            ctx.arc(0, ycBotGlass, 14, 0.15, Math.PI - 0.15);
+            ctx.closePath();
             ctx.fill();
-        });
+            [-7, -2.5, 2, 6, 9].forEach((gx, k) => {
+                ctx.fillStyle = (k % 2 === 0) ? '#064e3b' : '#115e59';
+                ctx.beginPath();
+                ctx.arc(gx, 31.2 + (k % 3) * 0.7, 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
-        // 2B) 底部缓慢旋转磁力搅拌子
-        ctx.save();
-        ctx.translate(0, 31.5);
-        ctx.rotate(time * 1.2 + bay.seed);
-        ctx.fillStyle = '#e2e8f0';
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 0.45;
-        ctx.beginPath();
-        ctx.roundRect ? ctx.roundRect(-2.2, -0.65, 4.4, 1.3, 0.65) : ctx.rect(-2.2, -0.65, 4.4, 1.3);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        // 2C) 68px 正常尺寸漂浮恶魔 / 三头犬（完全保留原模型与 68px 比例）
-        ctx.save();
-        ctx.translate(0, -1.5);
-        if (bay.creature === 'demon') {
-            drawQuadPodDemonFull(ctx, time, bay.seed);
-        } else {
-            drawQuadPodCerberusFull(ctx, time, bay.seed);
-        }
-        ctx.restore();
-
-        // 2D) 翡翠液体半透染色（纵向渐变）
-        const fluidAlpha = 0.17 + 0.03 * Math.sin(time * 1.4 + bay.seed);
-        const fGrad = ctx.createLinearGradient(0, -34, 0, 36);
-        fGrad.addColorStop(0, `rgba(52, 211, 153, ${(fluidAlpha * 0.8).toFixed(3)})`);
-        fGrad.addColorStop(0.55, `rgba(16, 185, 129, ${(fluidAlpha * 1.1).toFixed(3)})`);
-        fGrad.addColorStop(1, `rgba(4, 47, 46, ${(fluidAlpha * 1.65).toFixed(3)})`);
-        ctx.fillStyle = fGrad;
-        ctx.fillRect(-15, -34, 30, 72);
-
-        // 2E) 顶部气隙 + 弯月线（弧线）+ 液面微光
-        const menY = -33.0 + Math.sin(time * 1.5 + bay.seed) * 0.6;
-        ctx.fillStyle = 'rgba(209, 250, 229, 0.22)';
-        ctx.fillRect(-15, -43, 30, menY + 43);
-        ctx.strokeStyle = 'rgba(167, 243, 208, 0.72)';
-        ctx.lineWidth = 0.85;
-        ctx.beginPath();
-        ctx.moveTo(-13.5, menY - 0.9);
-        ctx.quadraticCurveTo(0, menY + 1.6, 13.5, menY - 0.9);
-        ctx.stroke();
-
-        // 2F) 2-3 条循环流线
-        ctx.strokeStyle = 'rgba(110, 231, 183, 0.24)';
-        ctx.lineWidth = 0.65;
-        [0, 1, 2].forEach(sIdx => {
-            const flowY = ((time * 5.5 + sIdx * 22 + bay.seed * 7) % 60) - 28;
+            ctx.save();
+            ctx.translate(0, 31.5);
+            ctx.rotate(time * 1.2 + bay.seed);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 0.45;
             ctx.beginPath();
-            ctx.moveTo(-9 + sIdx * 4.5, flowY + 8);
-            ctx.quadraticCurveTo(-5.5 + sIdx * 5.0, flowY, -8.5 + sIdx * 4.5, flowY - 8);
-            ctx.stroke();
-        });
-
-        // 2G) 底部焦散微光
-        ctx.strokeStyle = `rgba(167, 243, 208, ${(0.22 + 0.12 * Math.sin(time * 1.7 + bay.seed)).toFixed(2)})`;
-        ctx.lineWidth = 0.75;
-        ctx.beginPath();
-        ctx.arc(Math.sin(time * 1.1 + bay.seed) * 2.0, 25, 8.2, 0.35, Math.PI - 0.35);
-        ctx.stroke();
-
-        // 2H) 贴壁微气泡
-        [[-12.6, -12], [-12.8, 6], [12.6, -4], [12.7, 14], [-9, 27], [8.5, 28]].forEach(([wx, wy]) => {
-            ctx.fillStyle = 'rgba(209, 250, 229, 0.45)';
-            ctx.beginPath();
-            ctx.arc(wx, wy, 0.6, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // 2I) 悬浮微粒
-        for (let p = 0; p < 6; p++) {
-            const px = Math.sin(time * 0.45 + p * 1.7 + bay.seed) * 10;
-            const py = -25 + ((time * 3.2 + p * 11 + bay.seed * 5) % 56);
-            ctx.fillStyle = 'rgba(167, 243, 208, 0.42)';
-            ctx.fillRect(px, py, 1.0, 1.0);
-        }
-
-        // 2J) 6 个缓慢上升气泡 + 口鼻呼出气泡
-        [
-            { ox: -9.0, r: 1.8, off: 0.05 },
-            { ox: 9.5, r: 1.3, off: 0.22 },
-            { ox: -4.0, r: 2.1, off: 0.41 },
-            { ox: 6.5, r: 1.1, off: 0.58 },
-            { ox: -10.5, r: 1.25, off: 0.74 },
-            { ox: 3.5, r: 1.5, off: 0.89 }
-        ].forEach((b, idx) => {
-            const prog = ((time / 6.0) + b.off + bay.seed * 0.1) % 1;
-            const by = 32 - prog * 63;
-            const bxWob = b.ox + Math.sin(time * 1.8 + idx * 1.3) * 1.1;
-            ctx.fillStyle = 'rgba(167, 243, 208, 0.48)';
-            ctx.strokeStyle = 'rgba(236, 253, 245, 0.78)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.arc(bxWob, by, b.r * 0.62, 0, Math.PI * 2);
+            ctx.roundRect ? ctx.roundRect(-2.2, -0.65, 4.4, 1.3, 0.65) : ctx.rect(-2.2, -0.65, 4.4, 1.3);
             ctx.fill();
             ctx.stroke();
-        });
-        for (let eb = 0; eb < 2; eb++) {
-            const eProg = ((time / 4.8) + eb * 0.5 + bay.seed * 0.2) % 1;
-            const ey = 21 - eProg * 52;
-            const ex = Math.sin(time * 2.1 + eb * 2.0) * 1.4;
-            ctx.fillStyle = 'rgba(254, 240, 138, 0.52)';
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(0, -1.5);
+            if (bay.creature === 'demon') {
+                drawQuadPodDemonFull(ctx, time, bay.seed);
+            } else {
+                drawQuadPodCerberusFull(ctx, time, bay.seed);
+            }
+            ctx.restore();
+
+            const fluidAlpha = 0.17 + 0.03 * Math.sin(time * 1.4 + bay.seed);
+            const fGrad = ctx.createLinearGradient(0, -34, 0, 36);
+            fGrad.addColorStop(0, `rgba(52, 211, 153, ${(fluidAlpha * 0.8).toFixed(3)})`);
+            fGrad.addColorStop(0.55, `rgba(16, 185, 129, ${(fluidAlpha * 1.1).toFixed(3)})`);
+            fGrad.addColorStop(1, `rgba(4, 47, 46, ${(fluidAlpha * 1.65).toFixed(3)})`);
+            ctx.fillStyle = fGrad;
+            ctx.fillRect(-15, -34, 30, 72);
+
+            const menY = -33.0 + Math.sin(time * 1.5 + bay.seed) * 0.6;
+            ctx.fillStyle = 'rgba(209, 250, 229, 0.22)';
+            ctx.fillRect(-15, -43, 30, menY + 43);
+            ctx.strokeStyle = 'rgba(167, 243, 208, 0.72)';
+            ctx.lineWidth = 0.85;
             ctx.beginPath();
-            ctx.arc(ex, ey, 1.0 - eProg * 0.35, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.moveTo(-13.5, menY - 0.9);
+            ctx.quadraticCurveTo(0, menY + 1.6, 13.5, menY - 0.9);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(110, 231, 183, 0.24)';
+            ctx.lineWidth = 0.65;
+            [0, 1, 2].forEach(sIdx => {
+                const flowY = ((time * 5.5 + sIdx * 22 + bay.seed * 7) % 60) - 28;
+                ctx.beginPath();
+                ctx.moveTo(-9 + sIdx * 4.5, flowY + 8);
+                ctx.quadraticCurveTo(-5.5 + sIdx * 5.0, flowY, -8.5 + sIdx * 4.5, flowY - 8);
+                ctx.stroke();
+            });
+
+            ctx.strokeStyle = `rgba(167, 243, 208, ${(0.22 + 0.12 * Math.sin(time * 1.7 + bay.seed)).toFixed(2)})`;
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            ctx.arc(Math.sin(time * 1.1 + bay.seed) * 2.0, 25, 8.2, 0.35, Math.PI - 0.35);
+            ctx.stroke();
+
+            [[-12.6, -12], [-12.8, 6], [12.6, -4], [12.7, 14], [-9, 27], [8.5, 28]].forEach(([wx, wy]) => {
+                ctx.fillStyle = 'rgba(209, 250, 229, 0.45)';
+                ctx.beginPath();
+                ctx.arc(wx, wy, 0.6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            for (let p = 0; p < 6; p++) {
+                const px = Math.sin(time * 0.45 + p * 1.7 + bay.seed) * 10;
+                const py = -25 + ((time * 3.2 + p * 11 + bay.seed * 5) % 56);
+                ctx.fillStyle = 'rgba(167, 243, 208, 0.42)';
+                ctx.fillRect(px, py, 1.0, 1.0);
+            }
+
+            [
+                { ox: -9.0, r: 1.8, off: 0.05 },
+                { ox: 9.5, r: 1.3, off: 0.22 },
+                { ox: -4.0, r: 2.1, off: 0.41 },
+                { ox: 6.5, r: 1.1, off: 0.58 },
+                { ox: -10.5, r: 1.25, off: 0.74 },
+                { ox: 3.5, r: 1.5, off: 0.89 }
+            ].forEach((b, idx) => {
+                const prog = ((time / 6.0) + b.off + bay.seed * 0.1) % 1;
+                const by = 32 - prog * 63;
+                const bxWob = b.ox + Math.sin(time * 1.8 + idx * 1.3) * 1.1;
+                ctx.fillStyle = 'rgba(167, 243, 208, 0.48)';
+                ctx.strokeStyle = 'rgba(236, 253, 245, 0.78)';
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.arc(bxWob, by, b.r * 0.62, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+            for (let eb = 0; eb < 2; eb++) {
+                const eProg = ((time / 4.8) + eb * 0.5 + bay.seed * 0.2) % 1;
+                const ey = 21 - eProg * 52;
+                const ex = Math.sin(time * 2.1 + eb * 2.0) * 1.4;
+                ctx.fillStyle = 'rgba(254, 240, 138, 0.52)';
+                ctx.beginPath();
+                ctx.arc(ex, ey, 1.0 - eProg * 0.35, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+            ctx.restore();
         }
 
-        ctx.restore();
-        ctx.restore();
-
-        // 2K) 玻璃高光带（沿 r=15 玻璃胶囊左侧弧线跟着弯：上圆弧 -> 左侧直边 -> 下圆弧）+ 玻璃胶囊亮描边
-        ctx.strokeStyle = 'rgba(224, 242, 254, 0.38)';
+        // 2K) 玻璃高光带 + 玻璃胶囊描边
+        ctx.strokeStyle = bay.empty ? 'rgba(224, 242, 254, 0.22)' : 'rgba(224, 242, 254, 0.38)';
         ctx.lineWidth = 1.3;
         ctx.lineCap = 'round';
         ctx.beginPath();
@@ -5446,76 +5448,109 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
         ctx.arc(bx, ycBotGlass, 12.4, Math.PI, Math.PI * 0.78, true);
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(167, 243, 208, 0.62)';
+        ctx.strokeStyle = bay.empty ? 'rgba(148, 163, 184, 0.45)' : 'rgba(167, 243, 208, 0.62)';
         ctx.lineWidth = 0.75;
         traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
         ctx.stroke();
 
-        // 2L) 顶板状态主灯（柔和呼吸光晕）+ 副遥测小蓝灯（错相轻闪）
-        const ledAmber = (bIdx === 3 && Math.sin(time * 1.6) > 0.25);
-        const ledPulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(time * 2.1 + bay.seed));
-        ctx.fillStyle = ledAmber
-            ? `rgba(245, 158, 11, ${(0.26 * ledPulse).toFixed(2)})`
-            : `rgba(16, 185, 129, ${(0.26 * ledPulse).toFixed(2)})`;
-        ctx.beginPath();
-        ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = ledAmber
-            ? (ledPulse > 0.75 ? '#fbbf24' : '#f59e0b')
-            : (ledPulse > 0.75 ? '#34d399' : '#059669');
-        ctx.beginPath();
-        ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-        ctx.beginPath();
-        ctx.arc(bx - 0.35, -45.85, 0.35, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 副遥测小蓝灯
-        const linkOn = Math.sin(time * 2.8 + bIdx * 1.55) > -0.1;
-        ctx.fillStyle = linkOn ? '#38bdf8' : '#0c4a6e';
-        ctx.beginPath();
-        ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 2M) 内置 20x8 蓝屏动态生命体征波形 + 脉动状态灯 (sx = bx - 10, sy = 38.0)
+        // 2L) 顶板状态主灯 + 副遥测小灯（空舱为主灯红闪告警 + 副灯离线暗红）
         const sx = bx - 10.0, sy = 38.0;
-        const scrPulse = 0.5 + 0.5 * Math.sin(time * 3.2 - bay.seed);
-        ctx.fillStyle = ledAmber
-            ? (scrPulse > 0.5 ? '#fbbf24' : '#b45309')
-            : (scrPulse > 0.4 ? '#34d399' : '#065f46');
-        ctx.beginPath();
-        ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
-        ctx.fill();
+        if (bay.empty) {
+            const alertBlink = 0.5 + 0.5 * Math.sin(time * 4.5);
+            ctx.fillStyle = `rgba(239, 68, 68, ${(0.18 + 0.32 * alertBlink).toFixed(2)})`;
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 0.7;
-        ctx.beginPath();
-        for (let wx = 1.2; wx <= 18.8; wx += 1.1) {
-            const phase = (wx * 0.55 - time * 3.2 + bay.seed) % (Math.PI * 2);
-            const spike = Math.exp(-Math.pow(Math.sin(phase), 2) * 12) * 1.25 * Math.cos(phase);
-            const wy = sy + 4.35 - spike;
-            if (wx === 1.2) ctx.moveTo(sx + wx, wy);
-            else ctx.lineTo(sx + wx, wy);
+            ctx.fillStyle = alertBlink > 0.45 ? '#ef4444' : '#991b1b';
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(bx - 0.35, -45.85, 0.32, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#450a0a';
+            ctx.beginPath();
+            ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2M) 空舱 20x8 小屏：红色闪烁灯 + 平直生命线
+            ctx.fillStyle = alertBlink > 0.45 ? '#ef4444' : '#7f1d1d';
+            ctx.beginPath();
+            ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+            ctx.lineWidth = 0.65;
+            ctx.beginPath();
+            ctx.moveTo(sx + 1.2, sy + 4.35);
+            ctx.lineTo(sx + 18.8, sy + 4.35);
+            ctx.stroke();
+
+            const flatDotX = sx + 1.2 + ((time * 8.0) % 17.6);
+            ctx.fillStyle = '#fecaca';
+            ctx.beginPath();
+            ctx.arc(flatDotX, sy + 4.35, 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            const ledPulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(time * 2.1 + bay.seed));
+            ctx.fillStyle = `rgba(16, 185, 129, ${(0.26 * ledPulse).toFixed(2)})`;
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = ledPulse > 0.75 ? '#34d399' : '#059669';
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+            ctx.beginPath();
+            ctx.arc(bx - 0.35, -45.85, 0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            const linkOn = Math.sin(time * 2.8 + bIdx * 1.55) > -0.1;
+            ctx.fillStyle = linkOn ? '#38bdf8' : '#0c4a6e';
+            ctx.beginPath();
+            ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2M) 内置 20x8 蓝屏动态生命体征波形 + 脉动状态灯
+            const scrPulse = 0.5 + 0.5 * Math.sin(time * 3.2 - bay.seed);
+            ctx.fillStyle = scrPulse > 0.4 ? '#34d399' : '#065f46';
+            ctx.beginPath();
+            ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 0.7;
+            ctx.beginPath();
+            for (let wx = 1.2; wx <= 18.8; wx += 1.1) {
+                const phase = (wx * 0.55 - time * 3.2 + bay.seed) % (Math.PI * 2);
+                const spike = Math.exp(-Math.pow(Math.sin(phase), 2) * 12) * 1.25 * Math.cos(phase);
+                const wy = sy + 4.35 - spike;
+                if (wx === 1.2) ctx.moveTo(sx + wx, wy);
+                else ctx.lineTo(sx + wx, wy);
+            }
+            ctx.stroke();
         }
-        ctx.stroke();
     });
 
-    // 3. 中央主控屏真实实时遥测内容 + 动态效果 (屏幕区域 x ∈ [-20, +20], y ∈ [53.6, 65.2])
+    // 3. 中央共用主控屏：橙色部分清空状态（代表 1 个舱清空，其余 4 个舱正常）
     const pressKpa = Math.round(104 + 2 * Math.sin(time * 0.9));
     const avgHr = Math.round(69 + 2.2 * Math.sin(time * 0.85));
     const avgO2 = Math.round(97 + 0.8 * Math.sin(time * 0.45));
     const tempC = (3.8 + 0.14 * Math.sin(time * 0.55)).toFixed(1);
 
-    // Row 1 (y = 55.2): 运行状态灯 + ABYSS-04 OK + 实时舱压 kPa
     const mainBeacon = 0.5 + 0.5 * Math.sin(time * 2.3);
-    ctx.fillStyle = `rgba(16, 185, 129, ${(0.25 + 0.35 * mainBeacon).toFixed(2)})`;
+    ctx.fillStyle = `rgba(245, 158, 11, ${(0.25 + 0.35 * mainBeacon).toFixed(2)})`;
     ctx.beginPath();
     ctx.arc(-18.2, 55.2, 1.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = mainBeacon > 0.4 ? '#34d399' : '#059669';
+    ctx.fillStyle = mainBeacon > 0.4 ? '#fbbf24' : '#d97706';
     ctx.beginPath();
     ctx.arc(-18.2, 55.2, 0.75, 0, Math.PI * 2);
     ctx.fill();
@@ -5523,24 +5558,22 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
     ctx.font = 'bold 2.4px monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#bae6fd';
-    ctx.fillText('ABYSS-04 OK', -16.6, 55.25);
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillText('ABYSS-05 4/5', -16.6, 55.25);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = '#fb923c';
     ctx.fillText(`${pressKpa}kPa`, 9.8, 55.25);
 
-    // Row 2 (y = 58.15): 实时平均心率/血氧 + 维生液温
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#6ee7b7';
+    ctx.fillStyle = '#fdba74';
     ctx.fillText(`HR:${avgHr} O2:${avgO2}%`, -18.8, 58.15);
 
     ctx.textAlign = 'right';
     ctx.fillStyle = '#fde68a';
     ctx.fillText(`${tempC}C`, 9.8, 58.15);
 
-    // Row 3 (y = 60.8): 实时滚动双路遥测波形 + 扫描游标点
-    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 0.65;
     ctx.beginPath();
     for (let lx = -18.6; lx <= 9.2; lx += 1.0) {
@@ -5554,27 +5587,28 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
 
     const scanProg = (time * 0.42) % 1;
     const scanX = -18.6 + scanProg * 27.8;
-    ctx.fillStyle = 'rgba(167, 243, 208, 0.85)';
+    ctx.fillStyle = 'rgba(253, 186, 116, 0.90)';
     ctx.beginPath();
     ctx.arc(scanX, 60.85, 0.7, 0, Math.PI * 2);
     ctx.fill();
 
-    // Row 4 (y = 63.6): 密闭锁定文字 + 4 舱实时独立微指示灯
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#34d399';
-    ctx.fillText('SEAL:LOCK', -18.8, 63.65);
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText('1-BAY CLR', -18.8, 63.65);
 
-    WEST_QUAD_POD_BAYS.forEach((bay, bIdx) => {
-        const lx = -1.8 + bIdx * 3.1;
-        const p = 0.5 + 0.5 * Math.sin(time * 2.5 + bay.seed);
-        const isWarn = (bIdx === 3 && Math.sin(time * 1.6) > 0.25);
-        ctx.fillStyle = isWarn ? '#f59e0b' : (p > 0.45 ? '#34d399' : '#047857');
+    WEST_PENTA_POD_BAYS.forEach((bay, bIdx) => {
+        const lx = -2.0 + bIdx * 2.4;
+        if (bay.empty) {
+            ctx.fillStyle = Math.sin(time * 4.5) > 0 ? '#ef4444' : '#7f1d1d';
+        } else {
+            const p = 0.5 + 0.5 * Math.sin(time * 2.5 + bay.seed);
+            ctx.fillStyle = p > 0.45 ? '#34d399' : '#047857';
+        }
         ctx.beginPath();
-        ctx.arc(lx, 63.55, 0.78, 0, Math.PI * 2);
+        ctx.arc(lx, 63.55, 0.74, 0, Math.PI * 2);
         ctx.fill();
     });
 
-    // 右侧生物危害警戒环呼吸光圈 + 右上角锁定指示点
     const bioAlpha = 0.24 + 0.24 * Math.sin(time * 2.2);
     ctx.strokeStyle = `rgba(245, 158, 11, ${bioAlpha.toFixed(2)})`;
     ctx.lineWidth = 0.6;
@@ -5582,7 +5616,7 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
     ctx.arc(15.2, 59.3, 3.6, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.fillStyle = Math.sin(time * 2.6) > 0 ? '#f59e0b' : '#78350f';
+    ctx.fillStyle = Math.sin(time * 2.6) > 0 ? '#fb923c' : '#7c2d12';
     ctx.beginPath();
     ctx.arc(18.5, 55.2, 0.65, 0, Math.PI * 2);
     ctx.fill();
@@ -5590,17 +5624,927 @@ function drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
     ctx.restore();
 }
 
-function drawWestQuadIncubationUnit(ctx, cx, cy, unitAngle, time = 0) {
-    drawWestQuadIncubationUnitStatic(ctx, cx, cy, unitAngle);
-    drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+function drawWestPentaIncubationUnit(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestPentaIncubationUnitStatic(ctx, cx, cy, unitAngle);
+    drawWestPentaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
 }
 
-function getWestQuadIncubationUnitObstacle() {
-    const cx = 612, cy = 959;
-    const unitAngle = Math.atan2(-0.617, 0.787);
+function getWestPentaIncubationUnitObstacle() {
+    const cx = 1018.93, cy = 712.87;
+    const unitAngle = 1.4048;
     const cosA = Math.cos(unitAngle);
     const sinA = Math.sin(unitAngle);
-    const halfW = 91; // 182 / 2
+    const halfW = 114; // 228 / 2
+    const halfH = 57;  // 114 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST PENTA INCUBATION UNIT',
+        displayName: 'ABYSS SPECIMEN PENTA-INCUBATOR',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 220 < camX || cx - 220 > camX + vw || cy + 220 < camY || cy - 220 > camY + vh) return;
+
+            const cacheKey = '__westPentaIncubationUnitV1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 360, ch = 360;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestPentaIncubationUnitStatic(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestPentaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
+const WEST_HEPTA_POD_BAYS = [
+    { idx: 1, bx: -138, creature: 'demon', spec: 'SPEC-01', name: '样本-01 · 恶魔', hr: 62, o2: 98, seed: 0.0, fillPct: 0.84, empty: false },
+    { idx: 2, bx: -92, creature: 'cerberus', spec: 'SPEC-02', name: '样本-02 · 地狱三头犬', hr: 74, o2: 96, seed: 1.6, fillPct: 0.90, empty: false },
+    { idx: 3, bx: -46, creature: 'demon', spec: 'SPEC-03', name: '样本-03 · 恶魔', hr: 58, o2: 99, seed: 3.1, fillPct: 0.78, empty: false },
+    { idx: 4, bx: 0, creature: 'cerberus', spec: 'SPEC-04', name: '样本-04 · 地狱三头犬', hr: 81, o2: 95, seed: 4.7, fillPct: 0.88, empty: false },
+    { idx: 5, bx: 46, creature: 'demon', spec: 'SPEC-05', name: '样本-05 · 恶魔', hr: 66, o2: 97, seed: 6.2, fillPct: 0.82, empty: false },
+    { idx: 6, bx: 92, creature: 'cerberus', spec: 'SPEC-06', name: '样本-06 · 地狱三头犬', hr: 77, o2: 96, seed: 7.8, fillPct: 0.86, empty: false },
+    { idx: 7, bx: 138, creature: null, spec: 'SPEC-07', name: '样本-07 · 空舱', hr: 0, o2: 0, seed: 9.4, fillPct: 0.0, empty: true }
+];
+
+function drawWestHeptaIncubationUnitStatic(ctx, cx, cy, unitAngle) {
+    // 0.7x 七联胶囊连体单元 318x114 @ (1108.81, 1227.69)，x ∈ [-159, +159], y ∈ [-57, +57]
+    const ycTop = -27.5;
+    const ycBotOuter = 29.5;
+    const ycBotGlass = 22.0;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面淡淡的溅洒渍 + 阴影 + Ø10 地漏 + 短排水管 (按半长 159 平移)
+    [
+        { x: -162, y: 26, rx: 11, ry: 7.5 },
+        { x: -45, y: 63, rx: 13, ry: 4.5 },
+        { x: 116, y: 62, rx: 9, ry: 3.8 }
+    ].forEach(sp => {
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+        ctx.beginPath();
+        ctx.ellipse(sp.x, sp.y, sp.rx, sp.ry, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-161, -58, 322, 118, 3) : ctx.rect(-161, -58, 322, 118);
+    ctx.fill();
+
+    // 地漏 Ø10 + 周围格栅 (按半长 159 平移 -> 局部 (-158.96, 25.26))
+    const drainX = -158.96, drainY = 25.26;
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(drainX - 6.5, drainY - 6.5, 13, 13);
+    ctx.strokeRect(drainX - 6.5, drainY - 6.5, 13, 13);
+    for (let gx = -4; gx <= 4; gx += 2.6) {
+        ctx.beginPath();
+        ctx.moveTo(drainX + gx, drainY - 5.5); ctx.lineTo(drainX + gx, drainY + 5.5);
+        ctx.stroke();
+    }
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    ctx.arc(drainX, drainY, 5.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.arc(drainX, drainY, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 排水管（基座西端向南/西接地漏）
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(-158, 50); ctx.lineTo(-164.5, 50); ctx.lineTo(-164.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.stroke();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(-158, 50); ctx.lineTo(-164.5, 50); ctx.lineTo(-164.5, drainY); ctx.lineTo(drainX, drainY);
+    ctx.stroke();
+
+    // 2. 顶部接墙短管区（移到东端 x = 146, 153.5，总高 12px 以内）
+    [
+        { x: 146, w: 5.0, c1: '#475569', c2: '#e2e8f0' },
+        { x: 153.5, w: 3.6, c1: '#334155', c2: '#94a3b8' }
+    ].forEach(p => {
+        ctx.fillStyle = p.c1;
+        ctx.fillRect(p.x - p.w / 2, -63.0, p.w, 7.0);
+        ctx.fillStyle = p.c2;
+        ctx.fillRect(p.x - p.w * 0.25, -63.0, p.w * 0.5, 7.0);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.65;
+        ctx.strokeRect(p.x - p.w / 2, -63.0, p.w, 7.0);
+    });
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(142.5, -60.2, 14, 2.0);
+    ctx.strokeRect(142.5, -60.2, 14, 2.0);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(141.5, -64.0, 22.0, 2.8);
+    ctx.strokeRect(141.5, -64.0, 22.0, 2.8);
+
+    // 3. 调平脚 (4个) + 共用基座条 (318x16 @ x ∈ [-159, +159], y ∈ [+41, +57])
+    [[-156, -56], [150, -56], [-156, 56], [150, 56]].forEach(([fx, fy]) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx, fy, 6, 2.5);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(fx + 1, fy + 0.5, 4, 1.5);
+    });
+
+    const baseGrad = ctx.createLinearGradient(0, 41, 0, 57);
+    baseGrad.addColorStop(0, '#475569');
+    baseGrad.addColorStop(0.55, '#94a3b8');
+    baseGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = baseGrad;
+    ctx.fillRect(-159, 41, 318, 16);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.0;
+    ctx.strokeRect(-159, 41, 318, 16);
+
+    // 基座条南沿警示斜纹 (y ∈ [53.8, 56.6])
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-157, 53.8, 314, 2.8);
+    ctx.clip();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-157, 53.8, 314, 2.8);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.2;
+    for (let sx = -160; sx <= 160; sx += 5) {
+        ctx.beginPath();
+        ctx.moveTo(sx, 56.8); ctx.lineTo(sx + 3.2, 53.6);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    // 基座南沿线缆束（2 根 1px 线 + 卡扣 + 格兰头，东端北折至接线法兰）
+    [57.8, 59.4].forEach((cyLine, idx) => {
+        const ox = idx === 0 ? 160.2 : 161.8;
+        ctx.strokeStyle = idx === 0 ? '#334155' : '#0284c7';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.moveTo(-152, cyLine);
+        ctx.lineTo(ox, cyLine);
+        ctx.lineTo(ox, -62.5);
+        ctx.stroke();
+    });
+    [
+        { x: -124, y: 56.8, w: 4.5, h: 3.4 },
+        { x: -23, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 114, y: 56.8, w: 4.5, h: 3.4 },
+        { x: 159.2, y: 4, w: 3.4, h: 4.5 }
+    ].forEach(cl => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(cl.x, cl.y, cl.w, cl.h);
+        ctx.strokeRect(cl.x, cl.y, cl.w, cl.h);
+    });
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(157.5, 55.2, 3.2, 3.6);
+
+    // 4. 顶部总管 (y ∈ [-56, -52])
+    const hdrGrad = ctx.createLinearGradient(0, -56, 0, -52);
+    hdrGrad.addColorStop(0, '#64748b');
+    hdrGrad.addColorStop(0.45, '#f1f5f9');
+    hdrGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = hdrGrad;
+    ctx.fillRect(-147, -56, 302, 4.0);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(-147, -56, 302, 4.0);
+
+    // 保温带
+    [-103, 103].forEach(ix => {
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(ix - 5, -56.4, 10, 4.8);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.5;
+        for (let sx = ix - 4; sx <= ix + 4; sx += 2) {
+            ctx.beginPath(); ctx.moveTo(sx, -56.4); ctx.lineTo(sx - 1, -51.6); ctx.stroke();
+        }
+    });
+
+    // 西端压力表 (Ø10 -> r=5 @ -154, -45) + 竖向液位条 (3x9.5 @ -158, -37.5)
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-147, -54); ctx.lineTo(-154, -54); ctx.lineTo(-154, -45);
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.arc(-154, -45, 5.0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.arc(-154, -45, 3.5, -0.4, 0.9);
+    ctx.stroke();
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('PRS', -154, -42.6);
+
+    ctx.fillStyle = '#041f18';
+    ctx.fillRect(-158, -37.5, 3, 9.5);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-158, -37.5, 3, 9.5);
+
+    // 5. 六道舱间 3px 隔断 + 6 个小手轮阀门 (Ø8 @ x = -115, -69, -23, +23, +69, +115) + 流量计
+    [-115, -69, -23, 23, 69, 115].forEach(dx => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(dx - 1.5, -44, 3.0, 85);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.7;
+        ctx.strokeRect(dx - 1.5, -44, 3.0, 85);
+
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.moveTo(dx - 4.5, 41); ctx.lineTo(dx + 4.5, 41); ctx.lineTo(dx, 35); ctx.closePath();
+        ctx.fill();
+
+        [-30, -14, 2, 18, 34].forEach(ry => {
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(dx, ry, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.fillStyle = '#082f49';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(dx - 1.5, -40, 3.0, 9);
+        ctx.strokeRect(dx - 1.5, -40, 3.0, 9);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(dx - 2.5, -56.5, 5, 5.5);
+        drawQuadPodSmallValve(ctx, dx, -54);
+    });
+
+    // 6. 七舱胶囊主体（1–6 号有液体与生物；7 号最下面为空舱：无液体、无生物、释放闸颠倒、红警屏幕）
+    WEST_HEPTA_POD_BAYS.forEach(bay => {
+        const bx = bay.bx;
+
+        // 3px 短支管 + 接口环 + 泄压阀 + 加液口
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(bx - 1.5, -52.5, 3, 5.0);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.6;
+        ctx.strokeRect(bx - 1.5, -52.5, 3, 5.0);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(bx - 3.5, -49.6, 7, 2.0);
+        ctx.strokeRect(bx - 3.5, -49.6, 7, 2.0);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(bx - 14.5, -50.2, 2.2, 3.8);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(bx - 15.0, -51.2, 3.2, 1.4);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(bx + 12.2, -49.5, 2.6, 2.8);
+        ctx.fillStyle = bay.empty ? '#ef4444' : '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(bx + 13.5, -50.2, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 6A) 第 1 层：6px 厚实心不锈钢外壳胶囊 (r=21)
+        const shellGrad = ctx.createLinearGradient(bx - 21, 0, bx + 21, 0);
+        shellGrad.addColorStop(0, '#334155');
+        shellGrad.addColorStop(0.16, '#94a3b8');
+        shellGrad.addColorStop(0.32, '#e2e8f0');
+        shellGrad.addColorStop(0.68, '#94a3b8');
+        shellGrad.addColorStop(0.86, '#475569');
+        shellGrad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = shellGrad;
+        traceStadiumPath(ctx, bx, ycTop, ycBotOuter, 21);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.15;
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.48)';
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 19.7, Math.PI * 0.96, Math.PI * 1.75, false);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(bx - 19.7, ycTop); ctx.lineTo(bx - 19.7, ycBotOuter);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(15, 23, 42, 0.55)';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(bx + 19.7, ycTop); ctx.lineTo(bx + 19.7, ycBotOuter);
+        ctx.arc(bx, ycBotOuter, 19.7, 0, Math.PI * 0.85, false);
+        ctx.stroke();
+
+        [-14, 4, 20].forEach(ribY => {
+            [-18.0, 18.0].forEach(rx => {
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(bx + rx, ribY, 0.85, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#cbd5e1';
+                ctx.beginPath();
+                ctx.arc(bx + rx - 0.25, ribY - 0.25, 0.35, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        });
+
+        ctx.save();
+        traceStadiumPath(ctx, bx, ycTop, ycBotOuter, 20.4);
+        ctx.clip();
+        const capGrad = ctx.createLinearGradient(0, -48.5, 0, -40);
+        capGrad.addColorStop(0, '#f1f5f9');
+        capGrad.addColorStop(0.55, '#94a3b8');
+        capGrad.addColorStop(1, '#475569');
+        ctx.fillStyle = capGrad;
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 20.5, Math.PI, 0, false);
+        ctx.quadraticCurveTo(bx, -41.0, bx - 20.5, -42.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.65;
+        ctx.stroke();
+        for (let b = 0; b < 6; b++) {
+            const ba = Math.PI * (1.14 + b * 0.144);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(bx + Math.cos(ba) * 18.2, ycTop + Math.sin(ba) * 18.2, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        ctx.fillStyle = '#1e293b';
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.8);
+        ctx.fill();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.65;
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 16.0);
+        ctx.stroke();
+
+        // 6B) 第 2 层：玻璃胶囊 (r=15)
+        ctx.fillStyle = bay.empty ? '#04080a' : '#031712';
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
+        ctx.fill();
+        ctx.strokeStyle = bay.empty ? '#64748b' : '#6ee7b7';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+
+        // 6C) 第 3 层：空舱无液体（暗色干燥内腔）；其余舱保持翡翠营养液底衬 (r=14)
+        if (bay.empty) {
+            const dryGrad = ctx.createLinearGradient(bx - 14, 0, bx + 14, 0);
+            dryGrad.addColorStop(0, '#020608');
+            dryGrad.addColorStop(0.5, '#0b1215');
+            dryGrad.addColorStop(1, '#020608');
+            ctx.fillStyle = dryGrad;
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+            ctx.lineWidth = 0.5;
+            for (let ty = -24; ty <= 18; ty += 10.5) {
+                ctx.beginPath();
+                ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
+                ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
+                ctx.stroke();
+            }
+        } else {
+            const liqGrad = ctx.createLinearGradient(0, -41.5, 0, 36);
+            liqGrad.addColorStop(0, '#065f46');
+            liqGrad.addColorStop(0.5, '#044736');
+            liqGrad.addColorStop(1, '#02221a');
+            ctx.fillStyle = liqGrad;
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.18)';
+            ctx.lineWidth = 0.5;
+            for (let ty = -24; ty <= 18; ty += 10.5) {
+                ctx.beginPath();
+                ctx.moveTo(bx - 13.0, ty); ctx.lineTo(bx - 10.2, ty);
+                ctx.moveTo(bx + 10.2, ty); ctx.lineTo(bx + 13.0, ty);
+                ctx.stroke();
+            }
+        }
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(bx + 17.5, 6, 4.2, 2.0);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(bx + 20.4, 4.6, 1.4, 1.4);
+
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(bx - 9.5, -44.2); ctx.lineTo(bx - 9.5, -27);
+        ctx.stroke();
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.arc(bx - 9.5, -44.6, 1.85, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 6D) 内置底部小屏 20x8（空舱显示红/橙警框 + SPEC-07 + EMPTY；其余显示蓝框 + STABLE）
+        const sx = bx - 10.0, sy = 38.0;
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
+        ctx.strokeRect(sx - 0.8, sy - 0.6, 21.6, 9.2);
+
+        ctx.fillStyle = bay.empty ? '#26080a' : '#06263d';
+        ctx.fillRect(sx, sy, 20, 8);
+        ctx.strokeStyle = bay.empty ? '#ef4444' : '#38bdf8';
+        ctx.lineWidth = 0.7;
+        ctx.strokeRect(sx, sy, 20, 8);
+
+        ctx.font = 'bold 2.4px monospace';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = bay.empty ? '#fecaca' : '#bae6fd';
+        ctx.fillText(bay.spec, sx + 0.9, sy + 1.85);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = bay.empty ? '#f87171' : '#34d399';
+        ctx.fillText(bay.empty ? 'EMPTY' : 'STABLE', bx, sy + 6.55);
+
+        // 6E) 胶囊颈部倒 C 手动释放闸（7 号空舱上下颠倒，弧顶朝向舱体侧）
+        drawQuadPodReleaseGate(ctx, bx, -51.6, !!bay.empty);
+    });
+
+    // 7. UNIT-07 框架小标牌 + 中央共用总控屏 (40x12)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-11.5, 48.2, 23, 3.8);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText('UNIT-07', 0, 50.1);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-21.5, 52.4, 43, 14.0);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-21.5, 52.4, 43, 14.0);
+
+    ctx.fillStyle = '#1f1203';
+    ctx.fillRect(-20, 53.6, 40, 11.6);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.75;
+    ctx.strokeRect(-20, 53.6, 40, 11.6);
+
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath();
+    ctx.moveTo(-19.5, 56.6); ctx.lineTo(19.5, 56.6);
+    ctx.moveTo(10.6, 54.0); ctx.lineTo(10.6, 64.8);
+    ctx.stroke();
+
+    const bhX = 15.2, bhY = 59.3;
+    ctx.strokeStyle = '#fb923c';
+    ctx.lineWidth = 0.65;
+    [0, 1, 2].forEach(k => {
+        const a = -Math.PI / 2 + k * (Math.PI * 2 / 3);
+        ctx.beginPath();
+        ctx.arc(bhX + Math.cos(a) * 1.35, bhY + Math.sin(a) * 1.35, 1.45, 0, Math.PI * 2);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1f1203';
+    ctx.beginPath();
+    ctx.arc(bhX, bhY, 0.85, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText('BIO-7', 15.2, 63.7);
+
+    ctx.restore();
+}
+
+function drawWestHeptaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
+    const ycTop = -27.5;
+    const ycBotGlass = 22.0;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 西端压力表指针 (@ -154, -45) + 竖向液位条 (@ -158, -37.5)
+    const prsAngle = -0.5 + 0.16 * Math.sin(time * 1.8);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(-154, -45);
+    ctx.lineTo(-154 + Math.cos(prsAngle) * 3.4, -45 + Math.sin(prsAngle) * 3.4);
+    ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.arc(-154, -45, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+
+    const prsLedAlpha = 0.5 + 0.45 * Math.sin(time * 2.2);
+    ctx.fillStyle = `rgba(52, 211, 153, ${prsLedAlpha.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(-150.8, -48.3, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    const lvlRatio = 0.68 + 0.12 * Math.sin(time * 1.2);
+    const lvlH = 8.0 * lvlRatio;
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-157.4, -28.6 - lvlH, 1.8, lvlH);
+
+    // 1B. 六道隔断上的流量计动态浮标 + 顶部联机指示灯
+    [-115, -69, -23, 23, 69, 115].forEach((dx, fIdx) => {
+        const bobY = -35.5 + Math.sin(time * 1.9 + fIdx * 1.1) * 2.1;
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(dx, bobY, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+
+        const partPulse = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(time * 2.4 + fIdx * 1.8));
+        ctx.fillStyle = `rgba(56, 189, 248, ${partPulse.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(dx, -42.4, 0.75, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 2. 七舱胶囊玻璃液体动态层（7 号空舱无液体、无生物；顶灯红警闪烁、单舱屏平直线）
+    WEST_HEPTA_POD_BAYS.forEach((bay, bIdx) => {
+        const bx = bay.bx;
+
+        if (!bay.empty) {
+            ctx.save();
+            traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 14);
+            ctx.clip();
+
+            ctx.save();
+            ctx.translate(bx, 0);
+
+            ctx.fillStyle = 'rgba(2, 24, 18, 0.72)';
+            ctx.beginPath();
+            ctx.arc(0, ycBotGlass, 14, 0.15, Math.PI - 0.15);
+            ctx.closePath();
+            ctx.fill();
+            [-7, -2.5, 2, 6, 9].forEach((gx, k) => {
+                ctx.fillStyle = (k % 2 === 0) ? '#064e3b' : '#115e59';
+                ctx.beginPath();
+                ctx.arc(gx, 31.2 + (k % 3) * 0.7, 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.save();
+            ctx.translate(0, 31.5);
+            ctx.rotate(time * 1.2 + bay.seed);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 0.45;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(-2.2, -0.65, 4.4, 1.3, 0.65) : ctx.rect(-2.2, -0.65, 4.4, 1.3);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(0, -1.5);
+            if (bay.creature === 'demon') {
+                drawQuadPodDemonFull(ctx, time, bay.seed);
+            } else {
+                drawQuadPodCerberusFull(ctx, time, bay.seed);
+            }
+            ctx.restore();
+
+            const fluidAlpha = 0.17 + 0.03 * Math.sin(time * 1.4 + bay.seed);
+            const fGrad = ctx.createLinearGradient(0, -34, 0, 36);
+            fGrad.addColorStop(0, `rgba(52, 211, 153, ${(fluidAlpha * 0.8).toFixed(3)})`);
+            fGrad.addColorStop(0.55, `rgba(16, 185, 129, ${(fluidAlpha * 1.1).toFixed(3)})`);
+            fGrad.addColorStop(1, `rgba(4, 47, 46, ${(fluidAlpha * 1.65).toFixed(3)})`);
+            ctx.fillStyle = fGrad;
+            ctx.fillRect(-15, -34, 30, 72);
+
+            const menY = -33.0 + Math.sin(time * 1.5 + bay.seed) * 0.6;
+            ctx.fillStyle = 'rgba(209, 250, 229, 0.22)';
+            ctx.fillRect(-15, -43, 30, menY + 43);
+            ctx.strokeStyle = 'rgba(167, 243, 208, 0.72)';
+            ctx.lineWidth = 0.85;
+            ctx.beginPath();
+            ctx.moveTo(-13.5, menY - 0.9);
+            ctx.quadraticCurveTo(0, menY + 1.6, 13.5, menY - 0.9);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(110, 231, 183, 0.24)';
+            ctx.lineWidth = 0.65;
+            [0, 1, 2].forEach(sIdx => {
+                const flowY = ((time * 5.5 + sIdx * 22 + bay.seed * 7) % 60) - 28;
+                ctx.beginPath();
+                ctx.moveTo(-9 + sIdx * 4.5, flowY + 8);
+                ctx.quadraticCurveTo(-5.5 + sIdx * 5.0, flowY, -8.5 + sIdx * 4.5, flowY - 8);
+                ctx.stroke();
+            });
+
+            ctx.strokeStyle = `rgba(167, 243, 208, ${(0.22 + 0.12 * Math.sin(time * 1.7 + bay.seed)).toFixed(2)})`;
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            ctx.arc(Math.sin(time * 1.1 + bay.seed) * 2.0, 25, 8.2, 0.35, Math.PI - 0.35);
+            ctx.stroke();
+
+            [[-12.6, -12], [-12.8, 6], [12.6, -4], [12.7, 14], [-9, 27], [8.5, 28]].forEach(([wx, wy]) => {
+                ctx.fillStyle = 'rgba(209, 250, 229, 0.45)';
+                ctx.beginPath();
+                ctx.arc(wx, wy, 0.6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            for (let p = 0; p < 6; p++) {
+                const px = Math.sin(time * 0.45 + p * 1.7 + bay.seed) * 10;
+                const py = -25 + ((time * 3.2 + p * 11 + bay.seed * 5) % 56);
+                ctx.fillStyle = 'rgba(167, 243, 208, 0.42)';
+                ctx.fillRect(px, py, 1.0, 1.0);
+            }
+
+            [
+                { ox: -9.0, r: 1.8, off: 0.05 },
+                { ox: 9.5, r: 1.3, off: 0.22 },
+                { ox: -4.0, r: 2.1, off: 0.41 },
+                { ox: 6.5, r: 1.1, off: 0.58 },
+                { ox: -10.5, r: 1.25, off: 0.74 },
+                { ox: 3.5, r: 1.5, off: 0.89 }
+            ].forEach((b, idx) => {
+                const prog = ((time / 6.0) + b.off + bay.seed * 0.1) % 1;
+                const by = 32 - prog * 63;
+                const bxWob = b.ox + Math.sin(time * 1.8 + idx * 1.3) * 1.1;
+                ctx.fillStyle = 'rgba(167, 243, 208, 0.48)';
+                ctx.strokeStyle = 'rgba(236, 253, 245, 0.78)';
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.arc(bxWob, by, b.r * 0.62, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+            for (let eb = 0; eb < 2; eb++) {
+                const eProg = ((time / 4.8) + eb * 0.5 + bay.seed * 0.2) % 1;
+                const ey = 21 - eProg * 52;
+                const ex = Math.sin(time * 2.1 + eb * 2.0) * 1.4;
+                ctx.fillStyle = 'rgba(254, 240, 138, 0.52)';
+                ctx.beginPath();
+                ctx.arc(ex, ey, 1.0 - eProg * 0.35, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+            ctx.restore();
+        }
+
+        // 2K) 玻璃高光带 + 玻璃胶囊描边
+        ctx.strokeStyle = bay.empty ? 'rgba(224, 242, 254, 0.22)' : 'rgba(224, 242, 254, 0.38)';
+        ctx.lineWidth = 1.3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(bx, ycTop, 12.4, Math.PI * 1.20, Math.PI, true);
+        ctx.lineTo(bx - 12.4, ycBotGlass);
+        ctx.arc(bx, ycBotGlass, 12.4, Math.PI, Math.PI * 0.78, true);
+        ctx.stroke();
+
+        ctx.strokeStyle = bay.empty ? 'rgba(148, 163, 184, 0.45)' : 'rgba(167, 243, 208, 0.62)';
+        ctx.lineWidth = 0.75;
+        traceStadiumPath(ctx, bx, ycTop, ycBotGlass, 15);
+        ctx.stroke();
+
+        // 2L) 顶板状态主灯 + 副遥测小灯（空舱为主灯红闪告警 + 副灯熄灭）
+        const sx = bx - 10.0, sy = 38.0;
+        if (bay.empty) {
+            const alertBlink = 0.5 + 0.5 * Math.sin(time * 4.5);
+            ctx.fillStyle = `rgba(239, 68, 68, ${(0.18 + 0.32 * alertBlink).toFixed(2)})`;
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = alertBlink > 0.45 ? '#ef4444' : '#991b1b';
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(bx - 0.35, -45.85, 0.32, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 副遥测灯离线暗红
+            ctx.fillStyle = '#450a0a';
+            ctx.beginPath();
+            ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2M) 空舱 20x8 小屏：红色闪烁灯 + 平直生命线（无心跳峰）
+            ctx.fillStyle = alertBlink > 0.45 ? '#ef4444' : '#7f1d1d';
+            ctx.beginPath();
+            ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+            ctx.lineWidth = 0.65;
+            ctx.beginPath();
+            ctx.moveTo(sx + 1.2, sy + 4.35);
+            ctx.lineTo(sx + 18.8, sy + 4.35);
+            ctx.stroke();
+
+            const flatDotX = sx + 1.2 + ((time * 8.0) % 17.6);
+            ctx.fillStyle = '#fecaca';
+            ctx.beginPath();
+            ctx.arc(flatDotX, sy + 4.35, 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            const ledPulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(time * 2.1 + bay.seed));
+            ctx.fillStyle = `rgba(16, 185, 129, ${(0.26 * ledPulse).toFixed(2)})`;
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = ledPulse > 0.75 ? '#34d399' : '#059669';
+            ctx.beginPath();
+            ctx.arc(bx, -45.5, 1.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+            ctx.beginPath();
+            ctx.arc(bx - 0.35, -45.85, 0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            const linkOn = Math.sin(time * 2.8 + bIdx * 1.55) > -0.1;
+            ctx.fillStyle = linkOn ? '#38bdf8' : '#0c4a6e';
+            ctx.beginPath();
+            ctx.arc(bx + 5.2, -45.5, 0.72, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2M) 内置 20x8 蓝屏动态生命体征波形 + 脉动状态灯
+            const scrPulse = 0.5 + 0.5 * Math.sin(time * 3.2 - bay.seed);
+            ctx.fillStyle = scrPulse > 0.4 ? '#34d399' : '#065f46';
+            ctx.beginPath();
+            ctx.arc(sx + 18.2, sy + 1.85, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 0.7;
+            ctx.beginPath();
+            for (let wx = 1.2; wx <= 18.8; wx += 1.1) {
+                const phase = (wx * 0.55 - time * 3.2 + bay.seed) % (Math.PI * 2);
+                const spike = Math.exp(-Math.pow(Math.sin(phase), 2) * 12) * 1.25 * Math.cos(phase);
+                const wy = sy + 4.35 - spike;
+                if (wx === 1.2) ctx.moveTo(sx + wx, wy);
+                else ctx.lineTo(sx + wx, wy);
+            }
+            ctx.stroke();
+        }
+    });
+
+    // 3. 中央主控屏：橙色部分清空状态（代表 1 个舱清空，其余 6 个舱正常）
+    const pressKpa = Math.round(104 + 2 * Math.sin(time * 0.9));
+    const avgHr = Math.round(70 + 2.2 * Math.sin(time * 0.85));
+    const avgO2 = Math.round(97 + 0.8 * Math.sin(time * 0.45));
+    const tempC = (3.8 + 0.14 * Math.sin(time * 0.55)).toFixed(1);
+
+    const mainBeacon = 0.5 + 0.5 * Math.sin(time * 2.3);
+    ctx.fillStyle = `rgba(245, 158, 11, ${(0.25 + 0.35 * mainBeacon).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(-18.2, 55.2, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = mainBeacon > 0.4 ? '#fbbf24' : '#d97706';
+    ctx.beginPath();
+    ctx.arc(-18.2, 55.2, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillText('ABYSS-07 6/7', -16.6, 55.25);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText(`${pressKpa}kPa`, 9.8, 55.25);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fdba74';
+    ctx.fillText(`HR:${avgHr} O2:${avgO2}%`, -18.8, 58.15);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fde68a';
+    ctx.fillText(`${tempC}C`, 9.8, 58.15);
+
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    for (let lx = -18.6; lx <= 9.2; lx += 1.0) {
+        const ph = (lx * 0.45 - time * 3.0) % (Math.PI * 2);
+        const amp = Math.exp(-Math.pow(Math.sin(ph), 2) * 10) * 1.15 * Math.cos(ph);
+        const ly = 60.85 - amp;
+        if (lx === -18.6) ctx.moveTo(lx, ly);
+        else ctx.lineTo(lx, ly);
+    }
+    ctx.stroke();
+
+    const scanProg = (time * 0.42) % 1;
+    const scanX = -18.6 + scanProg * 27.8;
+    ctx.fillStyle = 'rgba(253, 186, 116, 0.90)';
+    ctx.beginPath();
+    ctx.arc(scanX, 60.85, 0.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText('1-BAY CLR', -18.8, 63.65);
+
+    WEST_HEPTA_POD_BAYS.forEach((bay, bIdx) => {
+        const lx = -2.2 + bIdx * 1.65;
+        if (bay.empty) {
+            ctx.fillStyle = Math.sin(time * 4.5) > 0 ? '#ef4444' : '#7f1d1d';
+        } else {
+            const p = 0.5 + 0.5 * Math.sin(time * 2.5 + bay.seed);
+            ctx.fillStyle = p > 0.45 ? '#34d399' : '#047857';
+        }
+        ctx.beginPath();
+        ctx.arc(lx, 63.55, 0.68, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    const bioAlpha = 0.24 + 0.24 * Math.sin(time * 2.2);
+    ctx.strokeStyle = `rgba(245, 158, 11, ${bioAlpha.toFixed(2)})`;
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(15.2, 59.3, 3.6, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = Math.sin(time * 2.6) > 0 ? '#fb923c' : '#7c2d12';
+    ctx.beginPath();
+    ctx.arc(18.5, 55.2, 0.65, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawWestHeptaIncubationUnit(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestHeptaIncubationUnitStatic(ctx, cx, cy, unitAngle);
+    drawWestHeptaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+}
+
+function getWestHeptaIncubationUnitObstacle() {
+    const cx = 1110.88, cy = 1239.52;
+    const unitAngle = 1.3977;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 159; // 318 / 2
     const halfH = 57; // 114 / 2
 
     const worldPts = [
@@ -5618,20 +6562,20 @@ function getWestQuadIncubationUnitObstacle() {
         cx: cx,
         cy: cy,
         points: worldPts,
-        label: 'WEST QUAD INCUBATION UNIT',
-        displayName: 'ABYSS SPECIMEN QUAD-INCUBATOR',
+        label: 'WEST HEPTA INCUBATION UNIT',
+        displayName: 'ABYSS SPECIMEN HEPTA-INCUBATOR',
         hideLabel: true,
         draw: (ctx) => {
             const camX = Math.max(0, window.cameraX || 0);
             const camY = Math.max(0, window.cameraY || 0);
             const vw = window.innerWidth || 1920;
             const vh = window.innerHeight || 1080;
-            if (cx + 200 < camX || cx - 200 > camX + vw || cy + 200 < camY || cy - 200 > camY + vh) return;
+            if (cx + 260 < camX || cx - 260 > camX + vw || cy + 260 < camY || cy - 260 > camY + vh) return;
 
-            const cacheKey = '__westQuadIncubationUnitV7_' + cx + '_' + cy;
+            const cacheKey = '__westHeptaIncubationUnitV1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
                 const SS = 4;
-                const cw = 340, ch = 340;
+                const cw = 420, ch = 420;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
                 off.height = ch * SS;
@@ -5639,7 +6583,7 @@ function getWestQuadIncubationUnitObstacle() {
                 octx.save();
                 octx.scale(SS, SS);
                 octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestQuadIncubationUnitStatic(octx, cx, cy, unitAngle);
+                drawWestHeptaIncubationUnitStatic(octx, cx, cy, unitAngle);
                 octx.restore();
                 window[cacheKey] = { canvas: off, w: cw, h: ch };
             }
@@ -5649,7 +6593,7 @@ function getWestQuadIncubationUnitObstacle() {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
-            drawWestQuadIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
+            drawWestHeptaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
         }
     };
@@ -5954,18 +6898,19 @@ const LEVEL_7_TEST = {
             // (已删除 R2-R，替换为圆形控制台)
             // (已删除 R3-L/R3-R，替换为三联方形隔间控制台，2026-11-05)
 
-            // J. 西侧三角房 · 0.7x 法医解剖室设施：解剖台 (140x45 @ 550,1300) + 4 托盘 (30x20，边距 ~4px) + 推车/水桶/踏凳
-            getWestAutopsyTableObstacle(550, 1300),
-            getWestAutopsyTrayObstacle(495, 1264, 'hearts', 'AUTOPSY TRAY NW (HEARTS)'),
-            getWestAutopsyTrayObstacle(605, 1264, 'tools', 'AUTOPSY TRAY NE (TOOLS)'),
-            getWestAutopsyTrayObstacle(495, 1337, 'organs', 'AUTOPSY TRAY SW (ORGANS)'),
-            getWestAutopsyTrayObstacle(605, 1337, 'intestines', 'AUTOPSY TRAY SE (INTESTINES)'),
-            getWestToolCartObstacle(420, 1300),
-            getWestBucketObstacle(470, 1365),
-            getWestStepStoolObstacle(640, 1360),
+            // J. 西侧三角房 · 0.7x 法医解剖室设施：向右侧斜上方挪至 (640,1085) 靠近房间中央与上方通道，不挡通道出口
+            getWestAutopsyTableObstacle(640, 1085),
+            getWestAutopsyTrayObstacle(585, 1049, 'hearts', 'AUTOPSY TRAY NW (HEARTS)'),
+            getWestAutopsyTrayObstacle(695, 1049, 'tools', 'AUTOPSY TRAY NE (TOOLS)'),
+            getWestAutopsyTrayObstacle(585, 1122, 'organs', 'AUTOPSY TRAY SW (ORGANS)'),
+            getWestAutopsyTrayObstacle(695, 1122, 'intestines', 'AUTOPSY TRAY SE (INTESTINES)'),
+            getWestToolCartObstacle(510, 1085),
+            getWestBucketObstacle(560, 1150),
+            getWestStepStoolObstacle(730, 1145),
 
-            // K. 西侧三角房 · 0.7x 四联胶囊型培养舱 (182x114 旋转矩形 solid @ 612,959)
-            getWestQuadIncubationUnitObstacle()
+            // K. 西侧三角房 · 0.7x 五联胶囊型培养舱 (228x114 旋转矩形 solid @ 1018.93,712.87) + 七联胶囊型培养舱 (318x114 旋转矩形 solid @ 1110.88,1239.52)
+            getWestPentaIncubationUnitObstacle(),
+            getWestHeptaIncubationUnitObstacle()
         ];
 
         // =====================================================================
@@ -6573,13 +7518,6 @@ const LEVEL_7_TEST = {
                     ctx.save();
                     ctx.strokeStyle = '#10b981';
 
-                    // 4A. 西侧三角房间大圆弧
-                    ctx.beginPath();
-                    ctx.lineWidth = 3;
-                    ctx.moveTo(1142, 985);
-                    ctx.bezierCurveTo(1010, 1070, 1010, 1330, 1215, 1415);
-                    ctx.stroke();
-
                     // 4B. 东侧三角房间大圆弧
                     ctx.beginPath();
                     ctx.lineWidth = 3;
@@ -6722,13 +7660,12 @@ const LEVEL_7_TEST = {
             getTripleCubicleWorkstation(1430, 1675, 0, 1.0, 'L7 LEFT TRIPLE CUBICLE'),
             getTripleCubicleWorkstation(1770, 1675, 0, 1.0, 'L7 RIGHT TRIPLE CUBICLE'),
             // =========================================================
-            // 6. 服务器集群 ×1 (移植自 Level 8，2026-11-05)
-            // 房间最底下贴墙，scale 0.85
+            // 6. 服务器集群 ×3 (贴各自对应墙体布置，scale 0.85)
             // =========================================================
-            getServerCluster(1600, 1900, 0, 0.85, 'L7 SERVER CLUSTER'),
-            // 两侧斜墙各一个，贴墙旋转（2026-11-05）
-            getServerCluster(1252, 1200, 4.5350, 0.85, 'L7 LEFT SERVER'),
-            getServerCluster(1948, 1200, 1.7480, 0.85, 'L7 RIGHT SERVER'),
+            getServerCluster(1600, 1910.5, 0, 0.85, 'L7 SERVER CLUSTER'),
+            // 两侧斜墙各一个，沿墙平行并贴墙布置
+            getServerCluster(1232.57, 1203.4, 4.5393, 0.85, 'L7 LEFT SERVER'),
+            getServerCluster(1967.43, 1203.4, 1.7439, 0.85, 'L7 RIGHT SERVER'),
             // 7. 斜向缓冲通道系统对象（长 560×0.7=392px，宽 122×0.75=91.5px，转角 2.4633 平行左上外墙）
             {
                 id: 'buffer_corridor_1',
@@ -7068,8 +8005,8 @@ const LEVEL_7_TEST = {
             c2DeconLiqS,
             getAirtightBlastDoor('airtight_door_3', c2Door3Pos.x, c2Door3Pos.y, c2Angle, false),
             getAirtightBlastDoor('airtight_door_4', c2Door4Pos.x, c2Door4Pos.y, c2Angle, true),
-            // 12. 西侧三角房无碰撞地面盘管 (直径 24 @ 680,1330)
-            getWestCoiledHoseProp(680, 1330)
+            // 12. 西侧三角房无碰撞地面盘管 (直径 24，随解剖组移至 750,1110)
+            getWestCoiledHoseProp(750, 1110)
         );
 
         // =====================================================================
