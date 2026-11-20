@@ -6599,6 +6599,2712 @@ function getWestHeptaIncubationUnitObstacle() {
     };
 }
 
+// =========================================================================
+// Level 8 · 西侧三角房 · 长试验台 04：底墙西段仪器分析台 (330x50，静态+动态分离)
+// 中心 (407.82, 1326.69)，长轴沿底墙内缘 (0.5824 rad)，占沿墙 120–450
+// 台身南缘距底墙内壁 3px（墙面管线/插座/挂钩贴墙至 +28），6 台仪器/耗材各不相同
+// =========================================================================
+function drawWestBench04Static(ctx, cx, cy, unitAngle) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面投影阴影（严格限定在房间与墙体间隙范围内）
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-167, -27.5, 334, 54.5, 2.5) : ctx.rect(-167, -27.5, 334, 54.5);
+    ctx.fill();
+
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2 + 实验记录板 ×1（贴底墙 y ∈ [+24.6, +28.0]）
+    // 2A) 水管（银白，y = +27.3）与气管（深黑，y = +25.9）及固定卡扣
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-162, 27.3); ctx.lineTo(162, 27.3);
+    ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-162, 27.0); ctx.lineTo(162, 27.0);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    ctx.moveTo(-162, 25.9); ctx.lineTo(162, 25.9);
+    ctx.stroke();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath();
+    ctx.moveTo(-162, 25.7); ctx.lineTo(162, 25.7);
+    ctx.stroke();
+
+    [-132, -66, 0, 66, 132].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, 24.8, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, 24.8, 2.4, 3.2);
+    });
+    // 气管黄铜截止小阀（x = +12）
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(10.5, 25.1, 3.0, 1.6);
+
+    // 2B) 墙面插座排 5 个（两孔、三孔、带开关、带指示灯、带 USB 各不相同）
+    [
+        { x: -146, kind: '2pin' },
+        { x: -86,  kind: '3pin' },
+        { x: -24,  kind: 'switch' },
+        { x: 46,   kind: 'led' },
+        { x: 122,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, 25.6, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, 25.6, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, 25.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, 26.3, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, 26.3, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, 25.4, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, 25.6, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(out.x - 2.4, 26.2, 0.75, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, 25.6, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, 25.5, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, 25.5, 2.0, 1.4);
+        }
+    });
+
+    // 2C) 墙面挂钩 2 个（左挂蓝手套、右挂擦拭抹布）
+    // 左挂钩 (-157, 25.4) + 折叠丁腈手套
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-158.2, 24.7, 2.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-158.6, 25.6); ctx.lineTo(-155.2, 25.6);
+    ctx.lineTo(-154.6, 27.9); ctx.lineTo(-156.2, 27.9);
+    ctx.lineTo(-157.0, 26.8); ctx.lineTo(-157.8, 27.9);
+    ctx.lineTo(-159.2, 27.9); ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 右挂钩 (+158, 25.4) + 折叠抹布
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(156.8, 24.7, 2.4, 2.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(155.4, 25.4, 5.2, 2.6, 0.7) : ctx.rect(155.4, 25.4, 5.2, 2.6);
+    ctx.fill();
+    ctx.stroke();
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（台前缘 y ∈ [-25.0, -23.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-129, -64, 0, 64, 129].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 22, -24.7); ctx.lineTo(bx + 22, -23.3);
+        ctx.moveTo(bx - 22, -23.3); ctx.lineTo(bx + 22, -24.7);
+        ctx.stroke();
+    });
+    // 踢脚护板
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-162, -24.3, 324, 1.3);
+    // 6 个不锈钢调平脚
+    [-161, -97, -32, 32, 97, 161].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, -25.4, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, -25.0, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [-23.0, -14.2]）
+    // 4A) 西组 [-161, -83]：2 门柜（双门缝 + 双拉手 + 中央锁孔）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-161, -23.0, 78, 8.8);
+    ctx.strokeRect(-161, -23.0, 78, 8.8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-160, -22.2, 37.2, 7.2);
+    ctx.fillRect(-121.2, -22.2, 37.2, 7.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(-122.0, -22.5); ctx.lineTo(-122.0, -14.7);
+    ctx.stroke();
+    // 双竖拉手 + 锁孔
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-126.0, -21.2, 1.5, 4.8);
+    ctx.fillRect(-119.5, -21.2, 1.5, 4.8);
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-122.0, -18.6, 1.05, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-122.3, -19.2, 0.6, 1.2);
+
+    // 4B) 次西组 [-79, -2]：4 档抽屉（拉手逐档变短：18 -> 13.5 -> 9 -> 5）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-79, -23.0, 77, 8.8);
+    ctx.strokeRect(-79, -23.0, 77, 8.8);
+    [
+        { y: -22.6, hw: 18.0 },
+        { y: -20.5, hw: 13.5 },
+        { y: -18.4, hw: 9.0 },
+        { y: -16.3, hw: 5.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#64748b' : '#475569';
+        ctx.fillRect(-77.5, dr.y, 74, 1.7);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.strokeRect(-77.5, dr.y, 74, 1.7);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-40.5 - dr.hw / 2, dr.y + 0.55, dr.hw, 0.7);
+    });
+
+    // 4C) 次东组 [+2, +79]：开放格（上层线缆盘 1 个 + 下层备用试剂箱 2 个）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, -23.0, 77, 8.8);
+    ctx.strokeRect(2, -23.0, 77, 8.8);
+    // 中层钢隔板
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, -18.8, 75, 0.95);
+    // 上层：线缆盘 1 个（x ∈ [14, 34]）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(14, -17.6, 2.2, 3.0);
+    ctx.fillRect(31.8, -17.6, 2.2, 3.0);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(16.2, -17.2, 15.6, 2.3);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.55;
+    for (let sx = 18; sx <= 30; sx += 3) {
+        ctx.beginPath(); ctx.moveTo(sx, -17.2); ctx.lineTo(sx, -14.9); ctx.stroke();
+    }
+    // 下层：备用试剂箱 2 个（左翡翠标箱 + 右琥珀标箱）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(10, -22.3, 24, 3.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(10, -22.3, 24, 3.1);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(12, -21.4, 8, 1.2);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(42, -22.3, 26, 3.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.strokeRect(42, -22.3, 26, 3.1);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(45, -21.4, 9, 1.2);
+
+    // 4D) 东组 [+83, +161]：深柜（单门 + 锁柄 + 斜向散热百叶孔）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(83, -23.0, 78, 8.8);
+    ctx.strokeRect(83, -23.0, 78, 8.8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(84.2, -22.1, 75.6, 7.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(87.2, -21.1, 1.8, 4.9);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 122; vx <= 154; vx += 3.6) {
+        ctx.beginPath();
+        ctx.moveTo(vx, -21.1); ctx.lineTo(vx + 2.0, -16.1);
+        ctx.stroke();
+    }
+
+    // 5. 台面下走线槽 1 条（镀锌槽 + 4 根粗细不同的黑色线缆 + 扎带卡扣）
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-162, -14.2, 324, 2.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-162, -14.2, 324, 2.2);
+    [
+        { y: -13.85, w: 0.55 },
+        { y: -13.40, w: 0.85 },
+        { y: -12.90, w: 1.15 },
+        { y: -12.38, w: 1.45 }
+    ].forEach(cb => {
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = cb.w;
+        ctx.beginPath();
+        ctx.moveTo(-158, cb.y); ctx.lineTo(158, cb.y);
+        ctx.stroke();
+    });
+    [-135, -71, 0, 62, 100, 141].forEach(dropX => {
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(dropX - 1.0, -14.2, 2.0, 2.2);
+    });
+
+    // 6. 环氧树脂台面（330x37 @ x ∈ [-165, +165], y ∈ [-12.0, +25.0]，含四周不锈钢凸边、网格蚀刻与钢印 BENCH-04）
+    const topGrad = ctx.createLinearGradient(0, -12, 0, 25);
+    topGrad.addColorStop(0, '#334155');
+    topGrad.addColorStop(0.18, '#1e293b');
+    topGrad.addColorStop(0.85, '#0f172a');
+    topGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-165, -12.0, 330, 37.0);
+
+    // 环氧台面精细蚀刻网格（每 15px）
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -150; gx <= 150; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -10.5); ctx.lineTo(gx, 23.5); ctx.stroke();
+    }
+    for (let gy = -6; gy <= 20; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-163.5, gy); ctx.lineTo(163.5, gy); ctx.stroke();
+    }
+
+    // 四周不锈钢凸边（1.5px 亮边 + 0.8px 外暗框）
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-164.25, -11.25, 328.5, 35.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-165, -12.0, 330, 37.0);
+
+    // 台面钢印编号 BENCH-04（西北端前沿金属铭牌）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-162, -11.7, 20, 4.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-162, -11.7, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-04', -152, -9.55);
+
+    // =====================================================================
+    // 7. 台面 6 台各不相同的分析仪器（从西到东，均留有散热空档、独立减震垫与散热孔）
+    // =====================================================================
+
+    // 7A) 仪器 1：实时荧光定量 PCR 仪（-151..-119，洁白壳体 + 96孔热盖板 + 前斜向温度屏底座）
+    // 减震垫 + 接线
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-150, -6.5, 30, 24);
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.moveTo(-135, -6.5); ctx.lineTo(-135, -12.0); ctx.stroke();
+    // 白色主体箱
+    const pcrGrad = ctx.createLinearGradient(-149, 0, -121, 0);
+    pcrGrad.addColorStop(0, '#cbd5e1');
+    pcrGrad.addColorStop(0.25, '#f8fafc');
+    pcrGrad.addColorStop(0.8, '#e2e8f0');
+    pcrGrad.addColorStop(1, '#94a3b8');
+    ctx.fillStyle = pcrGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-149, -5.5, 28, 22);
+    ctx.strokeRect(-149, -5.5, 28, 22);
+    // 后沿散热格栅
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.6;
+    for (let vx = -146; vx <= -124; vx += 2.2) {
+        ctx.beginPath(); ctx.moveTo(vx, 14.0); ctx.lineTo(vx, 16.0); ctx.stroke();
+    }
+    // 96 孔热盖板 + 锁扣压杆
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-145.5, 1.5, 21, 11.5);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-145.5, 1.5, 21, 11.5);
+    ctx.fillStyle = '#64748b';
+    for (let r = 0; r < 5; r++) {
+        for (let col = 0; col < 8; col++) {
+            ctx.fillRect(-143.8 + col * 2.3, 3.0 + r * 1.9, 1.0, 1.0);
+        }
+    }
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-141, 0.2, 12, 1.4);
+    // 温度屏静态框（动态数字在 DrawDynamic 中绘）
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-144.5, -4.6, 15.5, 5.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-144.5, -4.6, 15.5, 5.2);
+
+    // 7B) 耗材簇 A（-116..-91）：移液器架 1 个（3支长短不同）+ 枪头盒 2 个（一开一合）
+    // 移液器架 (-110, +5)
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-115.5, 0, 11, 14, 1.5) : ctx.rect(-115.5, 0, 11, 14);
+    ctx.fill();
+    ctx.stroke();
+    // 3 支不同长度移液器
+    [
+        { x: -113.2, len: 12.0, cap: '#38bdf8' },
+        { x: -110.0, len: 9.5,  cap: '#f59e0b' },
+        { x: -106.8, len: 7.2,  cap: '#ef4444' }
+    ].forEach(pip => {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(pip.x - 0.8, 13.0 - pip.len, 1.6, pip.len);
+        ctx.fillStyle = pip.cap;
+        ctx.fillRect(pip.x - 1.1, 12.2 - pip.len, 2.2, 1.8);
+    });
+    // 枪头盒 1（开启，-96, -3）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-102, -6.8, 10.5, 8.2);
+    ctx.strokeRect(-102, -6.8, 10.5, 8.2);
+    ctx.fillStyle = '#38bdf8';
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+            ctx.beginPath();
+            ctx.arc(-100.2 + c * 2.2, -5.0 + r * 2.2, 0.55, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    // 开启折盖阴影（向墙侧 +y 翻开，方便实验人员从房间内侧 -y 取用枪头）
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.35)';
+    ctx.fillRect(-102, 1.6, 10.5, 2.2);
+    // 枪头盒 2（闭合，-96, +11）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-102, 5.5, 10.5, 8.5);
+    ctx.strokeRect(-102, 5.5, 10.5, 8.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-98.2, 4.8, 3.0, 1.1);
+
+    // 7C) 仪器 2：液相色谱仪 HPLC（-89..-53，浅灰堆叠高箱 + 自动进样盘 + 溶剂瓶 2 个）
+    // 电源线接槽
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-71, -8.5); ctx.lineTo(-71, -12.0); ctx.stroke();
+    // 浅灰主塔体
+    const hplcGrad = ctx.createLinearGradient(-88, 0, -54, 0);
+    hplcGrad.addColorStop(0, '#94a3b8');
+    hplcGrad.addColorStop(0.25, '#e2e8f0');
+    hplcGrad.addColorStop(0.85, '#cbd5e1');
+    hplcGrad.addColorStop(1, '#64748b');
+    ctx.fillStyle = hplcGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-88, -8.2, 34, 24.5);
+    ctx.strokeRect(-88, -8.2, 34, 24.5);
+    // 分层模块线 + 侧散热片
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(-88, 2.0); ctx.lineTo(-54, 2.0);
+    ctx.moveTo(-88, 9.5); ctx.lineTo(-54, 9.5);
+    ctx.stroke();
+    for (let fy = -5; fy <= 13; fy += 3) {
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-55.6, fy, 1.6, 1.2);
+    }
+    // 进样盘（前抽屉托盘 + 样品瓶矩阵）
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-85.5, -7.2, 16, 7.8);
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(-85.5, -7.2, 16, 7.8);
+    for (let vy = -5.5; vy <= -1.2; vy += 2.1) {
+        for (let vx = -83.5; vx <= -71.5; vx += 2.4) {
+            ctx.fillStyle = (Math.round(vx + vy) % 2 === 0) ? '#38bdf8' : '#e2e8f0';
+            ctx.beginPath(); ctx.arc(vx, vy, 0.7, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    // 溶剂瓶 2 个（顶部/南侧架，蓝水相 + 琥珀有机相 + 毛细导管）
+    [
+        { x: -64.0, y: 12.5, col: '#38bdf8', cap: '#0284c7' },
+        { x: -58.2, y: 12.5, col: '#f59e0b', cap: '#b45309' }
+    ].forEach(bot => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 2.7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bot.col;
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 2.1, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bot.cap;
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 0.95, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(bot.x - 3, 6.0); ctx.stroke();
+    });
+    // HPLC 前状态小条
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-67.5, -6.8, 11.5, 4.5);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('HPLC', -61.8, -4.5);
+
+    // 实验记录板 1 块（置于低矮耗材簇 B 后方空位 x = -35, y = +20.0，避免被 HPLC 高箱体遮挡，面向 -y 方便取用）
+    ctx.save();
+    ctx.translate(-35, 20.0);
+    ctx.rotate(-0.12);
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-5.2, -3.5, 10.4, 7.0);
+    ctx.strokeRect(-5.2, -3.5, 10.4, 7.0);
+    ctx.fillStyle = '#fefce8';
+    ctx.fillRect(-4.3, -2.5, 8.6, 5.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-2.0, 2.3, 4.0, 1.4);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    [-1.1, 0.2, 1.5].forEach((ly, i) => {
+        ctx.beginPath();
+        ctx.moveTo(-3.3, ly);
+        ctx.quadraticCurveTo(-0.5, ly - 0.5, 3.0 - i * 0.8, ly + 0.2);
+        ctx.stroke();
+    });
+    ctx.restore();
+
+    // 7D) 耗材簇 B（-50..-20）：24孔样品架 + 96孔板×2（一满一空）+ 镊子 + 刮刀
+    // 镊子 (-45, -6.5) & 刮刀 (-37, -7.2)
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-48.5, -8.5); ctx.lineTo(-41.5, -5.2);
+    ctx.moveTo(-48.5, -7.4); ctx.lineTo(-41.5, -5.2);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-39.5, -8.5, 6.2, 1.1);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-35.0, -8.8, 3.2, 1.7);
+
+    // 24 孔样品架 1 个 (-41, +9，液面高低不同 + 管帽红蓝各异 + 绿/琥珀/蓝/透明液体)
+    ctx.fillStyle = '#1e3a8a';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-48.5, 2.0, 15, 14);
+    ctx.strokeRect(-48.5, 2.0, 15, 14);
+    const tubeCols = ['#10b981', '#f59e0b', '#38bdf8', '#e2e8f0'];
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            const tx = -46.8 + c * 2.3;
+            const ty = 4.0 + r * 3.1;
+            const col = tubeCols[(r * 3 + c) % 4];
+            const cap = (r + c) % 2 === 0 ? '#ef4444' : '#2563eb';
+            const fillR = 0.55 + ((r + c * 2) % 3) * 0.2;
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(tx, ty, 0.85 * fillR, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = cap;
+            ctx.lineWidth = 0.45;
+            ctx.beginPath(); ctx.arc(tx, ty, 0.9, 0, Math.PI * 2); ctx.stroke();
+        }
+    }
+
+    // 96 孔板 2 个：上板满板 (-26, -3.5)、下板空板 (-26, +10.5)
+    // 满板
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-31.5, -8.0, 10.5, 7.6);
+    ctx.strokeRect(-31.5, -8.0, 10.5, 7.6);
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            ctx.fillStyle = (r + c) % 3 === 0 ? '#10b981' : ((r + c) % 3 === 1 ? '#38bdf8' : '#cbd5e1');
+            ctx.fillRect(-30.3 + c * 1.45, -6.8 + r * 1.4, 0.9, 0.9);
+        }
+    }
+    // 空板
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#64748b';
+    ctx.fillRect(-31.5, 6.2, 10.5, 7.6);
+    ctx.strokeRect(-31.5, 6.2, 10.5, 7.6);
+    ctx.fillStyle = '#cbd5e1';
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            ctx.fillRect(-30.3 + c * 1.45, 7.4 + r * 1.4, 0.9, 0.9);
+        }
+    }
+
+    // 7E) 仪器 3：落地式大容量离心机（x = 0, y = +5，高圆柱 + 顶盖 + 转速屏，深灰壳体，完全不同于 02 台台式离心机）
+    // 重型圆形减震底环 + 接槽电缆
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(0, -10.5); ctx.lineTo(0, -12.0); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(0, 5.2, 17.5, 0, Math.PI * 2); ctx.fill();
+    // 深灰圆柱主体
+    const centGrad = ctx.createRadialGradient(-4, 2, 3, 0, 5.2, 16.0);
+    centGrad.addColorStop(0, '#64748b');
+    centGrad.addColorStop(0.65, '#475569');
+    centGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = centGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.arc(0, 5.2, 16.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 顶部不锈钢圆形厚盖 + 铰链 + 中心转子锁扣
+    const lidGrad = ctx.createLinearGradient(-11, -5, 11, 15);
+    lidGrad.addColorStop(0, '#e2e8f0');
+    lidGrad.addColorStop(0.5, '#94a3b8');
+    lidGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = lidGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.arc(0, 5.5, 11.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 转子锁扣与透视窗
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(0, 5.5, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(0, 5.5, 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-3.0, 16.0, 6.0, 2.2); // 后侧强力铰链
+    // 两侧散热缝
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    [-14.2, 14.2].forEach(vx => {
+        for (let vy = 2.5; vy <= 8.5; vy += 2.0) {
+            ctx.beginPath(); ctx.moveTo(vx - 0.9, vy); ctx.lineTo(vx + 0.9, vy); ctx.stroke();
+        }
+    });
+    // 前斜面板转速屏
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-8.5, -10.4, 17.0, 5.2);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-8.5, -10.4, 17.0, 5.2);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-7.5, -9.6, 12.2, 3.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('4200RPM', -1.4, -7.75);
+
+    // 7F) 耗材簇 C（+21..+46）：离心管架（15mL×4 + 50mL×2）+ 记号笔 + 台面计时器
+    // 记号笔 (+26, -6.5)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(21.5, -7.6, 8.2, 1.8);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(29.2, -7.6, 2.2, 1.8);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(23.0, -7.4, 2.5, 1.3);
+    // 台面计时器 (+41, -5.5：按钮位于靠房间侧 -y，显示屏置于其后朝向操作者)
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(35.5, -9.2, 10.5, 6.8);
+    ctx.strokeRect(35.5, -9.2, 10.5, 6.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(37.2, -8.5, 2.6, 1.1);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(41.4, -8.5, 2.6, 1.1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(36.7, -6.7, 8.1, 3.3);
+
+    // 离心管架 1 个（+33, +9：15mL 管 4 支 + 50mL 管 2 支，管身刻度不同）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(22.5, 2.0, 22, 14.5);
+    ctx.strokeRect(22.5, 2.0, 22, 14.5);
+    // 4 支 15mL 管（左排，细管蓝盖 + 细刻度线）
+    [
+        { x: 25.0, y: 5.5, col: '#10b981' },
+        { x: 29.0, y: 5.5, col: '#f59e0b' },
+        { x: 25.0, y: 12.2, col: '#38bdf8' },
+        { x: 29.0, y: 12.2, col: '#e2e8f0' }
+    ].forEach(t15 => {
+        ctx.fillStyle = t15.col;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.35, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.5, 0, Math.PI * 2); ctx.stroke();
+        // 细刻度标记
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath(); ctx.moveTo(t15.x - 0.8, t15.y); ctx.lineTo(t15.x + 0.8, t15.y); ctx.stroke();
+    });
+    // 2 支 50mL 大管（右排，粗管红盖 + 粗刻度线）
+    [
+        { x: 37.5, y: 5.5, col: '#10b981' },
+        { x: 37.5, y: 12.5, col: '#f59e0b' }
+    ].forEach(t50 => {
+        ctx.fillStyle = t50.col;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.25, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.45, 0, Math.PI * 2); ctx.stroke();
+        // 粗双刻度
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(t50.x - 1.3, t50.y - 0.5); ctx.lineTo(t50.x + 1.3, t50.y - 0.5);
+        ctx.moveTo(t50.x - 1.3, t50.y + 0.6); ctx.lineTo(t50.x + 1.3, t50.y + 0.6);
+        ctx.stroke();
+    });
+
+    // 7G) 仪器 4：超声破碎仪（+49..+75，米白主体 + 升降架 + 探头 + 功率屏）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(62, -7.5); ctx.lineTo(62, -12.0); ctx.stroke();
+    // 米白主体发生器
+    ctx.fillStyle = '#e7e5e4';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(50, -6.5, 16, 22);
+    ctx.strokeRect(50, -6.5, 16, 22);
+    // 侧面散热百叶
+    ctx.strokeStyle = '#57534e';
+    ctx.lineWidth = 0.55;
+    for (let sy = 5; sy <= 13; sy += 2.2) {
+        ctx.beginPath(); ctx.moveTo(51.5, sy); ctx.lineTo(54.5, sy); ctx.stroke();
+    }
+    // 功率屏
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(51.5, -5.2, 13, 5.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(51.5, -5.2, 13, 5.2);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('240W', 58.0, -2.55);
+    // 升降架底座 + 立柱 + 悬臂 + 钛合金超声探头 + 样品杯
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(67.0, -5.0, 8.0, 20.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.strokeRect(67.0, -5.0, 8.0, 20.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(70.5, 9.5, 2.4, 5.5); // 升降立柱
+    ctx.fillRect(68.0, 4.0, 4.5, 2.2); // 悬臂夹头
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(69.2, 0.2, 2.0, 4.2); // 超声变幅杆探头
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(70.2, -1.2, 2.2, 0, Math.PI * 2); ctx.fill(); // 样品冰浴杯
+
+    // 7H) 仪器 5：恒温摇床（+84..+116，淡蓝壳体 + 转速屏；动态摇床盘与夹具在 Dynamic 中缓慢小幅晃动）
+    // 减震垫 + 接线
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(83.5, -7.2, 33, 25);
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(100, -7.2); ctx.lineTo(100, -12.0); ctx.stroke();
+    // 淡蓝壳体
+    const shkGrad = ctx.createLinearGradient(84.5, 0, 115.5, 0);
+    shkGrad.addColorStop(0, '#93c5fd');
+    shkGrad.addColorStop(0.3, '#dbeafe');
+    shkGrad.addColorStop(0.85, '#bfdbfe');
+    shkGrad.addColorStop(1, '#60a5fa');
+    ctx.fillStyle = shkGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(84.5, -6.5, 31, 23.5);
+    ctx.strokeRect(84.5, -6.5, 31, 23.5);
+    // 侧面散热孔
+    ctx.strokeStyle = '#1e3a8a';
+    ctx.lineWidth = 0.55;
+    for (let sx = 86.5; sx <= 92.5; sx += 2.0) {
+        ctx.beginPath(); ctx.moveTo(sx, 14.5); ctx.lineTo(sx, 16.2); ctx.stroke();
+    }
+    // 摇床转速屏
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(87.5, -5.5, 16.5, 4.6);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(87.5, -5.5, 16.5, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('180RPM', 95.75, -3.15);
+
+    // 7I) 仪器 6：真空干燥箱（+125..+157，深灰方箱 + 观察玻璃门 + 真空表 + 接墙真空管）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.15;
+    ctx.beginPath(); ctx.moveTo(141, -7.5); ctx.lineTo(141, -12.0); ctx.stroke();
+    // 后沿接墙真空管
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath(); ctx.moveTo(149, 17.0); ctx.lineTo(149, 25.9); ctx.stroke();
+    // 深灰主体箱
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.95;
+    ctx.fillRect(125, -7.5, 32, 24.5);
+    ctx.strokeRect(125, -7.5, 32, 24.5);
+    // 重型银灰门框与左侧铰链 + 右侧门锁柄
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(126.5, -6.2, 22, 16.5);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(126.5, -6.2, 22, 16.5);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(125.6, -3.5, 1.5, 3.0);
+    ctx.fillRect(125.6, 4.5, 1.5, 3.0);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(147.2, -1.0, 2.2, 5.5);
+    // 观察玻璃门（透视内部多孔托盘与干燥皿）
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(129.0, -3.8, 16.5, 11.5);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(129.0, -3.8, 16.5, 11.5);
+    ctx.strokeStyle = 'rgba(203, 213, 225, 0.35)';
+    ctx.beginPath(); ctx.moveTo(130.5, 2.0); ctx.lineTo(144.0, 2.0); ctx.stroke();
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.25)';
+    ctx.beginPath(); ctx.arc(137.2, 1.8, 2.8, 0, Math.PI * 2); ctx.fill();
+    // 真空表（右侧银白圆盘 + 指针）与面向房间的调节旋钮
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(152.2, -2.5, 3.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.beginPath(); ctx.arc(152.2, 2.2, 1.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 右侧散热百叶孔
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    for (let vy = 5.0; vy <= 14.0; vy += 2.2) {
+        ctx.beginPath(); ctx.moveTo(151.0, vy); ctx.lineTo(155.2, vy); ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function drawWestBench04Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. PCR 仪：温度屏热循环数值 + 底部实时升温进度条
+    const pcrPhase = 0.5 + 0.5 * Math.sin(time * 0.45);
+    const pcrTemp = (60.2 + pcrPhase * 34.8).toFixed(1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-144.0, -4.2, 14.5, 4.4);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = pcrPhase > 0.7 ? '#f59e0b' : '#38bdf8';
+    ctx.fillText(`${pcrTemp}C`, -136.75, -2.35);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-143.0, -0.7, 12.5, 0.7);
+    ctx.fillStyle = pcrPhase > 0.7 ? '#f59e0b' : '#10b981';
+    ctx.fillRect(-143.0, -0.7, 12.5 * pcrPhase, 0.7);
+
+    // 2. HPLC 液相色谱仪：屏幕实时色谱出峰曲线 + 流动相毛细管液滴流动 + 溶剂瓶液面微晃
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-67.2, -6.5, 10.9, 4.0);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    for (let sx = 0; sx <= 10; sx += 1.0) {
+        const u = ((sx * 0.1 + time * 0.45) % 1.0);
+        const peak = Math.exp(-Math.pow((u - 0.5) * 7.0, 2)) * 2.2;
+        const px = -66.7 + sx;
+        const py = -3.1 - peak;
+        if (sx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // 蓝水相 & 琥珀有机相毛细管流体脉冲
+    [
+        { bx: -64.0, col: '#7dd3fc' },
+        { bx: -58.2, col: '#fcd34d' }
+    ].forEach((cap, ci) => {
+        const flowT = (time * 0.85 + ci * 0.5) % 1.0;
+        const fx = cap.bx - 3.0 * flowT;
+        const fy = 12.5 + (6.0 - 12.5) * flowT;
+        ctx.fillStyle = cap.col;
+        ctx.beginPath(); ctx.arc(fx, fy, 0.7, 0, Math.PI * 2); ctx.fill();
+        // 瓶内液面微光
+        const sw = Math.sin(time * 1.8 + ci) * 0.4;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        ctx.arc(cap.bx, 12.5, 1.35, -0.4 + sw, 0.9 + sw);
+        ctx.stroke();
+    });
+
+    // 3. 大容量离心机：中心转子高速旋转条 + 动态 RPM 微幅跳动
+    const rotAngle = time * 8.5;
+    ctx.save();
+    ctx.translate(0, 5.5);
+    ctx.rotate(rotAngle);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-2.2, 0); ctx.lineTo(2.2, 0);
+    ctx.moveTo(0, -2.2); ctx.lineTo(0, 2.2);
+    ctx.stroke();
+    ctx.restore();
+    const centRpm = 4195 + Math.round(Math.sin(time * 2.3) * 8);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-7.5, -9.6, 12.2, 3.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${centRpm}RPM`, -1.4, -7.75);
+
+    // 4. 台面计时器实时倒计时（04:25 循环）
+    const b4Sec = 265 - (Math.floor(time) % 265);
+    const b4mm = String(Math.floor(b4Sec / 60)).padStart(2, '0');
+    const b4ss = String(b4Sec % 60).padStart(2, '0');
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(36.7, -6.7, 8.1, 3.3);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${b4mm}:${b4ss}`, 40.75, -5.0);
+
+    // 5. 超声破碎仪：功率屏幕脉冲 + 冰浴样品杯空化声波涟漪
+    const usWatt = 236 + Math.round(Math.sin(time * 5.0) * 6);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(51.5, -5.2, 13, 5.2);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${usWatt}W`, 58.0, -2.55);
+    const ringR = 0.8 + ((time * 1.9) % 1.0) * 1.45;
+    const ringAlpha = 1.0 - ((time * 1.9) % 1.0);
+    ctx.strokeStyle = `rgba(224, 242, 254, ${ringAlpha.toFixed(2)})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(70.2, -1.2, ringR, 0, Math.PI * 2); ctx.stroke();
+
+    // 6. 恒温摇床：方盘 + 4 组弹簧夹具 + 烧瓶内部漩涡液体晃动 + 屏幕动态扫描
+    const ox = Math.cos(time * 3.0) * 0.65;
+    const oy = Math.sin(time * 3.0) * 0.65;
+    ctx.save();
+    ctx.translate(100.0 + ox, 7.6 + oy);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-11.5, -7.2, 23.0, 14.4);
+    ctx.strokeRect(-11.5, -7.2, 23.0, 14.4);
+    [[-6.0, -3.2], [6.0, -3.2], [-6.0, 3.2], [6.0, 3.2]].forEach(([fx, fy], fi) => {
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(fx, fy, 2.7, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = fx < 0 ? 'rgba(16, 185, 129, 0.72)' : 'rgba(56, 189, 248, 0.72)';
+        ctx.beginPath(); ctx.arc(fx, fy, 1.85, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.75)';
+        ctx.lineWidth = 0.45;
+        const sa = time * 3.0 + fi * 1.5;
+        ctx.beginPath(); ctx.arc(fx, fy, 1.15, sa, sa + 1.4); ctx.stroke();
+    });
+    ctx.restore();
+    const shkRpm = 179 + Math.round(Math.sin(time * 1.5));
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(87.5, -5.5, 16.5, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${shkRpm}RPM`, 95.75, -3.15);
+
+    // 7. 真空干燥箱：真空表指针微颤 + 内腔加热琥珀微光 + 真空管抽气脉冲
+    const vGlow = 0.14 + 0.1 * Math.sin(time * 1.2);
+    ctx.fillStyle = `rgba(245, 158, 11, ${vGlow.toFixed(3)})`;
+    ctx.fillRect(129.4, -3.4, 15.7, 10.7);
+    const needleAng = -2.2 + Math.sin(time * 4.5) * 0.12;
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(152.2, -2.5);
+    ctx.lineTo(152.2 + Math.cos(needleAng) * 2.4, -2.5 + Math.sin(needleAng) * 2.4);
+    ctx.stroke();
+    const vacPulseY = 17.0 + ((time * 1.3) % 1.0) * 8.9;
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(149.0, vacPulseY, 0.7, 0, Math.PI * 2); ctx.fill();
+
+    // 8. 六台仪器及墙面插座状态指示灯缓慢呼吸
+    [
+        { x: -125.5, y: -2.0, on: '#10b981', dim: '#064e3b', spd: 1.4, ph: 0.0 },
+        { x: -125.5, y: -4.0, on: '#f59e0b', dim: '#78350f', spd: 0.9, ph: 1.5 },
+        { x: -57.0,  y: -5.2, on: '#10b981', dim: '#064e3b', spd: 1.1, ph: 1.2 },
+        { x: -57.0,  y: -2.6, on: '#38bdf8', dim: '#0c4a6e', spd: 1.6, ph: 2.1 },
+        { x: 6.2,    y: -7.8, on: '#10b981', dim: '#064e3b', spd: 1.5, ph: 0.6 },
+        { x: 63.2,   y: -2.6, on: '#ef4444', dim: '#7f1d1d', spd: 2.2, ph: 1.8 },
+        { x: 109.5,  y: -3.2, on: '#f59e0b', dim: '#78350f', spd: 1.2, ph: 2.8 },
+        { x: 152.2,  y: -6.0, on: '#f59e0b', dim: '#78350f', spd: 0.9, ph: 0.4 },
+        { x: 43.6,   y: 26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.9 }
+    ].forEach(led => {
+        const pulse = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = pulse > 0.35 ? led.on : led.dim;
+        ctx.beginPath();
+        ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function drawWestBench04(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestBench04Static(ctx, cx, cy, unitAngle);
+    drawWestBench04Dynamic(ctx, cx, cy, unitAngle, time);
+}
+
+function getWestBench04Obstacle() {
+    const cx = 378.59, cy = 1307.44;
+    const unitAngle = 0.5824;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 165; // 330 / 2
+    const halfH = 25;  // 50 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST ANALYTICAL BENCH 04',
+        displayName: 'ANALYTICAL INSTRUMENT BENCH 04',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 220 < camX || cx - 220 > camX + vw || cy + 220 < camY || cy - 220 > camY + vh) return;
+
+            const cacheKey = '__westBench04V1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 420, ch = 260;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBench04Static(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestBench04Dynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// Level 8 · 西侧三角房 · 长试验台 05：底墙中段生物安全/标本储存台 (330x50，静态+动态分离)
+// 中心 (687.6, 1510.94)，长轴沿底墙内缘 (0.5824 rad)，占沿墙 455–785
+// 西端与 04 台留 5px 空档，东端与 06 台留 5px 空档，南缘距底墙内壁 3px（墙面管线贴墙至 +28）
+// =========================================================================
+function drawWestBench05Static(ctx, cx, cy, unitAngle) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面投影阴影
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-167, -27.5, 334, 54.5, 2.5) : ctx.rect(-167, -27.5, 334, 54.5);
+    ctx.fill();
+
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2（贴底墙 y ∈ [+24.6, +28.0]）
+    // 2A) 水管（银白，y = +27.3）与气管（深黑，y = +25.9）及固定卡扣
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-162, 27.3); ctx.lineTo(162, 27.3); ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-162, 27.0); ctx.lineTo(162, 27.0); ctx.stroke();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-162, 25.9); ctx.lineTo(162, 25.9); ctx.stroke();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(-162, 25.7); ctx.lineTo(162, 25.7); ctx.stroke();
+
+    [-130, -65, 0, 65, 130].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, 24.8, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, 24.8, 2.4, 3.2);
+    });
+    // 液氮排气管墙端法兰接口
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(-68.5, 24.8, 7.0, 3.2);
+    ctx.strokeRect(-68.5, 24.8, 7.0, 3.2);
+
+    // 2B) 墙面插座排 5 个（两孔、三孔、带开关、带指示灯、带 USB 各不相同）
+    [
+        { x: -144, kind: '2pin' },
+        { x: -82,  kind: '3pin' },
+        { x: -16,  kind: 'switch' },
+        { x: 48,   kind: 'led' },
+        { x: 124,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, 25.6, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, 25.6, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, 25.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, 26.3, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, 26.3, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, 25.4, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, 25.6, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(out.x - 2.4, 26.2, 0.75, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, 25.6, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, 25.5, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, 25.5, 2.0, 1.4);
+        }
+    });
+
+    // 2C) 墙面挂钩 2 个（左挂蓝手套、右挂透明防护面屏）
+    // 左挂钩 (-157, 25.4) + 折叠丁腈手套
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-158.2, 24.7, 2.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-158.6, 25.6); ctx.lineTo(-155.2, 25.6);
+    ctx.lineTo(-154.6, 27.9); ctx.lineTo(-156.2, 27.9);
+    ctx.lineTo(-157.0, 26.8); ctx.lineTo(-157.8, 27.9);
+    ctx.lineTo(-159.2, 27.9); ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 右挂钩 (+157, 25.2) + 防护面屏（深色头箍支架 + 弧形透明蓝聚碳酸酯面罩）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(155.8, 24.7, 2.4, 2.0);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(154.0, 25.1, 6.0, 1.0);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(157.0, 26.0, 3.1, 0.15, Math.PI - 0.15);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（台前缘 y ∈ [-25.0, -23.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-129, -64, 0, 64, 129].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 22, -24.7); ctx.lineTo(bx + 22, -23.3);
+        ctx.moveTo(bx - 22, -23.3); ctx.lineTo(bx + 22, -24.7);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-162, -24.3, 324, 1.3);
+    [-161, -97, -32, 32, 97, 161].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, -25.4, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, -25.0, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [-23.0, -12.6]）
+    // 4A) 西组 [-161, -83]：带锁标本柜（2 门 + 挂锁 + 生物危害标识 #1：三角黑黄徽标）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-161, -23.0, 78, 10.4);
+    ctx.strokeRect(-161, -23.0, 78, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-160, -22.1, 37.2, 8.6);
+    ctx.fillRect(-121.2, -22.1, 37.2, 8.6);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(-122.0, -22.4); ctx.lineTo(-122.0, -13.1); ctx.stroke();
+    // 门把 + 金属挂锁（锁梁 + 黄色/钢制锁体）
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-126.2, -21.2, 1.5, 6.2);
+    ctx.fillRect(-119.3, -21.2, 1.5, 6.2);
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.arc(-122.0, -19.2, 1.4, Math.PI, 0); ctx.stroke();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(-123.5, -18.8, 3.0, 2.8);
+    ctx.strokeRect(-123.5, -18.8, 3.0, 2.8);
+    // 生物危害标识 #1（标本柜门面三角警示贴：黄底黑框三角 + 三叶黑芯）
+    ctx.fillStyle = '#eab308';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-141.5, -21.2); ctx.lineTo(-136.0, -14.2); ctx.lineTo(-147.0, -14.2); ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-141.5, -16.6, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    // 4B) 次西组 [-79, -2]：3 档抽屉（拉手逐档变短：20 -> 13 -> 6）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-79, -23.0, 77, 10.4);
+    ctx.strokeRect(-79, -23.0, 77, 10.4);
+    [
+        { y: -22.4, hw: 20.0 },
+        { y: -19.1, hw: 13.0 },
+        { y: -15.8, hw: 6.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#64748b' : '#475569';
+        ctx.fillRect(-77.5, dr.y, 74, 2.6);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(-77.5, dr.y, 74, 2.6);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-40.5 - dr.hw / 2, dr.y + 0.9, dr.hw, 0.9);
+    });
+
+    // 4C) 次东组 [+2, +79]：开放格（上层冻存盒 2 个 + 下层黄生物危害废弃桶 1 个）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, -23.0, 77, 10.4);
+    ctx.strokeRect(2, -23.0, 77, 10.4);
+    // 钢层板
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, -18.2, 75, 1.0);
+    // 上层：冻存盒 2 个（左蓝盖、右翡翠盖）
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(12, -16.8, 22, 3.4);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(12, -16.8, 22, 3.4);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(43, -16.8, 22, 3.4);
+    ctx.strokeRect(43, -16.8, 22, 3.4);
+    // 下层：生物危害废弃桶 1 个黄桶 + 生物危害标识 #2（菱形黑框警示标 + 警示条纹）
+    ctx.fillStyle = '#eab308';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(24, -22.4, 32, 3.8);
+    ctx.strokeRect(24, -22.4, 32, 3.8);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(24, -22.4, 32, 0.95); // 黑色投料翻盖沿
+    // 生物危害标识 #2（菱形框 + 内部黑黄分格，与标识 #1 三角不同）
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(40, -21.3); ctx.lineTo(42.5, -19.9); ctx.lineTo(40, -18.5); ctx.lineTo(37.5, -19.9); ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.arc(40, -19.9, 0.65, 0, Math.PI * 2); ctx.fill();
+
+    // 4D) 东组 [+83, +161]：深柜（单门 + 把手 + 散热孔）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(83, -23.0, 78, 10.4);
+    ctx.strokeRect(83, -23.0, 78, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(84.2, -22.0, 75.6, 8.4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(87.2, -21.0, 1.8, 6.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 122; vx <= 154; vx += 3.6) {
+        ctx.beginPath(); ctx.moveTo(vx, -20.8); ctx.lineTo(vx + 2.0, -14.8); ctx.stroke();
+    }
+
+    // 5. 不锈钢银白边框环氧台面（330x37.6 @ x ∈ [-165, +165], y ∈ [-12.6, +25.0]，网格蚀刻 + 钢印 BENCH-05）
+    const topGrad = ctx.createLinearGradient(0, -12.6, 0, 25);
+    topGrad.addColorStop(0, '#334155');
+    topGrad.addColorStop(0.2, '#1e293b');
+    topGrad.addColorStop(0.85, '#0f172a');
+    topGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-165, -12.6, 330, 37.6);
+
+    // 精细蚀刻网格
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -150; gx <= 150; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -11.0); ctx.lineTo(gx, 23.5); ctx.stroke();
+    }
+    for (let gy = -6; gy <= 20; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-163.5, gy); ctx.lineTo(163.5, gy); ctx.stroke();
+    }
+
+    // 四周不锈钢凸边
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-164.25, -11.85, 328.5, 36.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-165, -12.6, 330, 37.6);
+
+    // 台面编号钢印 BENCH-05
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-162, -12.2, 20, 4.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-162, -12.2, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-05', -152, -10.05);
+
+    // =====================================================================
+    // 6. 超低温与液氮储存核心模块 + 样本处理耗材（全件仅出现一次，互不重复）
+    // =====================================================================
+
+    // 6A) 超低温冰箱 1 个（-151..-113，-80°C 立柜 + 深灰厚门 + 白字 -80°C + 门把 + 温度屏 + 报警灯）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-151, -7.8, 38, 26.5); // 隔振底座
+    // 不锈钢外壳包边
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-150, -7.2, 36, 25.2);
+    ctx.strokeRect(-150, -7.2, 36, 25.2);
+    // 深灰厚门（主视觉面）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-147.5, -5.8, 31, 21.5);
+    ctx.strokeRect(-147.5, -5.8, 31, 21.5);
+    // 厚门右侧重型金属门把手 + 左侧双铰链
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-119.5, -2.5, 2.2, 11.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-119.5, -2.5, 2.2, 11.5);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-149.2, -3.5, 1.8, 3.2);
+    ctx.fillRect(-149.2, 8.5, 1.8, 3.2);
+    // 深灰门面醒目白字 -80°C
+    ctx.font = 'bold 2.8px monospace';
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillText('-80°C', -132.5, 6.5);
+    // 后沿散热格栅
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.6;
+    for (let vx = -146; vx <= -122; vx += 2.6) {
+        ctx.beginPath(); ctx.moveTo(vx, 16.2); ctx.lineTo(vx, 17.8); ctx.stroke();
+    }
+    // 顶部温度屏底座（动态温度数值 + 报警灯在 Dynamic 绘制）
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-145.5, -4.8, 17.5, 5.4);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-145.5, -4.8, 17.5, 5.4);
+
+    // 6B) 耗材簇 A（-112..-85）：冻存管盒 2 个（一开一合，绿/蓝管帽不同）+ 镊子 + 刮刀
+    // 冻存管盒 1（开启，-104, -3：翡翠绿管帽）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-110, -7.2, 12.0, 9.2);
+    ctx.strokeRect(-110, -7.2, 12.0, 9.2);
+    ctx.fillStyle = '#10b981';
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+            ctx.beginPath(); ctx.arc(-107.8 + c * 2.5, -5.0 + r * 2.5, 0.7, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    // 折盖向墙侧 (+y) 翻开，方便实验人员从房间内侧 (-y) 取用冻存管
+    ctx.fillStyle = 'rgba(167, 243, 208, 0.28)';
+    ctx.fillRect(-110, 2.2, 12.0, 2.3);
+    // 冻存管盒 2（闭合，-104, +11：天蓝封盖与锁扣）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-110, 6.0, 12.0, 9.5);
+    ctx.strokeRect(-110, 6.0, 12.0, 9.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-108.5, 7.5, 9.0, 6.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-105.5, 5.1, 3.0, 1.2);
+    // 镊子 (-91, -4) & 刮刀 (-91, +11)
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-94.5, -7.5); ctx.lineTo(-87.0, -2.5);
+    ctx.moveTo(-94.5, -6.3); ctx.lineTo(-87.0, -2.5);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-94.5, 9.5, 6.5, 1.2);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-88.5, 9.2, 3.0, 1.8);
+
+    // 6C) 液氮储存罐 1 个（-83..-47，银白圆柱罐 + 顶盖 + 蓝液位计 + 排气管入墙）
+    // 排气管入墙（保温银白管接至墙面水管/排气管）
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(-65, 18.0); ctx.lineTo(-65, 27.3); ctx.stroke();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-65.8, 18.0); ctx.lineTo(-65.8, 27.3); ctx.stroke();
+    // 罐体底座阴影圈
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-65, 5.2, 16.8, 0, Math.PI * 2); ctx.fill();
+    // 银白圆柱罐身
+    const ln2Grad = ctx.createRadialGradient(-69, 2, 2, -65, 5.2, 15.6);
+    ln2Grad.addColorStop(0, '#f8fafc');
+    ln2Grad.addColorStop(0.55, '#cbd5e1');
+    ln2Grad.addColorStop(1, '#64748b');
+    ctx.fillStyle = ln2Grad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath(); ctx.arc(-65, 5.2, 15.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 罐盖 + 提环锁扣
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(-65, 5.2, 8.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-68.5, 4.2, 7.0, 2.0);
+    // 蓝色液位计（罐前显著蓝色刻度液位条）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-72.0, -8.5, 14.0, 3.6);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-72.0, -8.5, 14.0, 3.6);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-71.0, -7.7, 9.6, 2.0);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('LN2', -65, 10.6);
+
+    // 实验记录板 1 块（置于低矮样本转运箱后方空位 x = -31, y = +20.2，不遮挡、面向房间内侧 -y）
+    ctx.save();
+    ctx.translate(-31, 20.2);
+    ctx.rotate(0.10);
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-4.8, -3.2, 9.6, 6.4);
+    ctx.strokeRect(-4.8, -3.2, 9.6, 6.4);
+    ctx.fillStyle = '#fefce8';
+    ctx.fillRect(-4.0, -2.3, 8.0, 4.7);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-1.8, 2.1, 3.6, 1.3);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    [-0.9, 0.3, 1.5].forEach((ly, i) => {
+        ctx.beginPath(); ctx.moveTo(-3.0, ly); ctx.lineTo(2.6 - i * 0.7, ly + 0.15); ctx.stroke();
+    });
+    ctx.restore();
+
+    // 6D) 耗材簇 B（-45..-16）：标签打印机 1 个 + 记号笔 1 支 + 样本转运箱 1 个（硬壳低温箱款，区别于 03 台）
+    // 标签打印机 (-33, -4.5)：方箱 + 出纸口 + 白色条码标签纸
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-41.5, -8.5, 14.5, 9.5);
+    ctx.strokeRect(-41.5, -8.5, 14.5, 9.5);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-39.5, -7.2, 10.5, 2.0); // 出纸槽
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-38.0, -10.5, 7.5, 3.2); // 吐出的标签纸
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-37.0, -9.8, 5.5, 0.7);
+    ctx.fillRect(-37.0, -8.6, 3.8, 0.6);
+    // 记号笔 (-21, -5.5)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-25.0, -7.2, 7.2, 1.6);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-18.2, -7.2, 2.0, 1.6);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-23.5, -7.0, 2.2, 1.1);
+    // 样本转运箱 1 个 (-31, +10：加强筋银白箱盖 + 折叠提手 + 蓝翠温度贴)
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-42.5, 3.5, 23.0, 13.5);
+    ctx.strokeRect(-42.5, 3.5, 23.0, 13.5);
+    // 双侧扣与顶提手
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-43.2, 8.0, 1.5, 4.5);
+    ctx.fillRect(-20.2, 8.0, 1.5, 4.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.0;
+    ctx.strokeRect(-35.0, 8.2, 8.0, 3.8);
+    // 温度贴 (-20°C 贴片)
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-40.5, 5.0, 7.0, 3.4);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-39.6, 5.8, 2.4, 1.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-36.6, 5.8, 2.2, 1.8);
+
+    // 6E) 冻存架 1 组（-13..+19，并排 3 列抽屉 A1/B4/C9 面向房间侧 -y 拉出，带前侧拉手）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-13, -5.5, 31, 23.0);
+    ctx.strokeRect(-13, -5.5, 31, 23.0);
+    [
+        { x: -11.5, w: 8.6, col: '#0284c7', txt: 'A1', txtCol: '#e0f2fe', pull: 2.8 },
+        { x: -1.8,  w: 8.6, col: '#10b981', txt: 'B4', txtCol: '#ecfdf5', pull: 1.3 },
+        { x: 7.9,   w: 8.6, col: '#f59e0b', txt: 'C9', txtCol: '#fef3c7', pull: 0.0 }
+    ].forEach(tier => {
+        const ty = -4.2 - tier.pull;
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(tier.x, ty, tier.w, 20.5);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.6;
+        ctx.strokeRect(tier.x, ty, tier.w, 20.5);
+        ctx.fillStyle = tier.col;
+        ctx.fillRect(tier.x + 0.8, ty + 2.2, tier.w - 1.6, 16.8);
+        ctx.strokeRect(tier.x + 0.8, ty + 2.2, tier.w - 1.6, 16.8);
+        ctx.font = 'bold 2.4px monospace';
+        ctx.fillStyle = tier.txtCol;
+        ctx.fillText(tier.txt, tier.x + tier.w / 2, ty + 10.6);
+        // 前侧（-y 面向房间）抽屉拉手
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(tier.x + 1.8, ty - 0.9, tier.w - 3.6, 1.3);
+    });
+
+    // 6F) 耗材簇 C（+22..+48）：台面计时器 1 个（按钮在 -y 前缘、屏在后）+ 离心管架 1 个
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(28.5, -9.6, 12.5, 6.8);
+    ctx.strokeRect(28.5, -9.6, 12.5, 6.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(30.4, -8.9, 3.2, 1.1);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(35.8, -8.9, 3.2, 1.1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(29.8, -7.1, 9.9, 3.5);
+
+    // 离心管架 (+35, +9：15mL×4 蓝盖细刻度 + 50mL×2 红盖粗刻度)
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(23.5, 2.0, 22.5, 15.0);
+    ctx.strokeRect(23.5, 2.0, 22.5, 15.0);
+    [
+        { x: 26.2, y: 5.8, col: '#10b981' },
+        { x: 30.4, y: 5.8, col: '#f59e0b' },
+        { x: 26.2, y: 12.6, col: '#38bdf8' },
+        { x: 30.4, y: 12.6, col: '#e2e8f0' }
+    ].forEach(t15 => {
+        ctx.fillStyle = t15.col;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.35, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.5, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath(); ctx.moveTo(t15.x - 0.8, t15.y); ctx.lineTo(t15.x + 0.8, t15.y); ctx.stroke();
+    });
+    [
+        { x: 39.2, y: 5.8, col: '#10b981' },
+        { x: 39.2, y: 12.8, col: '#38bdf8' }
+    ].forEach(t50 => {
+        ctx.fillStyle = t50.col;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.25, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.45, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(t50.x - 1.3, t50.y - 0.5); ctx.lineTo(t50.x + 1.3, t50.y - 0.5);
+        ctx.moveTo(t50.x - 1.3, t50.y + 0.6); ctx.lineTo(t50.x + 1.3, t50.y + 0.6);
+        ctx.stroke();
+    });
+
+    // 6G) 标本柜 1 个（+50..+94，带锁玻璃柜 + 门内 2 层样品架 + 层板）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(51, -7.8, 42, 25.5);
+    ctx.strokeRect(51, -7.8, 42, 25.5);
+    // 深蓝玻璃内腔
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(53.2, -5.5, 37.6, 21.0);
+    // 门内 2 层钢层板 + 2 层样品架/冻存瓶
+    [2.0, 10.5].forEach((sy, sIdx) => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(54.0, sy, 36.0, 1.4);
+        for (let rx = 56.5; rx <= 87.5; rx += 5.2) {
+            ctx.fillStyle = (rx + sIdx) % 2 === 0 ? '#10b981' : '#38bdf8';
+            ctx.fillRect(rx, sy - 4.2, 3.4, 3.8);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(rx + 0.6, sy - 5.0, 2.2, 0.8);
+        }
+    });
+    // 双玻璃门竖框 + 锁芯 + 双把手
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.95;
+    ctx.strokeRect(53.2, -5.5, 18.8, 21.0);
+    ctx.strokeRect(72.0, -5.5, 18.8, 21.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(69.6, -2.2, 1.2, 5.2);
+    ctx.fillRect(73.2, -2.2, 1.2, 5.2);
+    // 中缝圆柱门锁
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.arc(72.0, 4.5, 1.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    // 6H) 传递窗 1 个（+104..+154，方窗 + 双门 + 门把 + 内部紫外灯管静态支架，微光在 Dynamic 绘）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.95;
+    ctx.fillRect(104, -7.8, 48, 25.5);
+    ctx.strokeRect(104, -7.8, 48, 25.5);
+    // 内部腔体
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(107.5, -4.5, 41.0, 19.0);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(107.5, -4.5, 41.0, 19.0);
+    // 传递窗双门边框（前后/左右互锁对开门）+ 门把手
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.9;
+    ctx.strokeRect(108.5, -3.5, 19.0, 17.0);
+    ctx.strokeRect(128.5, -3.5, 19.0, 17.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(125.0, 1.5, 1.4, 6.0);
+    ctx.fillRect(129.6, 1.5, 1.4, 6.0);
+    // 紫外灯管灯座（x ∈ [112, 144], y = 5.0）
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(111.5, 3.8, 2.2, 2.4);
+    ctx.fillRect(142.3, 3.8, 2.2, 2.4);
+    // 互锁标牌与前缘互锁控制面板（面向房间侧 -y）
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(108.5, -7.3, 12.5, 2.3);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('PASS-BOX', 131.5, -5.8);
+
+    ctx.restore();
+}
+
+function drawWestBench05Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 超低温冰箱：动态 -80°C 数值 + 压缩机运行进度条 + 前门缝冷气微雾
+    const tempVal = (-80.0 + Math.sin(time * 0.42) * 0.4).toFixed(1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-145.0, -4.4, 16.5, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${tempVal}C`, -136.75, -2.5);
+    const compLoad = 0.55 + 0.35 * Math.sin(time * 0.9);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-144.0, -0.9, 14.5, 0.7);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-144.0, -0.9, 14.5 * compLoad, 0.7);
+    const frostDrift = 0.22 + 0.14 * Math.sin(time * 1.4);
+    ctx.fillStyle = `rgba(224, 242, 254, ${frostDrift.toFixed(3)})`;
+    ctx.fillRect(-146.0, -7.2, 28.0, 1.3);
+
+    // 2. 液氮储存罐：蓝色液位计微波动 + 罐口冷雾流动 + 排气管冷凝流体脉冲
+    const ln2Level = 8.4 + Math.sin(time * 0.7) * 1.2;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-71.2, -7.8, 12.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-71.0, -7.7, ln2Level, 2.0);
+    // 罐盖冷雾圈脉冲
+    const mistR = 4.2 + ((time * 0.75) % 1.0) * 5.8;
+    const mistA = (1.0 - ((time * 0.75) % 1.0)) * 0.36;
+    ctx.strokeStyle = `rgba(224, 242, 254, ${mistA.toFixed(3)})`;
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(-65, 5.2, mistR, 0, Math.PI * 2); ctx.stroke();
+    // 排气管向墙排冷气液滴脉冲
+    const exhY = 18.2 + ((time * 1.15) % 1.0) * 8.8;
+    ctx.fillStyle = '#bae6fd';
+    ctx.beginPath(); ctx.arc(-65.0, exhY, 0.85, 0, Math.PI * 2); ctx.fill();
+
+    // 3. 冻存架：拉出的 A1 抽屉冷雾闪烁 + 状态灯
+    const a1Frost = 0.16 + 0.12 * Math.sin(time * 1.8);
+    ctx.fillStyle = `rgba(186, 230, 253, ${a1Frost.toFixed(3)})`;
+    ctx.fillRect(-10.8, -5.2, 7.2, 16.0);
+
+    // 4. 台面计时器：实时倒计时数字 (12:40 循环)
+    const b5Sec = 760 - (Math.floor(time) % 760);
+    const b5mm = String(Math.floor(b5Sec / 60)).padStart(2, '0');
+    const b5ss = String(b5Sec % 60).padStart(2, '0');
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(29.8, -7.1, 9.9, 3.5);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${b5mm}:${b5ss}`, 34.75, -5.35);
+
+    // 5. 标本柜：内部冷光微闪 + 2 层样品瓶液面流动反光
+    const cabGlow = 0.08 + 0.06 * Math.sin(time * 1.1);
+    ctx.fillStyle = `rgba(56, 189, 248, ${cabGlow.toFixed(3)})`;
+    ctx.fillRect(54.0, -4.8, 36.0, 19.6);
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.5)';
+    ctx.lineWidth = 0.45;
+    [2.0, 10.5].forEach((sy, sIdx) => {
+        for (let rx = 56.5; rx <= 87.5; rx += 5.2) {
+            const w = Math.sin(time * 1.6 + rx * 0.4 + sIdx) * 0.35;
+            ctx.beginPath();
+            ctx.moveTo(rx + 0.4, sy - 2.2 + w);
+            ctx.lineTo(rx + 3.0, sy - 2.2 - w);
+            ctx.stroke();
+        }
+    });
+
+    // 6. 传递窗：紫外灯管微光起伏 + UV 扫描光束 + 前面板互锁指示条
+    const uvPulse = 0.45 + 0.35 * Math.sin(time * 1.15);
+    ctx.fillStyle = `rgba(56, 189, 248, ${(uvPulse * 0.24).toFixed(3)})`;
+    ctx.fillRect(109.5, -2.0, 37.0, 14.0);
+    const scanX = 110.5 + ((Math.sin(time * 1.2) * 0.5 + 0.5) * 35.0);
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(scanX, -2.5); ctx.lineTo(scanX, 12.5); ctx.stroke();
+    ctx.strokeStyle = `rgba(186, 230, 253, ${(0.55 + 0.35 * uvPulse).toFixed(2)})`;
+    ctx.lineWidth = 1.35;
+    ctx.beginPath();
+    ctx.moveTo(113.7, 5.0); ctx.lineTo(142.3, 5.0);
+    ctx.stroke();
+    const uvPct = ((time * 0.12) % 1.0);
+    ctx.fillStyle = '#a855f7';
+    ctx.fillRect(109.2, -6.7, 11.1 * uvPct, 1.1);
+
+    // 7. 各模块及墙面插座状态指示灯缓慢呼吸
+    [
+        { x: -124.2, y: -3.2, on: '#ef4444', dim: '#7f1d1d', spd: 1.8, ph: 0.0 },
+        { x: -124.2, y: -1.0, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 1.0 },
+        { x: -55.0,  y: -6.8, on: '#38bdf8', dim: '#0c4a6e', spd: 1.3, ph: 2.0 },
+        { x: -29.0,  y: -7.2, on: '#10b981', dim: '#064e3b', spd: 2.4, ph: 0.4 }, // 标签打印机出纸灯
+        { x: -35.0,  y: 6.7,  on: '#38bdf8', dim: '#0c4a6e', spd: 1.5, ph: 1.2 }, // 转运箱温度灯
+        { x: 64.0,   y: -6.6, on: '#10b981', dim: '#064e3b', spd: 1.1, ph: 0.5 },
+        { x: 146.5,  y: -5.8, on: '#c084fc', dim: '#4c1d95', spd: 1.4, ph: 1.7 },
+        { x: 45.6,   y: 26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.9 }
+    ].forEach(led => {
+        const p = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = p > 0.35 ? led.on : led.dim;
+        ctx.beginPath();
+        ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function drawWestBench05(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestBench05Static(ctx, cx, cy, unitAngle);
+    drawWestBench05Dynamic(ctx, cx, cy, unitAngle, time);
+}
+
+function getWestBench05Obstacle() {
+    const cx = 658.37, cy = 1491.69;
+    const unitAngle = 0.5824;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 165; // 330 / 2
+    const halfH = 25;  // 50 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST BIOSAFETY BENCH 05',
+        displayName: 'BIOSAFETY & SPECIMEN STORAGE BENCH 05',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 220 < camX || cx - 220 > camX + vw || cy + 220 < camY || cy - 220 > camY + vh) return;
+
+            const cacheKey = '__westBench05V1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 420, ch = 260;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBench05Static(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestBench05Dynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// Level 8 · 西侧三角房 · 长试验台 06：底墙东段湿化学台 (330x50，静态+动态分离)
+// 中心 (938.14, 1675.95)，长轴沿底墙内缘 (0.5824 rad)，占沿墙 755–1085
+// 西端与 05 台留 5px 空档，东端距通道 2 西墙 ~54px（与 04 台西端到北墙 ~53px 对称）
+// 南缘距底墙内壁 3px（墙面管线与排风管道贴墙至 +28）
+// =========================================================================
+function drawWestBench06Static(ctx, cx, cy, unitAngle) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面投影阴影
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-167, -27.5, 334, 54.5, 2.5) : ctx.rect(-167, -27.5, 334, 54.5);
+    ctx.fill();
+
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2 + 气阀墙端分支（贴底墙 y ∈ [+24.6, +28.0]）
+    // 2A) 水管（银白，y = +27.3）与气管（深黑，y = +25.9）及固定卡扣
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.45;
+    ctx.beginPath(); ctx.moveTo(-162, 27.3); ctx.lineTo(162, 27.3); ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-162, 27.0); ctx.lineTo(162, 27.0); ctx.stroke();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-162, 25.9); ctx.lineTo(162, 25.9); ctx.stroke();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(-162, 25.7); ctx.lineTo(162, 25.7); ctx.stroke();
+
+    [-132, -72, -32, 48, 126].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, 24.8, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, 24.8, 2.4, 3.2);
+    });
+
+    // 2B) 墙面插座排 5 个（两孔、三孔、带开关、带指示灯、带 USB 各不相同）
+    [
+        { x: -148, kind: '2pin' },
+        { x: -80,  kind: '3pin' },
+        { x: -52,  kind: 'switch' },
+        { x: 56,   kind: 'led' },
+        { x: 134,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, 24.6, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, 25.6, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, 25.6, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, 25.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, 26.3, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, 26.3, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, 25.4, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, 25.6, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(out.x - 2.4, 26.2, 0.75, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, 25.6, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, 25.6, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, 25.5, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, 25.5, 2.0, 1.4);
+        }
+    });
+
+    // 2C) 墙面挂钩 2 个（左挂防酸手套、右挂实验擦拭抹布）
+    // 左挂钩 (-159, 25.3) + 黄色耐酸橡胶手套
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-160.2, 24.7, 2.4, 2.2);
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#854d0e';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-160.6, 25.6); ctx.lineTo(-157.2, 25.6);
+    ctx.lineTo(-156.6, 27.9); ctx.lineTo(-158.1, 27.9);
+    ctx.lineTo(-159.0, 26.8); ctx.lineTo(-159.9, 27.9);
+    ctx.lineTo(-161.2, 27.9); ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 右挂钩 (+159, 25.3) + 蓝白格实验抹布
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(157.8, 24.7, 2.4, 2.2);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(156.4, 25.4, 5.2, 2.5);
+    ctx.strokeRect(156.4, 25.4, 5.2, 2.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(157.1, 25.5, 1.1, 2.3);
+    ctx.fillRect(159.6, 25.5, 1.1, 2.3);
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（台前缘 y ∈ [-25.0, -23.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-129, -64, 0, 64, 129].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 22, -24.7); ctx.lineTo(bx + 22, -23.3);
+        ctx.moveTo(bx - 22, -23.3); ctx.lineTo(bx + 22, -24.7);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-162, -24.3, 324, 1.3);
+    [-161, -97, -32, 32, 97, 161].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, -25.4, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, -25.0, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [-23.0, -12.6]）
+    // 4A) 西组 [-161, -83]：带锁双开门柜（2 门 + 中央锁扣 + 竖拉手）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-161, -23.0, 78, 10.4);
+    ctx.strokeRect(-161, -23.0, 78, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-160, -22.1, 37.2, 8.6);
+    ctx.fillRect(-121.2, -22.1, 37.2, 8.6);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(-122.0, -22.4); ctx.lineTo(-122.0, -13.1); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-126.2, -21.2, 1.5, 6.2);
+    ctx.fillRect(-119.3, -21.2, 1.5, 6.2);
+    // 柜门铜芯圆锁
+    ctx.fillStyle = '#fbbf24';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(-122.0, -17.8, 1.45, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-122.3, -18.5, 0.6, 1.4);
+
+    // 4B) 次西组 [-79, -2]：3 档抽屉（拉手逐档变短：20 -> 13 -> 6）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-79, -23.0, 77, 10.4);
+    ctx.strokeRect(-79, -23.0, 77, 10.4);
+    [
+        { y: -22.4, hw: 20.0 },
+        { y: -19.1, hw: 13.0 },
+        { y: -15.8, hw: 6.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#64748b' : '#475569';
+        ctx.fillRect(-77.5, dr.y, 74, 2.6);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(-77.5, dr.y, 74, 2.6);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-40.5 - dr.hw / 2, dr.y + 0.9, dr.hw, 0.9);
+    });
+
+    // 4C) 次东组 [+2, +79]：开放格（上层试剂桶 2 个 + 下层蓝/白废液桶各 1 个）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, -23.0, 77, 10.4);
+    ctx.strokeRect(2, -23.0, 77, 10.4);
+    // 钢层板
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, -18.2, 75, 1.0);
+    // 上层：试剂桶 2 个（左琥珀耐酸桶、右深灰溶剂桶，配螺口盖）
+    ctx.fillStyle = '#b45309';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(14, -16.9, 18, 3.5);
+    ctx.strokeRect(14, -16.9, 18, 3.5);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(20, -16.9, 5, 1.1);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(46, -16.9, 18, 3.5);
+    ctx.strokeRect(46, -16.9, 18, 3.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(52, -16.9, 5, 1.1);
+    // 下层：蓝、白废液桶各 1 个
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(12, -22.5, 22, 3.9);
+    ctx.strokeRect(12, -22.5, 22, 3.9);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(19, -22.5, 8, 1.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(45, -22.5, 22, 3.9);
+    ctx.strokeRect(45, -22.5, 22, 3.9);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(52, -22.5, 8, 1.0);
+
+    // 4D) 东组 [+83, +161]：深柜（单门 + 把手 + 散热百叶孔）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(83, -23.0, 78, 10.4);
+    ctx.strokeRect(83, -23.0, 78, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(84.2, -22.0, 75.6, 8.4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(87.2, -21.0, 1.8, 6.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 122; vx <= 154; vx += 3.6) {
+        ctx.beginPath(); ctx.moveTo(vx, -20.8); ctx.lineTo(vx + 2.0, -14.8); ctx.stroke();
+    }
+
+    // 5. 304 不锈钢凸边环氧耐酸台面（330x37.6 @ x ∈ [-165, +165], y ∈ [-12.6, +25.0]，精细网格 + BENCH-06 钢印）
+    const topGrad = ctx.createLinearGradient(0, -12.6, 0, 25);
+    topGrad.addColorStop(0, '#334155');
+    topGrad.addColorStop(0.2, '#1e293b');
+    topGrad.addColorStop(0.85, '#0f172a');
+    topGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-165, -12.6, 330, 37.6);
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -150; gx <= 150; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -11.0); ctx.lineTo(gx, 23.5); ctx.stroke();
+    }
+    for (let gy = -6; gy <= 20; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-163.5, gy); ctx.lineTo(163.5, gy); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-164.25, -11.85, 328.5, 36.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-165, -12.6, 330, 37.6);
+
+    // 台面编号钢印 BENCH-06
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-162, -12.2, 20, 4.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-162, -12.2, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-06', -152, -10.05);
+
+    // =====================================================================
+    // 6. 湿化学核心模块与台面器皿（全件仅出现一次，结构不重复 01 台）
+    // =====================================================================
+
+    // 6A) 最西端功能区 [-162, -103]：旋转蒸发仪 + 单层试剂架(4瓶) + 移液器架(3支) + 培养皿/镊子/药匙
+    // 旋转蒸发仪（x ∈ [-160, -135], y ∈ [-7.2, +14.2]）：恒温水浴锅 + 斜置主机/冷凝管 + 接收烧瓶
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-159.5, -7.2, 23.5, 21.2);
+    ctx.strokeRect(-159.5, -7.2, 23.5, 21.2);
+    // 恒温水浴锅（圆形不锈钢槽 + 淡蓝水浴）
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath(); ctx.arc(-151.5, -1.2, 6.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath(); ctx.arc(-151.5, -1.2, 4.6, 0, Math.PI * 2); ctx.fill();
+    // 驱动机头 + 立柱 + 斜置玻璃冷凝管
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-156.5, 6.8, 6.0, 6.4);
+    ctx.strokeRect(-156.5, 6.8, 6.0, 6.4);
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-150.5, 8.6); ctx.lineTo(-140.0, 12.6); ctx.lineTo(-137.5, 8.2); ctx.lineTo(-148.0, 4.4); ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // 内螺旋冷却盘管
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(-148.5, 6.6); ctx.lineTo(-145.5, 8.4); ctx.lineTo(-143.5, 7.2); ctx.lineTo(-140.5, 9.6);
+    ctx.stroke();
+    // 接收圆底烧瓶 + 前沿数显控温/转速面板（面向房间侧 -y）
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.38)';
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath(); ctx.arc(-140.2, -1.5, 3.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-158.0, -6.8, 12.0, 3.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.45;
+    ctx.strokeRect(-158.0, -6.8, 12.0, 3.2);
+
+    // 单层试剂架（沿南墙缘 x ∈ [-133, -103], y ∈ [+14.5, +23.5]）：1 层木质搁板 + 1 根防倒栏 + 4 个试剂瓶
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-133, 14.5, 30, 9.0);
+    ctx.strokeRect(-133, 14.5, 30, 9.0);
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(-131, 18.8); ctx.lineTo(-105, 18.8); ctx.stroke();
+    // 4 个高度/液位/瓶盖色各异的试剂瓶（琥珀、蓝、无色、绿）
+    [
+        { x: -129.0, w: 5.2, h: 6.4, body: '#b45309', liq: '#f59e0b', cap: '#0f172a' },
+        { x: -122.0, w: 4.8, h: 5.6, body: '#1d4ed8', liq: '#60a5fa', cap: '#e2e8f0' },
+        { x: -115.2, w: 5.4, h: 6.8, body: '#cbd5e1', liq: '#bae6fd', cap: '#dc2626' },
+        { x: -108.2, w: 4.6, h: 5.2, body: '#047857', liq: '#34d399', cap: '#fbbf24' }
+    ].forEach(b => {
+        ctx.fillStyle = b.body;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(b.x - b.w / 2, 16.0, b.w, b.h);
+        ctx.strokeRect(b.x - b.w / 2, 16.0, b.w, b.h);
+        ctx.fillStyle = b.liq;
+        ctx.fillRect(b.x - b.w / 2 + 0.6, 16.0 + b.h * 0.42, b.w - 1.2, b.h * 0.5);
+        ctx.fillStyle = b.cap;
+        ctx.fillRect(b.x - 1.3, 14.9, 2.6, 1.3);
+    });
+    // 单根金属防倒挡杆（架在瓶身前侧护栏位置，朝房间侧防倾倒）
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.moveTo(-132.5, 18.2); ctx.lineTo(-103.5, 18.2); ctx.stroke();
+
+    // 移液器架 + 3 支不同长度移液器（手柄帽面向房间侧 -y 方便握取）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-132.5, 2.5, 13.5, 8.2);
+    ctx.strokeRect(-132.5, 2.5, 13.5, 8.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-131.5, 8.8, 11.5, 1.2);
+    [
+        { px: -129.2, len: 12.2, col: '#38bdf8' },
+        { px: -125.7, len: 10.0, col: '#10b981' },
+        { px: -122.2, len: 7.8,  col: '#f8fafc' }
+    ].forEach(pip => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.fillRect(pip.px - 0.8, 8.8 - pip.len, 1.6, pip.len);
+        ctx.strokeRect(pip.px - 0.8, 8.8 - pip.len, 1.6, pip.len);
+        ctx.fillStyle = pip.col;
+        ctx.fillRect(pip.px - 1.1, 8.0 - pip.len, 2.2, 1.5);
+    });
+
+    // 培养皿（淡黄琼脂）+ 镊子 + 药匙（x ∈ [-117, -102], y ∈ [-7.5, +11.5]）
+    ctx.fillStyle = 'rgba(226, 232, 240, 0.35)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath(); ctx.arc(-109.5, 4.5, 5.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(-109.5, 4.5, 4.1, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 0.4;
+    ctx.beginPath(); ctx.moveTo(-111.5, 3.2); ctx.lineTo(-107.8, 5.8); ctx.stroke();
+    // 镊子
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(-115.5, -6.5); ctx.lineTo(-103.5, -5.0);
+    ctx.moveTo(-115.5, -4.6); ctx.lineTo(-103.5, -5.0);
+    ctx.stroke();
+    // 双头药匙
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.moveTo(-115.0, -2.0); ctx.lineTo(-104.0, -2.0); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath(); ctx.ellipse(-115.2, -2.0, 1.3, 0.7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(-104.2, -2.6, 1.5, 1.2);
+
+    // 6B) 水槽西（x = -90，方形水槽 + 弯颈龙头 + 挡水板 + 皂液瓶，与东圆形槽及 01 台完全不同）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-100, -7.5, 20, 26.5);
+    ctx.strokeRect(-100, -7.5, 20, 26.5);
+    // 方形盆体
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-97.5, -5.2, 15, 18.5);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-97.5, -5.2, 15, 18.5);
+    // 盆内底水渍/反光点
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.beginPath(); ctx.arc(-93.2, 2.4, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-86.8, -1.8, 1.3, 0, Math.PI * 2); ctx.fill();
+    // 排水口 + 橡胶塞
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-90.0, 4.0, 1.9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath(); ctx.arc(-86.5, 8.5, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.4;
+    ctx.beginPath(); ctx.moveTo(-86.5, 8.5); ctx.lineTo(-85.0, 13.5); ctx.stroke();
+    // 后挡水板
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-99.5, 15.6, 19, 3.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(-99.5, 15.6, 19, 3.2);
+    // 弯颈水龙头
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(-90.0, 16.5); ctx.lineTo(-90.0, 10.5); ctx.arc(-91.6, 10.5, 1.6, 0, Math.PI, true); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-90.0, 16.8, 1.3, 0, Math.PI * 2); ctx.fill();
+    // 皂液瓶
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(-84.5, 13.2, 3.4, 4.0);
+    ctx.strokeRect(-84.5, 13.2, 3.4, 4.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-83.4, 12.1, 1.2, 1.2);
+
+    // 6C) 小型通风橱（x ∈ [-76, +50]，宽 126px，半开玻璃视窗 + 刻度 + 网孔台面 + 圆底烧瓶 + 试管架 + 排风管 + 风速屏 + 进风口）
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-76, -9.5, 126, 33.2);
+    ctx.strokeRect(-76, -9.5, 126, 33.2);
+    // 顶部排风管接墙（x ∈ [-20, -8], y ∈ [+21.5, +28.0]）
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-20, 21.5, 12, 6.5);
+    ctx.strokeRect(-20, 21.5, 12, 6.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-22, 23.2, 16, 1.6);
+    ctx.strokeRect(-22, 23.2, 16, 1.6);
+    // 内腔网孔工作台面（x ∈ [-68, +34], y ∈ [-1.5, +19.5]）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-68, -1.5, 102, 21.0);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    for (let gx = -64; gx <= 30; gx += 4.5) {
+        ctx.beginPath(); ctx.moveTo(gx, -1.0); ctx.lineTo(gx, 19.0); ctx.stroke();
+    }
+    for (let gy = 1.5; gy <= 17.5; gy += 4.0) {
+        ctx.beginPath(); ctx.moveTo(-67.5, gy); ctx.lineTo(33.5, gy); ctx.stroke();
+    }
+    // 橱内：1 个圆底烧瓶（左中 x = -38, y = +9.2）+ 夹持铁架台
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-45, 13.5, 14, 3.0);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-38, 15.0); ctx.lineTo(-38, 9.2); ctx.stroke();
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(-38, 8.8, 5.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 橱内：1 个试管架（右中 x ∈ [-10, +22], y ∈ [+5.0, +13.5]），内插 5 支彩色试剂试管
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-10, 5.2, 32, 8.2);
+    ctx.strokeRect(-10, 5.2, 32, 8.2);
+    ['#38bdf8', '#f59e0b', '#10b981', '#e2e8f0', '#f43f5e'].forEach((tCol, ti) => {
+        const tx = -5.5 + ti * 5.7;
+        ctx.fillStyle = tCol;
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath(); ctx.arc(tx, 9.3, 1.75, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    });
+    // 右侧进风百叶口（x ∈ [+36, +48.5], y ∈ [-4.5, +16.5]）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(36.5, -4.0, 11.5, 20.0);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    for (let ly = -2.0; ly <= 14.5; ly += 2.6) {
+        ctx.beginPath(); ctx.moveTo(37.8, ly); ctx.lineTo(46.7, ly); ctx.stroke();
+    }
+    // 面板风速监控屏（x ∈ [-71, -44], y ∈ [-8.8, -3.6]）
+    ctx.fillStyle = '#020617';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-71, -8.8, 27, 5.2);
+    ctx.strokeRect(-71, -8.8, 27, 5.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('0.52m/s', -60, -6.15);
+    // 半开透明玻璃视窗（向后方 +y 拉起半开，保留房间侧 -y 前半段操作开口，拉手横杆位于开口上缘 y = +4.2）
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.16)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-70, 4.2, 105, 12.5);
+    ctx.strokeRect(-70, 4.2, 105, 12.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-70, 4.2, 105, 1.3);
+    // 视窗开启高度刻度（左轨 x = -69.2）
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.45;
+    for (let ty = -2.5; ty <= 16.5; ty += 3.0) {
+        ctx.beginPath(); ctx.moveTo(-71.2, ty); ctx.lineTo(-68.6, ty); ctx.stroke();
+    }
+
+    // 6D) 东中部玻璃器皿区 + 氧气阀 + 带玻璃门试剂柜（x ∈ [+53, +98]）
+    // 蒸馏与玻璃器皿（x ∈ [+53, +68], y ∈ [-8.0, +18.0]）：直形冷凝管 + 分液漏斗 + 圆底烧瓶 + 量筒
+    // 直形冷凝管（垂直透明夹套 + 内管 + 两侧水嘴）
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.28)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(54.8, 5.5, 3.8, 12.0);
+    ctx.strokeRect(54.8, 5.5, 3.8, 12.0);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(56.7, 4.0); ctx.lineTo(56.7, 18.8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(53.2, 7.6); ctx.lineTo(54.8, 7.6); ctx.moveTo(58.6, 15.2); ctx.lineTo(60.2, 15.2); ctx.stroke();
+    // 分液漏斗（梨形腔 + 聚四氟乙烯旋塞）
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.36)';
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.arc(64.5, 9.2, 3.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(62.2, 5.0, 4.6, 1.3); // 旋塞
+    ctx.strokeStyle = '#f8fafc';
+    ctx.beginPath(); ctx.moveTo(64.5, 4.0); ctx.lineTo(64.5, 6.2); ctx.stroke();
+    // 圆底烧瓶（底部含琥珀色液）
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.42)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(57.2, -2.8, 3.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(56.1, -7.2, 2.2, 1.2);
+    // 量筒（正置：六角底座位于 +y 底侧、管口朝 -y 方向，与烧瓶同向）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(62.4, 0.8, 5.0, 1.4);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(63.6, -7.2, 2.6, 8.0);
+    ctx.strokeRect(63.6, -7.2, 2.6, 8.0);
+    for (let cyTick = -5.5; cyTick <= -0.5; cyTick += 1.6) {
+        ctx.beginPath(); ctx.moveTo(63.7, cyTick); ctx.lineTo(64.8, cyTick); ctx.stroke();
+    }
+
+    // 氧气阀（x = +61, y = +21.5）：铜质分气管接入墙面气管 + 绿色手轮
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(61.0, 21.5); ctx.lineTo(61.0, 25.9); ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(59.0, 19.8, 4.0, 3.4);
+    ctx.strokeRect(59.0, 19.8, 4.0, 3.4);
+    ctx.fillStyle = '#16a34a';
+    ctx.beginPath(); ctx.arc(61.0, 21.5, 2.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#dcfce7';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(59.2, 21.5); ctx.lineTo(62.8, 21.5); ctx.moveTo(61.0, 19.7); ctx.lineTo(61.0, 23.3); ctx.stroke();
+
+    // 小型带玻璃门试剂柜（x ∈ [+70, +98], y ∈ [-7.5, +22.2]，内部 2 层小试剂瓶）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(70, -7.5, 28, 29.7);
+    ctx.strokeRect(70, -7.5, 28, 29.7);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(71.8, -5.5, 24.4, 25.7);
+    // 内部 2 层钢搁板（y = +3.5, +12.5）
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(72.0, 3.2, 24.0, 1.1);
+    ctx.fillRect(72.0, 12.2, 24.0, 1.1);
+    // 上、下层小试剂瓶
+    [
+        { x: 75.5, y: 13.8, c: '#d97706' },
+        { x: 80.5, y: 13.8, c: '#38bdf8' },
+        { x: 85.5, y: 13.8, c: '#e2e8f0' },
+        { x: 91.0, y: 13.8, c: '#10b981' },
+        { x: 76.0, y: 4.8,  c: '#ef4444' },
+        { x: 81.5, y: 4.8,  c: '#facc15' },
+        { x: 87.0, y: 4.8,  c: '#3b82f6' },
+        { x: 92.2, y: 4.8,  c: '#cbd5e1' }
+    ].forEach(sb => {
+        ctx.fillStyle = sb.c;
+        ctx.fillRect(sb.x - 1.6, sb.y, 3.2, 4.8);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(sb.x - 0.9, sb.y - 0.9, 1.8, 0.9);
+    });
+    // 透明玻璃门与金属锁扣
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(71.4, -6.2, 25.2, 27.0);
+    ctx.strokeRect(71.4, -6.2, 25.2, 27.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(81.5, -7.2, 5.0, 1.2);
+
+    // 6E) 水槽东（x = +110，圆形水槽 + 双控龙头 + 弹簧软管喷枪，与西方形槽及 01 台完全不同）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(100, -7.5, 20, 26.5);
+    ctx.strokeRect(100, -7.5, 20, 26.5);
+    // 圆形不锈钢深盆
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.arc(110.0, 3.2, 7.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 圆形盆内水渍
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.24)';
+    ctx.beginPath(); ctx.arc(106.2, 5.2, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(113.5, 0.2, 1.2, 0, Math.PI * 2); ctx.fill();
+    // 排水口 + 塞子
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(110.0, 3.2, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath(); ctx.arc(113.6, 7.6, 1.1, 0, Math.PI * 2); ctx.fill();
+    // 双控冷热阀门 + 主嘴
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(105.0, 14.5, 10.0, 2.6);
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath(); ctx.arc(105.8, 15.8, 1.25, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(114.2, 15.8, 1.25, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(110.0, 15.6); ctx.lineTo(110.0, 9.5); ctx.stroke();
+    // 弹簧软管喷枪（绕主嘴右旁弧形弹簧卷）
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(112.4, 15.0); ctx.lineTo(115.0, 12.8); ctx.lineTo(112.2, 11.2); ctx.lineTo(114.8, 9.2);
+    ctx.stroke();
+
+    // 6F) 最东端（x ∈ [+123, +162]）：氩气阀 + 台面计时器 + 记录板
+    // 氩气阀（x = +146, y = +21.5）：灰管接入墙面气管 + 白色手轮（与氧气阀口径/颜色不同）
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.moveTo(146.0, 21.5); ctx.lineTo(146.0, 25.9); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(144.3, 20.0, 3.4, 3.0);
+    ctx.strokeRect(144.3, 20.0, 3.4, 3.0);
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath(); ctx.arc(146.0, 21.5, 2.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(146.0, 21.5, 0.7, 0, Math.PI * 2); ctx.fill();
+
+    // 台面计时器（x ∈ [+124, +140], y ∈ [+7.2, +16.6]）：倾斜壳体 + 深色屏幕框 + 按键
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(124.5, 7.2, 15.5, 9.4);
+    ctx.strokeRect(124.5, 7.2, 15.5, 9.4);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(126.0, 10.6, 12.5, 4.6);
+    // 底部 3 颗操作按键
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(126.8, 8.2, 2.8, 1.4);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(130.8, 8.2, 2.8, 1.4);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(134.8, 8.2, 2.8, 1.4);
+
+    // 记录板（x ∈ [+125, +156], y ∈ [-7.8, +4.2]）：深棕夹板 + 白纸 + 银夹子 + 3 行手写线
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(125.5, -7.8, 29.0, 11.8);
+    ctx.strokeRect(125.5, -7.8, 29.0, 11.8);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(127.5, -6.5, 25.0, 9.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(135.5, 1.5, 9.0, 2.0);
+    ctx.strokeRect(135.5, 1.5, 9.0, 2.0);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.5;
+    [0.0, -2.2, -4.4].forEach((ly, li) => {
+        ctx.beginPath(); ctx.moveTo(129.5, ly); ctx.lineTo(148.5 - li * 2.5, ly); ctx.stroke();
+    });
+    // 旁置实验记号笔
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(156.5, -6.5); ctx.lineTo(158.0, 3.0); ctx.stroke();
+
+    ctx.restore();
+}
+
+function drawWestBench06Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 旋转蒸发仪：水浴锅沸腾气泡与旋流 + 冷凝管馏分下流液滴 + 接收瓶液面晃动 + 前置数显
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-157.6, -6.4, 11.2, 2.4);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('58C', -152.0, -5.2);
+    // 水浴锅内旋转液面弧 + 冒泡
+    const bathAng = time * 2.4;
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.65)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(-151.5, -1.2, 3.0, bathAng, bathAng + 1.9); ctx.stroke();
+    for (let bi = 0; bi < 3; bi++) {
+        const bp = ((time * 0.9 + bi * 0.33) % 1.0);
+        ctx.fillStyle = `rgba(224, 242, 254, ${(1 - bp).toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(-153.2 + bi * 1.7, 0.8 - bp * 3.8, 0.55, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    // 斜置冷凝管冷凝液流动液滴 -> 滴入接收烧瓶
+    const condT = (time * 0.8) % 1.0;
+    ctx.fillStyle = '#7dd3fc';
+    ctx.beginPath();
+    ctx.arc(-148.5 + condT * 8.3, 8.2 + (2.0 - 8.2) * condT, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+    const wave = Math.sin(time * 1.6);
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.7)';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-142.6, -1.4 + wave * 0.45);
+    ctx.lineTo(-137.8, -1.4 - wave * 0.45);
+    ctx.stroke();
+
+    // 2. 水槽西（方形槽）& 水槽东（圆形槽）：龙头滴水液珠 + 排水口水面扩散涟漪
+    const dropW = (time * 1.05) % 1.0;
+    ctx.fillStyle = `rgba(125, 211, 252, ${(1 - dropW * 0.5).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(-93.2, 10.5 - dropW * 6.5, 0.65, 0, Math.PI * 2); ctx.fill();
+    const ripW = 1.6 + ((time * 1.1) % 1.0) * 4.5;
+    ctx.strokeStyle = `rgba(125, 211, 252, ${(0.55 * (1 - ((time * 1.1) % 1.0))).toFixed(2)})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(-90.0, 4.0, ripW, 0, Math.PI * 2); ctx.stroke();
+
+    const dropE = (time * 0.9 + 0.45) % 1.0;
+    ctx.fillStyle = `rgba(125, 211, 252, ${(1 - dropE * 0.5).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(110.0, 9.5 - dropE * 6.3, 0.65, 0, Math.PI * 2); ctx.fill();
+    const ripE = 1.6 + ((time * 0.95 + 0.4) % 1.0) * 4.5;
+    ctx.strokeStyle = `rgba(125, 211, 252, ${(0.55 * (1 - ((time * 0.95 + 0.4) % 1.0))).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(110.0, 3.2, ripE, 0, Math.PI * 2); ctx.stroke();
+
+    // 3. 小型通风橱：动态风速数字 + 排风气流流线 + 圆底烧瓶磁力搅拌与气泡 + 5 试管液面微晃
+    const vel = (0.51 + Math.sin(time * 1.7) * 0.02).toFixed(2);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(-70.2, -8.3, 21.5, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText(`${vel}m/s`, -59.5, -6.15);
+    // 橱内向排风口上升气流线
+    for (let si = 0; si < 3; si++) {
+        const airP = ((time * 0.75 + si * 0.33) % 1.0);
+        const ax = -42 + si * 24;
+        const ay = 4.0 + airP * 14.5;
+        ctx.strokeStyle = `rgba(148, 163, 184, ${(0.35 * Math.sin(airP * Math.PI)).toFixed(2)})`;
+        ctx.lineWidth = 0.55;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(-14 + (ax + 14) * (1 - airP * 0.5), ay + 2.2); ctx.stroke();
+    }
+    // 通风橱圆底烧瓶磁力搅拌子旋转 + 液面晃动 + 气泡
+    ctx.save();
+    ctx.translate(-38, 8.8);
+    ctx.rotate(time * 6.0);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-1.8, -0.45, 3.6, 0.9);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.65)';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-41.5, 8.6 + wave * 0.55);
+    ctx.lineTo(-34.5, 8.6 - wave * 0.55);
+    ctx.stroke();
+    // 5 支试管液面闪烁
+    for (let ti = 0; ti < 5; ti++) {
+        const tw = Math.sin(time * 2.0 + ti) * 0.35;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        ctx.arc(-5.5 + ti * 5.7, 9.3, 1.1, tw, tw + 1.3);
+        ctx.stroke();
+    }
+
+    // 4. 东中部玻璃器皿：直形冷凝管冷却水自下而上流动 + 分液漏斗分液晃动与滴落 + 圆底烧瓶/量筒微晃
+    const coolT = (time * 1.1) % 1.0;
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(56.7, 6.2 + coolT * 10.6, 0.75, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(56.7, 6.2 + ((coolT + 0.5) % 1.0) * 10.6, 0.65, 0, Math.PI * 2); ctx.fill();
+    // 分液漏斗两相液面 + 旋塞处缓慢滴液
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.7)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(62.2, 9.2 + wave * 0.3);
+    ctx.lineTo(66.8, 9.2 - wave * 0.3);
+    ctx.stroke();
+    const sepDrop = (time * 0.7) % 1.0;
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(64.5, 4.6 - sepDrop * 4.5, 0.65, 0, Math.PI * 2); ctx.fill();
+    // 圆底烧瓶 & 量筒液面微晃
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(54.8, -2.6 + wave * 0.35);
+    ctx.lineTo(59.6, -2.6 - wave * 0.35);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(63.8, -3.2 - wave * 0.3);
+    ctx.lineTo(66.0, -3.2 + wave * 0.3);
+    ctx.stroke();
+
+    // 5. 单层试剂架 4 瓶液体微反光 + 带玻璃门试剂柜内部微光
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 0.45;
+    [-129.0, -122.0, -115.2, -108.2].forEach((bx, bi) => {
+        const w = Math.sin(time * 1.4 + bi * 1.2) * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(bx - 1.4, 19.2 + w);
+        ctx.lineTo(bx + 1.4, 19.2 - w);
+        ctx.stroke();
+    });
+    const rCabGlow = 0.06 + 0.05 * Math.sin(time * 1.0);
+    ctx.fillStyle = `rgba(56, 189, 248, ${rCabGlow.toFixed(3)})`;
+    ctx.fillRect(72.0, -5.0, 24.0, 24.6);
+
+    // 6. 台面计时器实时倒计时数字（15:00 循环）
+    const totalSec = 900 - (Math.floor(time) % 900);
+    const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+    const ss = String(totalSec % 60).padStart(2, '0');
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(126.0, 10.6, 12.5, 4.6);
+    ctx.font = 'bold 2.6px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(mm + ':' + ss, 132.25, 12.9);
+
+    // 7. 各仪器与墙面插座指示灯及气阀气流微光
+    [
+        { x: -147.2, y: -5.2, on: '#f59e0b', dim: '#78350f', spd: 1.5, ph: 0.2 }, // 旋蒸加热灯
+        { x: -156.2, y: 8.5,  on: '#38bdf8', dim: '#0c4a6e', spd: 1.8, ph: 1.1 }, // 旋蒸旋转灯
+        { x: -46.8,  y: -6.2, on: '#10b981', dim: '#064e3b', spd: 1.4, ph: 0.0 }, // 通风橱风速灯
+        { x: 74.0,   y: -6.8, on: '#10b981', dim: '#064e3b', spd: 0.9, ph: 0.8 }, // 试剂柜锁灯
+        { x: 138.8,  y: 15.6, on: '#38bdf8', dim: '#0c4a6e', spd: 2.0, ph: 1.4 }, // 计时器灯
+        { x: 53.6,   y: 26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.5 }, // 墙面插座灯
+        { x: 61.0,   y: 23.8, on: '#4ade80', dim: '#14532d', spd: 1.7, ph: 0.3 }, // 氧气阀气流微灯
+        { x: 146.0,  y: 23.8, on: '#e2e8f0', dim: '#475569', spd: 1.3, ph: 2.0 }  // 氩气阀气流微灯
+    ].forEach(led => {
+        const pulse = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = pulse > 0.35 ? led.on : led.dim;
+        ctx.beginPath(); ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function drawWestBench06(ctx, cx, cy, unitAngle, time = 0) {
+    drawWestBench06Static(ctx, cx, cy, unitAngle);
+    drawWestBench06Dynamic(ctx, cx, cy, unitAngle, time);
+}
+
+function getWestBench06Obstacle() {
+    const cx = 938.14, cy = 1675.95;
+    const unitAngle = 0.5824;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 165; // 330 / 2
+    const halfH = 25;  // 50 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST WET CHEMISTRY BENCH 06',
+        displayName: 'WET CHEMISTRY BENCH 06',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 220 < camX || cx - 220 > camX + vw || cy + 220 < camY || cy - 220 > camY + vh) return;
+
+            const cacheKey = '__westBench06V1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 420, ch = 260;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBench06Static(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestBench06Dynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
 const LEVEL_7_TEST = {
     id: "level7_test",
     name: "第 8 关 · 测试关卡",
@@ -6910,7 +9616,16 @@ const LEVEL_7_TEST = {
 
             // K. 西侧三角房 · 0.7x 五联胶囊型培养舱 (228x114 旋转矩形 solid @ 1018.93,712.87) + 七联胶囊型培养舱 (318x114 旋转矩形 solid @ 1110.88,1239.52)
             getWestPentaIncubationUnitObstacle(),
-            getWestHeptaIncubationUnitObstacle()
+            getWestHeptaIncubationUnitObstacle(),
+
+            // L. 西侧三角房 · 底墙西段长试验台 04（仪器分析台 330x50 旋转矩形 solid @ 378.59,1307.44，占沿墙 85–415）
+            getWestBench04Obstacle(),
+
+            // M. 西侧三角房 · 底墙中段长试验台 05（生物安全/标本储存台 330x50 旋转矩形 solid @ 658.37,1491.69，占沿墙 420–750）
+            getWestBench05Obstacle(),
+
+            // N. 西侧三角房 · 底墙东段长试验台 06（湿化学台 330x50 旋转矩形 solid @ 938.14,1675.95，占沿墙 755–1085）
+            getWestBench06Obstacle()
         ];
 
         // =====================================================================
