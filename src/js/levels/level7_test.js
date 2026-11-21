@@ -9305,6 +9305,962 @@ function getWestBench06Obstacle() {
     };
 }
 
+// =========================================================================
+// Level 8 · 西侧三角房 · 半开放三排武器测试站 TEST-01 (260x120 规则矩形，静态+动态分离)
+// 中心 (900, 1450)，长轴水平 (0 rad)，独立放置于房间中部偏东南空地
+// 结构：三排独立开放式钢架（西排武器/深钢灰、中排仪器/中钢灰、东排靶标/浅钢灰），
+// 排间留 10px 通视缝（[-50,-40] 与 [+40,+50]），共用开放式钢架底座，无连续台面/实心柜/封闭侧板
+// 不画地面警示线；整站单一 solid 碰撞体 (260x120)
+// =========================================================================
+function drawWestWeaponTestStationStatic(ctx, cx, cy) {
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // =====================================================================
+    // 0. 共用开放式钢架底座（仅画钢轨与支脚，不画连续底板/台面，排间 10px 缝完全透出地面）
+    // =====================================================================
+    // 底座细框下方轻微接触投影（只沿四周钢轨与各排骨架，留出通视缝与架内镂空）
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.45)';
+    ctx.fillRect(-130, -59.5, 260, 4.5);
+    ctx.fillRect(-130, 55.0, 260, 4.5);
+    ctx.fillRect(-130, -56, 4.5, 112);
+    ctx.fillRect(125.5, -56, 4.5, 112);
+
+    // 南北贯通共用底座纵梁（y = -58 与 y = +58，连接三排并跨越两道 10px 通视缝）
+    ctx.fillStyle = '#2d3b4e';
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-129.5, -59.2, 259, 3.0);
+    ctx.strokeRect(-129.5, -59.2, 259, 3.0);
+    ctx.fillRect(-129.5, 56.2, 259, 3.0);
+    ctx.strokeRect(-129.5, 56.2, 259, 3.0);
+
+    // 底座纵梁顶面金属亮线与两道 10px 通视缝跨接夹板（[-50,-40] 与 [+40,+50]）
+    ctx.fillStyle = '#708094';
+    ctx.fillRect(-128, -58.5, 256, 0.8);
+    ctx.fillRect(-128, 56.9, 256, 0.8);
+    [-45, 45].forEach(gx => {
+        ctx.fillStyle = '#4a586d';
+        ctx.strokeStyle = '#0c1322';
+        ctx.lineWidth = 0.75;
+        ctx.fillRect(gx - 6, -59.6, 12, 3.8);
+        ctx.strokeRect(gx - 6, -59.6, 12, 3.8);
+        ctx.fillRect(gx - 6, 55.8, 12, 3.8);
+        ctx.strokeRect(gx - 6, 55.8, 12, 3.8);
+        // 跨接夹板螺栓
+        ctx.fillStyle = '#d1dae6';
+        ctx.beginPath(); ctx.arc(gx - 3.5, -57.7, 0.7, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(gx + 3.5, -57.7, 0.7, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(gx - 3.5, 57.7, 0.7, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(gx + 3.5, 57.7, 0.7, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // 12 处调平地脚垫板（分置三排四角）
+    [-126.5, -53.5, -36.5, 36.5, 53.5, 126.5].forEach(fx => {
+        [-57.5, 57.5].forEach(fy => {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(fx - 2.6, fy - 1.8, 5.2, 3.6);
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(fx - 1.6, fy - 1.0, 3.2, 2.0);
+        });
+    });
+
+    // 三排各自独立的底层交叉撑（分别用西深灰/中中灰/东浅灰，中缝完全镂空透视）
+    [
+        { x0: -126, x1: -54, col: '#283548', hi: '#475569' },
+        { x0: -36,  x1: 36,  col: '#475569', hi: '#64748b' },
+        { x0: 54,   x1: 126, col: '#78879b', hi: '#cbd5e1' }
+    ].forEach(br => {
+        ctx.strokeStyle = br.col;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(br.x0, -54); ctx.lineTo(br.x1, 54);
+        ctx.moveTo(br.x0, 54); ctx.lineTo(br.x1, -54);
+        ctx.stroke();
+        ctx.strokeStyle = br.hi;
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(br.x0, -54); ctx.lineTo(br.x1, 54);
+        ctx.stroke();
+    });
+
+    // =====================================================================
+    // 一、西排 · 武器排（x ∈ [-130, -50], y ∈ [-60, +60]，深钢灰开放式枪架）
+    // =====================================================================
+    // 西排开放边框钢条（深钢灰 #1e293b / #273444）
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-129.5, -56, 3.0, 112); ctx.strokeRect(-129.5, -56, 3.0, 112);
+    ctx.fillRect(-53.5, -56, 3.0, 112);  ctx.strokeRect(-53.5, -56, 3.0, 112);
+    ctx.fillRect(-126.5, -55.8, 73, 2.6); ctx.strokeRect(-126.5, -55.8, 73, 2.6);
+    ctx.fillRect(-126.5, 53.2, 73, 2.6);  ctx.strokeRect(-126.5, 53.2, 73, 2.6);
+
+    // 立柱 2 根（螺栓与焊缝各不相同）
+    // 立柱 1（西北重型方立柱 -123, -47：4 枚六角螺栓 + 弧形 TIG 鱼鳞焊缝）
+    ctx.fillStyle = '#26303d';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-127.5, -52.5, 9.5, 11.0);
+    ctx.strokeRect(-127.5, -52.5, 9.5, 11.0);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-125.8, -50.8, 6.1, 7.6);
+    [[-125.6, -50.6], [-119.9, -50.6], [-125.6, -43.4], [-119.9, -43.4]].forEach(([bx, by]) => {
+        ctx.fillStyle = '#94a3b8';
+        ctx.beginPath(); ctx.arc(bx, by, 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.6;
+    for (let wy = -50.5; wy <= -43.5; wy += 2.2) {
+        ctx.beginPath(); ctx.arc(-117.5, wy, 1.0, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+    }
+
+    // 立柱 2（东南侧斜撑方立柱 -57, +47：斜角加强板 + 3 枚沉头内六角螺栓 + 之字 MIG 焊缝）
+    ctx.fillStyle = '#283548';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(-62.5, 42.0); ctx.lineTo(-52.5, 42.0); ctx.lineTo(-52.5, 52.8); ctx.lineTo(-60.0, 52.8); ctx.lineTo(-62.5, 49.5); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#3f4c5e';
+    ctx.fillRect(-59.5, 44.2, 5.2, 6.0);
+    [[-60.5, 44.0], [-54.5, 44.0], [-57.5, 50.8]].forEach(([bx, by]) => {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.beginPath(); ctx.arc(bx, by, 0.78, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(bx - 0.35, by - 0.35, 0.7, 0.7);
+    });
+    ctx.strokeStyle = '#7c8ba1';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-62.8, 42.5); ctx.lineTo(-64.2, 44.5); ctx.lineTo(-62.8, 46.5); ctx.lineTo(-64.2, 48.5);
+    ctx.stroke();
+
+    // 横轨 2 根（开放式横向挂载轨，各自连接件与焊缝不同）
+    // 上横轨（y = -25：带长槽孔滑轨 + 左侧双螺栓端板 + 点焊）
+    ctx.fillStyle = '#273444';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-126.5, -27.5, 73, 5.0);
+    ctx.strokeRect(-126.5, -27.5, 73, 5.0);
+    ctx.fillStyle = '#090d16';
+    for (let sx = -120; sx <= -60; sx += 10) {
+        ctx.fillRect(sx, -25.8, 5.0, 1.6);
+    }
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(-126.0, -28.5, 4.5, 7.0);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.beginPath(); ctx.arc(-123.8, -26.8, 0.65, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-123.8, -23.2, 0.65, 0, Math.PI * 2); ctx.fill();
+
+    // 下横轨（y = +19：双脊 T 型导轨 + 右侧三铆钉角码 + V 形连续焊）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-126.5, 16.5, 73, 5.2);
+    ctx.strokeRect(-126.5, 16.5, 73, 5.2);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-125.5, 18.4, 71, 1.4);
+    ctx.fillStyle = '#3f4c5e';
+    ctx.fillRect(-58.5, 15.2, 5.0, 7.8);
+    [-56.0].forEach(rx => {
+        [16.5, 19.1, 21.7].forEach(ry => {
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath(); ctx.arc(rx, ry, 0.58, 0, Math.PI * 2); ctx.fill();
+        });
+    });
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-59.5, 15.8); ctx.lineTo(-58.2, 17.5); ctx.lineTo(-59.5, 19.2);
+    ctx.stroke();
+
+    // 站体钢印编号 TEST-01（西北立柱顶缘）
+    ctx.fillStyle = '#b4c0d0';
+    ctx.strokeStyle = '#111827';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-127.0, -58.2, 22.0, 4.8);
+    ctx.strokeRect(-127.0, -58.2, 22.0, 4.8);
+    ctx.font = 'bold 2.6px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0b1120';
+    ctx.fillText('TEST-01', -116.0, -55.7);
+
+    // 西排小标识牌（武器：深炭底 + 屏蓝框 + 银白字）
+    ctx.fillStyle = '#0d1526';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(-102.0, -56.2, 20.0, 6.2);
+    ctx.strokeRect(-102.0, -56.2, 20.0, 6.2);
+    ctx.font = 'bold 3.1px sans-serif';
+    ctx.fillStyle = '#e0f2fe';
+    ctx.fillText('武器', -92.0, -53.0);
+
+    // 顶部警示灯支架与底座（琥珀色，西排顶 -62, -51）
+    ctx.fillStyle = '#1b2434';
+    ctx.strokeStyle = '#0a0f1c';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(-67.5, -55.5, 11.0, 9.0);
+    ctx.strokeRect(-67.5, -55.5, 11.0, 9.0);
+    ctx.fillStyle = '#4e5d73';
+    ctx.beginPath(); ctx.arc(-62.0, -51.0, 3.8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 0.75;
+    ctx.stroke();
+
+    // 步枪 2 挂架（上横轨 y = -25 挂着的第二支突击步枪：折叠线托 + 弯弹匣 + 全息红点 + 三叉消焰器）
+    // 双 J 形挂钩
+    [-108, -74].forEach(hx => {
+        ctx.fillStyle = '#6b7b92';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.75;
+        ctx.fillRect(hx - 1.5, -29.0, 3.0, 8.0);
+        ctx.strokeRect(hx - 1.5, -29.0, 3.0, 8.0);
+    });
+    // 折叠线型枪托
+    ctx.strokeStyle = '#3f3f46';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    ctx.moveTo(-121, -27.2); ctx.lineTo(-109, -26.2);
+    ctx.moveTo(-121, -22.2); ctx.lineTo(-109, -23.5);
+    ctx.moveTo(-121, -27.6); ctx.lineTo(-121, -21.8);
+    ctx.stroke();
+    // 冲压深灰机匣
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-109, -27.4, 22, 4.8);
+    ctx.strokeRect(-109, -27.4, 22, 4.8);
+    // 弯弹匣（斜向南伸出）
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.moveTo(-98, -22.6); ctx.lineTo(-93, -22.6); ctx.lineTo(-90.5, -15.5); ctx.lineTo(-95.5, -15.5); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // 紧凑全息方框瞄具 + 翡翠绿发射点
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-103, -30.0, 7.5, 2.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-99.5, -29.1, 1.4, 1.0);
+    // 短四面导轨护木 + 氮化短枪管 + 三叉消焰制退器
+    ctx.fillStyle = '#27272a';
+    ctx.fillRect(-87, -26.6, 15, 3.2);
+    ctx.strokeRect(-87, -26.6, 15, 3.2);
+    ctx.fillStyle = '#52525b';
+    ctx.fillRect(-72, -25.8, 10, 1.6);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-62, -26.6, 4.8, 1.0);
+    ctx.fillRect(-62, -24.4, 4.8, 1.0);
+    ctx.fillRect(-62, -25.5, 3.2, 1.0);
+
+    // 虎钳 1 个（跨架于中央开放横梁 y = 0 上：钳口 + 角度刻度盘 + 锁紧手轮）
+    // 虎钳开放承托鞍座（仅窄鞍座，左右镂空见地）
+    ctx.fillStyle = '#283548';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(-106, -9.5, 34, 22.5);
+    ctx.strokeRect(-106, -9.5, 34, 22.5);
+    // 前后齿纹夹钳口
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-102, -5.2, 10, 12.0);
+    ctx.strokeRect(-102, -5.2, 10, 12.0);
+    ctx.fillRect(-83, -4.4, 9, 10.4);
+    ctx.strokeRect(-83, -4.4, 9, 10.4);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-101, -4.4, 8, 1.2);
+    ctx.fillRect(-101, 4.8, 8, 1.2);
+    // 角度刻度盘 (-96, +9.6)
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.arc(-96, 9.5, 3.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.45;
+    for (let a = -Math.PI; a <= 0; a += Math.PI / 4) {
+        ctx.beginPath();
+        ctx.moveTo(-96 + Math.cos(a) * 2.0, 9.5 + Math.sin(a) * 2.0);
+        ctx.lineTo(-96 + Math.cos(a) * 3.2, 9.5 + Math.sin(a) * 3.2);
+        ctx.stroke();
+    }
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.moveTo(-96, 9.5); ctx.lineTo(-93.8, 7.8); ctx.stroke();
+    // 锁紧手轮 (-78.5, +9.5)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-78.5, 9.5, 3.0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-81.2, 9.5); ctx.lineTo(-75.8, 9.5);
+    ctx.moveTo(-78.5, 6.8); ctx.lineTo(-78.5, 12.2);
+    ctx.stroke();
+
+    // 步枪 1（夹在虎钳上，沿 y = +0.5 弹道轴线瞄东：镂空狙击托 + 直匣 + 长倍镜 + 坦克式双室制退器）
+    // 镂空狙击枪托
+    ctx.fillStyle = '#18181b';
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-125, -2.5); ctx.lineTo(-108, -1.2); ctx.lineTo(-108, 3.2); ctx.lineTo(-125, 5.2); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#05100c';
+    ctx.fillRect(-121.5, -0.4, 8.5, 2.5);
+    // CNC 铣削机匣
+    ctx.fillStyle = '#26303d';
+    ctx.fillRect(-108, -1.8, 24, 5.2);
+    ctx.strokeRect(-108, -1.8, 24, 5.2);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-99, -0.8, 6.5, 1.5);
+    // 直弹匣 (20发)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-95, 3.4, 5.2, 5.4);
+    ctx.strokeRect(-95, 3.4, 5.2, 5.4);
+    // 长可变倍瞄准镜 + 双环 + 蓝膜物镜
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-104, -5.0, 17, 2.8);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-104, -5.0, 17, 2.8);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-87.8, -4.6, 1.0, 2.0);
+    // 槽孔护木 + 重型不锈钢槽纹枪管 + 双室坦克制退器
+    ctx.fillStyle = '#3f4c5e';
+    ctx.fillRect(-84, -1.1, 20, 3.8);
+    ctx.strokeRect(-84, -1.1, 20, 3.8);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-64, -0.2, 8.5, 2.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-55.5, -1.0, 4.6, 3.6);
+    ctx.strokeRect(-55.5, -1.0, 4.6, 3.6);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-54.4, -0.6, 0.9, 2.8);
+    ctx.fillRect(-52.7, -0.6, 0.9, 2.8);
+
+    // 手枪 1 支（挂在下横轨 y = +19 南侧挂钉上：-84..-62, y ∈ [+21, +33]）
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-75, 19.5, 2.4, 5.0);
+    // 银灰切角滑套
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-81, 22.8, 17.5, 3.8);
+    ctx.strokeRect(-81, 22.8, 17.5, 3.8);
+    // 后部防滑纹与绿氚准星
+    ctx.fillStyle = '#334155';
+    for (let sx = -80; sx <= -76; sx += 1.4) {
+        ctx.fillRect(sx, 23.2, 0.7, 3.0);
+    }
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-64.8, 22.3, 1.0, 0.8);
+    // 聚合物握把与扳机护圈
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(-80.5, 26.6); ctx.lineTo(-75.0, 26.6); ctx.lineTo(-76.5, 33.2); ctx.lineTo(-82.0, 33.2); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-74.5, 26.6, 4.2, 3.0);
+
+    // 西排南端角架：开盖弹药箱 (箱内 2 弹匣) + 枪油瓶 + 通条（均架在窄边肋条上，周围透空）
+    ctx.fillStyle = '#283548';
+    ctx.fillRect(-126.5, 33, 73, 2.2);
+    // 开盖弹药箱 (-125..-102, y ∈ [+31, +52])
+    ctx.fillStyle = '#365314';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-125, 31.5, 22, 15.5);
+    ctx.strokeRect(-125, 31.5, 22, 15.5);
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(-122.8, 33.5, 17.6, 11.5);
+    [[-120.5, 35.0], [-112.5, 35.0]].forEach(([mx, my]) => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(mx, my, 5.0, 8.8);
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(mx + 0.8, my + 0.5, 3.4, 1.6);
+    });
+    // 翻开在南缘的箱盖
+    ctx.fillStyle = '#4d7c0f';
+    ctx.fillRect(-125, 47.2, 22, 4.6);
+    ctx.strokeRect(-125, 47.2, 22, 4.6);
+
+    // 枪油瓶 1 个 (-95, +39)
+    ctx.fillStyle = '#b45309';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(-94, 39.5, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-95.8, 38.4, 3.6, 2.2);
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath(); ctx.arc(-94, 39.5, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.moveTo(-91.2, 39.5); ctx.lineTo(-87.0, 38.0); ctx.stroke();
+
+    // 通条 1 根 (-97..-56, y = +49)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-97, 45.8, 2.2, 6.4);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(-94.8, 49.0); ctx.lineTo(-59.5, 49.0); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-59.8, 47.8, 3.8, 2.4);
+
+    // =====================================================================
+    // 二、中排 · 仪器排（x ∈ [-40, +40], y ∈ [-60, +60]，中钢灰开放式仪器架）
+    // =====================================================================
+    // 中排开放边框钢条（中钢灰 #475569 / #5b6b80，明显浅于西排深灰）
+    ctx.fillStyle = '#4c5b70';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(-39.5, -56, 2.8, 112); ctx.strokeRect(-39.5, -56, 2.8, 112);
+    ctx.fillRect(36.7, -56, 2.8, 112);  ctx.strokeRect(36.7, -56, 2.8, 112);
+    ctx.fillRect(-36.7, -55.8, 73.4, 2.6); ctx.strokeRect(-36.7, -55.8, 73.4, 2.6);
+    ctx.fillRect(-36.7, 53.2, 73.4, 2.6);  ctx.strokeRect(-36.7, 53.2, 73.4, 2.6);
+
+    // 中排中横轨（开放式，仅托住两道光幕门与工具条）
+    ctx.fillStyle = '#5a6a80';
+    ctx.fillRect(-36.7, -23.0, 73.4, 3.0);
+    ctx.fillRect(-36.7, 20.5, 73.4, 3.0);
+
+    // 中排小标识牌（仪器：中青灰底 + 翡翠边框 + 翡翠绿字）
+    ctx.fillStyle = '#192638';
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(-10.0, -56.2, 20.0, 6.2);
+    ctx.strokeRect(-10.0, -56.2, 20.0, 6.2);
+    ctx.font = 'bold 3.1px sans-serif';
+    ctx.fillStyle = '#6ee7b7';
+    ctx.fillText('仪器', 0.0, -53.0);
+
+    // 测速屏 1 个（立柱上小屏：x ∈ [-35, -9], y ∈ [-50, -27]）
+    ctx.fillStyle = '#607087';
+    ctx.fillRect(-25.0, -29.0, 6.0, 6.5); // 圆柱立柱底座
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-35, -49, 26, 20);
+    ctx.strokeRect(-35, -49, 26, 20);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(-33, -47, 22, 13.5);
+    ctx.strokeStyle = '#0ea5e9';
+    ctx.lineWidth = 0.75;
+    ctx.strokeRect(-33, -47, 22, 13.5);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#9aa8bc';
+    ctx.fillText('CHRONO', -22.0, -31.2);
+
+    // 数据屏 1 个（立式屏 + 铰接支架：x ∈ [-2, +35], y ∈ [-50, -25]）
+    ctx.fillStyle = '#68788e';
+    ctx.fillRect(11.5, -28.0, 10.0, 5.2);
+    ctx.fillStyle = '#4a596e';
+    ctx.fillRect(14.5, -31.0, 4.0, 4.5);
+    ctx.fillStyle = '#1c2838';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-2, -49, 37, 20);
+    ctx.strokeRect(-2, -49, 37, 20);
+    ctx.fillStyle = '#031522';
+    ctx.fillRect(0, -47, 33, 16);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(0, -47, 33, 16);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('VEL / WAVE', 16.5, -44.8);
+
+    // 测速仪 2 道光幕门（跨 y = 0 弹道线，支架高度不同！）
+    // 门 1（西门 x = -25：高架方框光幕门 + 双高立式支架 + 顶部漫射板 + 琥珀传感器）
+    ctx.fillStyle = '#7c8ba1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-29.5, -18.5, 9.0, 4.8); // 高北支架脚
+    ctx.fillRect(-29.5, 15.0, 9.0, 4.8);  // 高南支架脚
+    ctx.fillStyle = '#55657a';
+    ctx.fillRect(-28.0, -14.5, 6.0, 30.5);
+    ctx.strokeRect(-28.0, -14.5, 6.0, 30.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-26.5, -12.5, 3.0, 26.5);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(-26.2, -11.0, 2.4, 2.0);
+    ctx.fillRect(-26.2, 10.5, 2.4, 2.0);
+
+    // 门 2（东门 x = +14：矮胖宽台斜罩光幕门 + 短台阶底座支架 + 遮光罩 + 翡翠传感器）
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(8.5, -13.5, 11.0, 3.0); // 矮宽北台阶脚
+    ctx.fillRect(8.5, 12.0, 11.0, 3.0);  // 矮宽南台阶脚
+    ctx.fillStyle = '#3b495c';
+    ctx.fillRect(10.0, -11.0, 8.0, 23.5);
+    ctx.strokeRect(10.0, -11.0, 8.0, 23.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(12.8, -8.5, 2.4, 18.5);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(12.9, -10.2, 2.2, 1.8);
+    ctx.fillRect(12.9, 9.8, 2.2, 1.8);
+
+    // 光幕门间地面投影虚线标尺（仅位于门间内侧 x ∈ [-22, +10]）
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.lineWidth = 0.6;
+    ctx.setLineDash([3, 2.5]);
+    ctx.beginPath(); ctx.moveTo(-21, 0.5); ctx.lineTo(9, 0.5); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 线缆盘 1 个（x = +26, y = +38：黑线缆绕盘 + 2 条连向两道光幕门的引线）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(21, 35); ctx.quadraticCurveTo(0, 26, -24, 18); ctx.stroke();
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(24, 31); ctx.quadraticCurveTo(22, 21, 15, 14.5); ctx.stroke();
+    // 线缆盘法兰与同心黑线缆圈
+    ctx.fillStyle = '#7c8ba1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(26.0, 38.5, 8.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    [6.6, 5.2, 3.8].forEach((r, ci) => {
+        ctx.strokeStyle = ci % 2 === 0 ? '#020617' : '#1e293b';
+        ctx.lineWidth = 1.05;
+        ctx.beginPath(); ctx.arc(26.0, 38.5, r, 0, Math.PI * 2); ctx.stroke();
+    });
+    ctx.fillStyle = '#d97706';
+    ctx.beginPath(); ctx.arc(26.0, 38.5, 1.8, 0, Math.PI * 2); ctx.fill();
+
+    // 工具架 1 层（开放式穿孔钢条 y ∈ [+25, +37]，扳手/螺丝刀/钳子长短不同）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-35.5, 25.0, 48.0, 11.5);
+    ctx.strokeRect(-35.5, 25.0, 48.0, 11.5);
+    // 1) 长扳手 (24px: -34..-10, y = 27.5)
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1.35;
+    ctx.beginPath(); ctx.moveTo(-32.5, 27.5); ctx.lineTo(-11.5, 27.5); ctx.stroke();
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath(); ctx.arc(-33.0, 27.5, 1.9, 0.5, Math.PI * 2 - 0.5); ctx.fill();
+    ctx.beginPath(); ctx.arc(-11.0, 27.5, 1.7, Math.PI + 0.5, Math.PI - 0.5); ctx.fill();
+    // 2) 中螺丝刀 (17px: -34..-17, y = 33.0)
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-34.0, 31.6, 6.2, 2.8);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-32.5, 32.0, 3.2, 2.0);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.moveTo(-27.8, 33.0); ctx.lineTo(-17.0, 33.0); ctx.stroke();
+    // 3) 短尖嘴钳 (12px: -12..0, y = 33.0)
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(-6.0, 32.8); ctx.lineTo(-1.0, 31.8);
+    ctx.moveTo(-6.0, 33.2); ctx.lineTo(-1.0, 34.2);
+    ctx.stroke();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.moveTo(-11.5, 31.4); ctx.lineTo(-6.0, 32.8);
+    ctx.moveTo(-11.5, 34.6); ctx.lineTo(-6.0, 33.2);
+    ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath(); ctx.arc(-6.0, 33.0, 0.9, 0, Math.PI * 2); ctx.fill();
+
+    // 弹匣 3 个（长短不同、最后一个带铜弹，插在南侧开放卡槽 y ∈ [+40, +53]）
+    ctx.fillStyle = '#55657a';
+    ctx.fillRect(-35.5, 43.0, 48.0, 2.5);
+    // 短弹匣 (8.5px)
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-33.5, 41.5, 5.5, 8.5);
+    ctx.strokeRect(-33.5, 41.5, 5.5, 8.5);
+    // 中弹匣 (11.5px + 观察窗)
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(-23.5, 40.2, 5.8, 11.5);
+    ctx.strokeRect(-23.5, 40.2, 5.8, 11.5);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-21.6, 43.0, 2.0, 5.5);
+    // 长弧形带铜弹弹匣 (14.5px)
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(-13.0, 38.8); ctx.lineTo(-7.0, 38.8); ctx.lineTo(-4.8, 52.8); ctx.lineTo(-10.8, 52.8); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(-12.2, 39.2, 4.4, 1.9);
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath(); ctx.arc(-10.0, 38.6, 1.0, 0, Math.PI * 2); ctx.fill();
+
+    // =====================================================================
+    // 三、东排 · 靶标排（x ∈ [+50, +130], y ∈ [-60, +60]，浅钢灰开放式靶架）
+    // =====================================================================
+    // 东排开放边框钢条（浅钢灰 #78879b / #94a3b8 / #cbd5e1，明显浅于中排与西排）
+    ctx.fillStyle = '#7e8ea3';
+    ctx.strokeStyle = '#111827';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(50.5, -56, 2.8, 112);  ctx.strokeRect(50.5, -56, 2.8, 112);
+    ctx.fillRect(126.7, -56, 2.8, 112); ctx.strokeRect(126.7, -56, 2.8, 112);
+    ctx.fillRect(53.3, -55.8, 73.4, 2.6); ctx.strokeRect(53.3, -55.8, 73.4, 2.6);
+    ctx.fillRect(53.3, 53.2, 73.4, 2.6);  ctx.strokeRect(53.3, 53.2, 73.4, 2.6);
+    ctx.fillStyle = '#d5dee9';
+    ctx.fillRect(53.8, -55.2, 72.4, 0.8);
+    ctx.fillRect(53.8, 53.8, 72.4, 0.8);
+
+    // 东排小标识牌（靶标：浅拉丝钢底 + 琥珀边框 + 深炭字）
+    ctx.fillStyle = '#dae2ec';
+    ctx.strokeStyle = '#c2410c';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(78.0, -56.2, 20.0, 6.2);
+    ctx.strokeRect(78.0, -56.2, 20.0, 6.2);
+    ctx.font = 'bold 3.1px sans-serif';
+    ctx.fillStyle = '#0b1120';
+    ctx.fillText('靶标', 88.0, -53.0);
+
+    // 上层开放式搁板（y ∈ [-27, -5]：浅钢灰条形镂空搁板 + 挂耳）+ 弹道明胶块 1
+    for (let sy = -25.5; sy <= -7.5; sy += 6.0) {
+        ctx.fillStyle = '#9aa8bc';
+        ctx.strokeStyle = '#1f2937';
+        ctx.lineWidth = 0.7;
+        ctx.fillRect(54.5, sy, 23.0, 3.0);
+        ctx.strokeRect(54.5, sy, 23.0, 3.0);
+    }
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(54.5, -26.5, 2.5, 22.0);
+    ctx.fillRect(75.0, -26.5, 2.5, 22.0);
+    // 明胶块 1（透明琥珀：上偏西入口弹孔 + 星形放射空腔裂纹 + 滞留铜弹芯）
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.52)';
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(57.5, -24.5, 17.0, 18.0);
+    ctx.strokeRect(57.5, -24.5, 17.0, 18.0);
+    ctx.fillStyle = 'rgba(254, 243, 199, 0.25)';
+    ctx.fillRect(58.5, -23.5, 15.0, 3.2);
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath(); ctx.arc(58.2, -17.5, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fef3c7';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(58.2, -17.5); ctx.lineTo(66.8, -16.8);
+    ctx.moveTo(62.5, -17.2); ctx.lineTo(65.0, -22.2);
+    ctx.moveTo(63.2, -17.1); ctx.lineTo(66.2, -11.5);
+    ctx.moveTo(65.2, -17.0); ctx.lineTo(69.8, -20.5);
+    ctx.stroke();
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath(); ctx.arc(67.5, -16.8, 1.15, 0, Math.PI * 2); ctx.fill();
+
+    // 下层开放式搁板（y ∈ [+7, +29]：偏下暗影衬托下层位置 + 中浅灰条形搁板）+ 弹道明胶块 2
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.35)';
+    ctx.fillRect(55.5, 8.5, 23.0, 21.0);
+    for (let sy = 8.5; sy <= 26.5; sy += 6.0) {
+        ctx.fillStyle = '#6c7c92';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.7;
+        ctx.fillRect(56.0, sy, 23.0, 2.8);
+        ctx.strokeRect(56.0, sy, 23.0, 2.8);
+    }
+    ctx.fillStyle = '#a3b1c4';
+    ctx.fillRect(56.0, 7.2, 2.4, 21.5);
+    ctx.fillRect(76.6, 7.2, 2.4, 21.5);
+    // 明胶块 2（透明深琥珀：偏下入口 + 弯折贯通裂纹 + 气泡群）
+    ctx.fillStyle = 'rgba(217, 119, 6, 0.50)';
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(59.0, 9.5, 17.0, 18.0);
+    ctx.strokeRect(59.0, 9.5, 17.0, 18.0);
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath(); ctx.arc(59.7, 21.0, 1.05, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fde68a';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(59.7, 21.0); ctx.lineTo(65.8, 22.0); ctx.lineTo(75.4, 18.2);
+    ctx.moveTo(64.5, 21.8); ctx.lineTo(67.2, 26.2);
+    ctx.moveTo(69.5, 20.5); ctx.lineTo(71.8, 13.5);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(254, 243, 199, 0.58)';
+    ctx.beginPath(); ctx.arc(62.8, 13.5, 0.85, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(71.0, 24.5, 0.7, 0, Math.PI * 2); ctx.fill();
+
+    // 钢靶板 1 块（圆形靶 + 靶心 + 4 处弹痕，立在开放 A 型支架上，x = +89, y = +1）
+    // A 型钢架脚
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(83.0, -14.0); ctx.lineTo(95.0, -14.0);
+    ctx.moveTo(83.0, 16.5);  ctx.lineTo(95.0, 16.5);
+    ctx.moveTo(89.0, -14.0); ctx.lineTo(89.0, 16.5);
+    ctx.stroke();
+    // 顶部命中指示灯灯座 (89, -15)
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(86.2, -17.5, 5.6, 4.0);
+    ctx.strokeRect(86.2, -17.5, 5.6, 4.0);
+    // 圆形钢靶盘
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.arc(89.0, 1.0, 8.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath(); ctx.arc(89.0, 1.0, 6.2, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(89.0, 1.0, 3.8, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(89.0, 1.0, 1.6, 0, Math.PI * 2); ctx.fill();
+    // 4 处不同弹痕凹坑
+    [[85.5, -2.5], [92.2, 2.8], [86.8, 5.4], [91.5, -3.8]].forEach(([ix, iy]) => {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.arc(ix, iy, 0.85, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.45;
+        ctx.stroke();
+    });
+
+    // 防弹背板 1 块（厚钢板 + 铆钉 + 后斜撑，x ∈ [+104, +115], y ∈ [-33, +35]）
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    ctx.moveTo(114.5, -24); ctx.lineTo(126.5, -28);
+    ctx.moveTo(114.5, 26);  ctx.lineTo(126.5, 30);
+    ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(104.5, -33, 10.0, 68);
+    ctx.strokeRect(104.5, -33, 10.0, 68);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(104.5, -33, 2.6, 68);
+    // 铆钉阵列
+    for (let ry = -28; ry <= 30; ry += 8.2) {
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.arc(111.5, ry, 1.05, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.stroke();
+    }
+
+    // 沙袋 2 个（堆在背板根部，褶皱与扎口各不相同）
+    // 沙袋 1（北根部 +96..+117, y ∈ [-44, -33.5]：斜向压缩褶皱 + 西端拧绳扎口）
+    ctx.fillStyle = '#a8a29e';
+    ctx.strokeStyle = '#1c1917';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(98.0, -43.5, 18.0, 9.5, 3.0) : ctx.rect(98.0, -43.5, 18.0, 9.5);
+    ctx.fill(); ctx.stroke();
+    // 西端褶扇扎口
+    ctx.fillStyle = '#78716c';
+    ctx.beginPath();
+    ctx.moveTo(98.0, -39.5); ctx.lineTo(94.5, -42.0); ctx.lineTo(94.5, -35.5); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#57534e';
+    ctx.fillRect(97.2, -40.5, 1.4, 3.5);
+    ctx.strokeStyle = '#44403c';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(101.0, -41.5); ctx.lineTo(105.0, -35.8);
+    ctx.moveTo(108.0, -42.0); ctx.lineTo(111.5, -36.0);
+    ctx.stroke();
+
+    // 沙袋 2（南根部 +96..+120, y ∈ [+35.5, +46.5]：弧形缝线褶皱 + 东端绳结扎口）
+    ctx.fillStyle = '#d6d3d1';
+    ctx.strokeStyle = '#292524';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(96.5, 36.0, 19.5, 9.5, 2.8) : ctx.rect(96.5, 36.0, 19.5, 9.5);
+    ctx.fill(); ctx.stroke();
+    // 东端绳结扎口
+    ctx.fillStyle = '#b0aaa4';
+    ctx.beginPath();
+    ctx.moveTo(116.0, 40.8); ctx.lineTo(120.0, 38.0); ctx.lineTo(120.0, 43.5); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#857f79';
+    ctx.fillRect(115.2, 39.0, 1.4, 3.5);
+    ctx.strokeStyle = '#6d6660';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(99.0, 39.0); ctx.quadraticCurveTo(106.5, 37.6, 113.5, 39.2);
+    ctx.moveTo(99.5, 42.5); ctx.quadraticCurveTo(106.5, 43.8, 113.0, 42.2);
+    ctx.stroke();
+
+    // 灭火器 1 个（挂在东排东南架角 x = +120, y = +46.5：红瓶 + 软管 + 压力表）
+    ctx.fillStyle = '#9aa8bc';
+    ctx.fillRect(124.0, 43.5, 3.0, 6.0); // 架角抱箍卡扣
+    ctx.fillStyle = '#090d16';
+    ctx.beginPath(); ctx.arc(119.5, 46.5, 6.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#dc2626';
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.arc(119.5, 46.5, 5.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath(); ctx.arc(118.2, 45.2, 2.0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#b91c1c';
+    ctx.beginPath(); ctx.arc(121.0, 48.0, 1.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(117.9, 44.9, 3.2, 3.2);
+    // 软管与喷嘴
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.15;
+    ctx.beginPath(); ctx.moveTo(118.0, 46.0); ctx.quadraticCurveTo(111.0, 43.5, 112.0, 51.8); ctx.stroke();
+    // 白色压力表盘 + 绿区弧
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.arc(122.4, 44.5, 2.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath(); ctx.arc(122.4, 44.5, 1.0, -Math.PI, 0); ctx.fill();
+
+    ctx.restore();
+}
+
+function drawWestWeaponTestStationDynamic(ctx, cx, cy, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 1. 测速屏数字滚动变化（每轮击发稳定更新并带微滚动位移，不晃眼）
+    const cycle = time % 3.6;
+    const shotIdx = Math.floor(time / 3.6);
+    const velBase = 910.2 + Math.sin(shotIdx * 2.3) * 5.4;
+    const velStr = velBase.toFixed(1);
+    const prevStr = (910.2 + Math.sin((shotIdx - 1) * 2.3) * 5.4).toFixed(1);
+    const scrollProgress = Math.min(1, cycle / 0.45);
+    const scrollOffset = (1 - scrollProgress) * 3.0;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-32.5, -46.2, 21.0, 11.8);
+    ctx.clip();
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(-32.5, -46.2, 21.0, 11.8);
+    ctx.font = 'bold 2.8px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (scrollProgress < 1) {
+        ctx.fillStyle = `rgba(56, 189, 248, ${(1 - scrollProgress).toFixed(2)})`;
+        ctx.fillText(prevStr, -22.0, -41.8 - (3.0 - scrollOffset));
+    }
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(velStr, -22.0, -41.8 + scrollOffset);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#10b981';
+    ctx.fillText(`m/s #${String((shotIdx % 99) + 1).padStart(2, '0')}`, -22.0, -37.0);
+    ctx.restore();
+
+    // 2. 数据屏测速散布数值 + 波形缓慢滚动
+    const dispMoa = (0.74 + Math.sin(shotIdx * 1.7) * 0.09).toFixed(2);
+    ctx.fillStyle = '#031522';
+    ctx.fillRect(0.6, -42.5, 31.8, 10.8);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${velStr}`, 2.0, -40.2);
+    ctx.fillStyle = '#10b981';
+    ctx.fillText(`D:${dispMoa}`, 17.5, -40.2);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(1.5, -38.0, 30.0, 6.0);
+    ctx.clip();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath();
+    for (let wx = 0; wx <= 30; wx += 1.5) {
+        const wy = Math.sin(wx * 0.45 - time * 1.4) * 1.7 + Math.cos(wx * 0.9 - time * 0.7) * 0.6;
+        if (wx === 0) ctx.moveTo(1.5 + wx, -35.0 + wy);
+        else ctx.lineTo(1.5 + wx, -35.0 + wy);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. 靶标命中指示灯闪烁（命中周期初始亮起 0.45s 后熄灭，模拟命中后亮一下再灭）
+    const hitActive = cycle < 0.45;
+    if (hitActive) {
+        const flashAlpha = Math.sin((cycle / 0.45) * Math.PI);
+        ctx.fillStyle = `rgba(16, 185, 129, ${(0.38 * flashAlpha).toFixed(2)})`;
+        ctx.beginPath(); ctx.arc(89.0, -15.5, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath(); ctx.arc(89.0, -15.5, 1.15, 0, Math.PI * 2); ctx.fill();
+    } else {
+        ctx.fillStyle = '#064e3b';
+        ctx.beginPath(); ctx.arc(89.0, -15.5, 0.95, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // 4. 顶部警示灯缓慢旋转呼吸（琥珀色，西排顶 -62, -51）
+    const breath = 0.42 + 0.38 * Math.sin(time * 1.6);
+    const rotA = time * 1.15;
+    ctx.fillStyle = `rgba(245, 158, 11, ${(0.24 * breath).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(-62.0, -51.0, 5.2, 0, Math.PI * 2); ctx.fill();
+    // 旋转光束扇区
+    ctx.fillStyle = `rgba(251, 191, 36, ${(0.55 * breath).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.moveTo(-62.0, -51.0);
+    ctx.arc(-62.0, -51.0, 3.6, rotA - 0.45, rotA + 0.45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath(); ctx.arc(-62.0, -51.0, 1.45, 0, Math.PI * 2); ctx.fill();
+
+    ctx.restore();
+}
+
+function getWestWeaponTestStationObstacle() {
+    const cx = 900, cy = 1450;
+    const w = 260, h = 120;
+    const halfW = w * 0.5, halfH = h * 0.5;
+    const worldPts = [
+        { x: cx - halfW, y: cy - halfH },
+        { x: cx + halfW, y: cy - halfH },
+        { x: cx + halfW, y: cy + halfH },
+        { x: cx - halfW, y: cy + halfH }
+    ];
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        x: cx - halfW,
+        y: cy - halfH,
+        w: w,
+        h: h,
+        points: worldPts,
+        label: 'WEST WEAPON TEST STATION',
+        displayName: 'WEAPON TEST STATION TEST-01',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 170 < camX || cx - 170 > camX + vw || cy + 100 < camY || cy - 100 > camY + vh) return;
+
+            const cacheKey = '__westWeaponTestStationV2_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 300, ch = 160;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestWeaponTestStationStatic(octx, cx, cy);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestWeaponTestStationDynamic(ctx, cx, cy, time);
+            ctx.restore();
+        }
+    };
+}
+
 const LEVEL_7_TEST = {
     id: "level7_test",
     name: "第 8 关 · 测试关卡",
@@ -9625,7 +10581,10 @@ const LEVEL_7_TEST = {
             getWestBench05Obstacle(),
 
             // N. 西侧三角房 · 底墙东段长试验台 06（湿化学台 330x50 旋转矩形 solid @ 938.14,1675.95，占沿墙 755–1085）
-            getWestBench06Obstacle()
+            getWestBench06Obstacle(),
+
+            // O. 西侧三角房 · 紧凑武器测试站 TEST-01（260x120 规则矩形 solid @ 900,1450，水平 0 rad）
+            getWestWeaponTestStationObstacle()
         ];
 
         // =====================================================================
