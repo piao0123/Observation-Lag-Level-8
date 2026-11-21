@@ -411,10 +411,11 @@
           // 2026-11-07：辉光顶点跟视锥走，移到镜头处（前方 16.5px）
           // 2026-11-09 重组 V4：辉光射程跟摄像头 fovRange 走（之前写死 330，与引擎视锥 360/320 不一致）；
           // L7 摄像头（theme 'l7'）辉光改翡翠色（之前亮绿，与引擎翡翠视锥不一致）；顶点按 scale 缩。
+          // 2026-11-21：摄像头视野不再受墙/障碍物遮挡——辉光传空线段集 []，与引擎视锥（已不裁剪）同步；玩家与敌人的辉光仍用 segs。
           var _camR = (typeof cam.fovRange === 'number' && cam.fovRange > 0) ? cam.fovRange : 330;
           var _camOff = 16.5 * ((typeof cam.scale === 'number' && cam.scale > 0) ? cam.scale : 1);
           var _camRgb = cam.detecting ? '255,51,51' : (cam.theme === 'l7' ? '16,185,129' : '0,255,102');
-          coneGlow(ctx, cam.x + Math.cos(a) * _camOff, cam.y + Math.sin(a) * _camOff, a, 0.45, _camR, segs, _camRgb, 0.42);
+          coneGlow(ctx, cam.x + Math.cos(a) * _camOff, cam.y + Math.sin(a) * _camOff, a, 0.45, _camR, [], _camRgb, 0.42);
         }
       }
 

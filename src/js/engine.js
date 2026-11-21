@@ -5835,7 +5835,8 @@ function update() {
                 diff = Math.atan2(Math.sin(diff), Math.cos(diff));
 
                 // 2026-11-09 重组 V4：加视线遮挡——墙/桌/L7 家具/闭合门挡住时不报警（之前只看距离+角度，墙后也被扫到就报警）
-                if (Math.abs(diff) < halfFov && !isCameraLineBlocked(cam.x, cam.y, player.x, player.y)) {
+                // 2026-11-21：摄像头视野改成不受墙/障碍物遮挡——只看距离+角度，删掉 isCameraLineBlocked 视线检查（与视锥画面同步）。
+                if (Math.abs(diff) < halfFov) {
                     inSight = true;
                 }
             }
@@ -6864,8 +6865,33 @@ function drawAllPropLabels() {
         if (typeof isObjectRevealed === 'function' && !isObjectRevealed(p.x, p.y, p.w || 1, p.h || 1)) {
             return;
         }
+        // 2026-11-21：视口剔除修好——之前只按 X 轴、且只认 p.x/p.w；cx/cy + points 的道具（如 L8 试验台/培养舱）p.x 是 undefined，
+        // NaN 比较恒为 false，等于没剔除，全图每帧都画。现在按包围盒（points / circle / cx-cy / x-y）做 X+Y 剔除，留 400px 余量
+        // （盖住辉光/标签等画出包围盒的部分）；算不出包围盒的照画，不漏画。
         const camX = window.cameraX || 0;
-        if (p.x + (p.w || 50) < camX - 150 || p.x > camX + width + 150) {
+        const camY = window.cameraY || 0;
+        let _b = null;
+        if (p.points && Array.isArray(p.points) && p.points.length) {
+            let _minX = Infinity, _maxX = -Infinity, _minY = Infinity, _maxY = -Infinity;
+            for (let _i = 0; _i < p.points.length; _i++) {
+                const _pt = p.points[_i];
+                if (typeof _pt.x !== 'number' || typeof _pt.y !== 'number') continue;
+                if (_pt.x < _minX) _minX = _pt.x;
+                if (_pt.x > _maxX) _maxX = _pt.x;
+                if (_pt.y < _minY) _minY = _pt.y;
+                if (_pt.y > _maxY) _maxY = _pt.y;
+            }
+            if (_minX !== Infinity) _b = { minX: _minX, maxX: _maxX, minY: _minY, maxY: _maxY };
+        } else if (p.circle && typeof p.circle.cx === 'number') {
+            const _r = p.circle.radius || 0;
+            _b = { minX: p.circle.cx - _r, maxX: p.circle.cx + _r, minY: p.circle.cy - _r, maxY: p.circle.cy + _r };
+        } else if (typeof p.cx === 'number' && typeof p.cy === 'number') {
+            const _hw = (typeof p.w === 'number' ? p.w : 50) / 2, _hh = (typeof p.h === 'number' ? p.h : 50) / 2;
+            _b = { minX: p.cx - _hw, maxX: p.cx + _hw, minY: p.cy - _hh, maxY: p.cy + _hh };
+        } else if (typeof p.x === 'number' && typeof p.y === 'number') {
+            _b = { minX: p.x, maxX: p.x + (p.w || 50), minY: p.y, maxY: p.y + (p.h || 50) };
+        }
+        if (_b && (_b.maxX < camX - 400 || _b.minX > camX + width + 400 || _b.maxY < camY - 400 || _b.minY > camY + height + 400)) {
             return;
         }
         drawPropTagLabel(p);
@@ -7408,7 +7434,40 @@ window.drawSectorWorkstation = drawSectorWorkstation;
 // =========================================================
 // drawSectorWorkstationDynamic (migrated from level7_lab.js, 2026-11-05)
 // =========================================================
+// 2026-11-21 动态层节流缓存：动态内容（气泡/液滴/数字闪烁等）每 0.1s 重绘一次进离屏缓存，其余帧直接贴图。
+// 之前每帧对每个动态道具做上百次 arc/fill，是 L8 掉帧的主因。缓存按 (函数名, cx, cy) 区分道具；
+// 动态函数都在世界坐标里画（内部自己 translate(cx,cy)），所以缓存用“画布中心对准 (cx,cy)”的平移，与静态缓存同款。
+// 刷新间隔 0.1s（10Hz）：气泡/液滴周期约 1s，10Hz 更新肉眼基本看不出阶梯。
+// 注意：必须挂在 window 上——level7_test.js 是独立模块作用域，看不到 engine.js 的顶层函数（之前只声明为普通函数，
+// 左房间的包装器每帧报 ReferenceError，道具整批不画；中室的包装器在 engine.js 同文件内所以没事）。
+window.__dynDrawCached = function (ctx, key, w, h, cx, cy, redrawFn) {
+    const k = '__dyn_' + key + '_' + cx + '_' + cy;
+    let d = window[k];
+    const now = Date.now() * 0.001;
+    if (!d) {
+        const off = document.createElement('canvas');
+        off.width = Math.max(2, Math.ceil(w));
+        off.height = Math.max(2, Math.ceil(h));
+        d = window[k] = { canvas: off, w: Math.ceil(w), h: Math.ceil(h), lastT: -1 };
+    }
+    if (now - d.lastT >= 0.1 || d.lastT < 0) {
+        const octx = d.canvas.getContext('2d');
+        octx.clearRect(0, 0, d.canvas.width, d.canvas.height);
+        octx.save();
+        octx.translate(d.w / 2, d.h / 2);
+        octx.translate(-cx, -cy);
+        redrawFn(octx);
+        octx.restore();
+        d.lastT = now;
+    }
+    ctx.drawImage(d.canvas, cx - d.w / 2, cy - d.h / 2);
+};
+
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawSectorWorkstationDynamic(ctx, cx, cy, angle = 0, scale = 1.0) {
+    __dynDrawCached(ctx, 'drawSectorWorkstationDynamic', 340, 340, cx, cy, (octx) => drawSectorWorkstationDynamicImpl(octx, cx, cy, angle, scale));
+}
+function drawSectorWorkstationDynamicImpl(ctx, cx, cy, angle = 0, scale = 1.0) {
     const time = Date.now() * 0.001;
     const R_scr_out = 110, R_scr_in = 94;
 
@@ -8230,7 +8289,11 @@ window.drawCircularPodWorkstation = drawCircularPodWorkstation;
 // =========================================================
 // drawCircularPodWorkstationDynamic (migrated from level7_lab.js, 2026-11-05)
 // =========================================================
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawCircularPodWorkstationDynamic(ctx, cx, cy, angle = 0, scale = 1.0) {
+    __dynDrawCached(ctx, 'drawCircularPodWorkstationDynamic', 320, 320, cx, cy, (octx) => drawCircularPodWorkstationDynamicImpl(octx, cx, cy, angle, scale));
+}
+function drawCircularPodWorkstationDynamicImpl(ctx, cx, cy, angle = 0, scale = 1.0) {
     const time = Date.now() * 0.001;
 
     ctx.save();
@@ -8977,7 +9040,11 @@ window.drawTripleCubicleWorkstation = drawTripleCubicleWorkstation;
 // =========================================================
 // drawTripleCubicleWorkstationDynamic (migrated from level7_lab.js, 2026-11-05)
 // =========================================================
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawTripleCubicleWorkstationDynamic(ctx, cx, cy, angle = 0, scale = 1.0) {
+    __dynDrawCached(ctx, 'drawTripleCubicleWorkstationDynamic', 320, 160, cx, cy, (octx) => drawTripleCubicleWorkstationDynamicImpl(octx, cx, cy, angle, scale));
+}
+function drawTripleCubicleWorkstationDynamicImpl(ctx, cx, cy, angle = 0, scale = 1.0) {
     const time = Date.now() * 0.001;
 
     ctx.save();
@@ -10150,7 +10217,11 @@ window.drawConferenceTableSystem = drawConferenceTableSystem;
 // 会议桌动态层 (动静分离，2026-11-05)：全息光环呼吸 + 平板波形 + 灯珠光晕
 // 只画随时间变化的元素；静态部分已预渲染进缓存
 // =========================================================
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawConferenceTableSystemDynamic(ctx, cx, cy, radius = 155) {
+    __dynDrawCached(ctx, 'drawConferenceTableSystemDynamic', 420, 420, cx, cy, (octx) => drawConferenceTableSystemDynamicImpl(octx, cx, cy, radius));
+}
+function drawConferenceTableSystemDynamicImpl(ctx, cx, cy, radius = 155) {
     const time = Date.now() * 0.001;
     const numSeats = 12;
     const itemRadius = 118;
@@ -10516,7 +10587,11 @@ window.drawServerCluster = drawServerCluster;
 // 服务器集群动态层 (动静分离，2026-11-05)：信标灯 + 硬盘 LED + LCD 波形 + VU 柱 + LED 阵列
 // 只画随时间变化的元素；静态部分已预渲染进缓存
 // =========================================================
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawServerClusterDynamic(ctx, cx, cy, angle = 0, scale = 1.0) {
+    __dynDrawCached(ctx, 'drawServerClusterDynamic', 320, 220, cx, cy, (octx) => drawServerClusterDynamicImpl(octx, cx, cy, angle, scale));
+}
+function drawServerClusterDynamicImpl(ctx, cx, cy, angle = 0, scale = 1.0) {
     const time = Date.now() * 0.001;
 
     ctx.save();
@@ -10694,8 +10769,33 @@ function drawProps() {
         if (typeof isObjectRevealed === 'function' && !isObjectRevealed(p.x, p.y, p.w || 1, p.h || 1)) {
             return;
         }
+        // 2026-11-21：视口剔除修好——之前只按 X 轴、且只认 p.x/p.w；cx/cy + points 的道具（如 L8 试验台/培养舱）p.x 是 undefined，
+        // NaN 比较恒为 false，等于没剔除，全图每帧都画。现在按包围盒（points / circle / cx-cy / x-y）做 X+Y 剔除，留 400px 余量
+        // （盖住辉光/标签等画出包围盒的部分）；算不出包围盒的照画，不漏画。
         const camX = window.cameraX || 0;
-        if (p.x + (p.w || 50) < camX - 150 || p.x > camX + width + 150) {
+        const camY = window.cameraY || 0;
+        let _b = null;
+        if (p.points && Array.isArray(p.points) && p.points.length) {
+            let _minX = Infinity, _maxX = -Infinity, _minY = Infinity, _maxY = -Infinity;
+            for (let _i = 0; _i < p.points.length; _i++) {
+                const _pt = p.points[_i];
+                if (typeof _pt.x !== 'number' || typeof _pt.y !== 'number') continue;
+                if (_pt.x < _minX) _minX = _pt.x;
+                if (_pt.x > _maxX) _maxX = _pt.x;
+                if (_pt.y < _minY) _minY = _pt.y;
+                if (_pt.y > _maxY) _maxY = _pt.y;
+            }
+            if (_minX !== Infinity) _b = { minX: _minX, maxX: _maxX, minY: _minY, maxY: _maxY };
+        } else if (p.circle && typeof p.circle.cx === 'number') {
+            const _r = p.circle.radius || 0;
+            _b = { minX: p.circle.cx - _r, maxX: p.circle.cx + _r, minY: p.circle.cy - _r, maxY: p.circle.cy + _r };
+        } else if (typeof p.cx === 'number' && typeof p.cy === 'number') {
+            const _hw = (typeof p.w === 'number' ? p.w : 50) / 2, _hh = (typeof p.h === 'number' ? p.h : 50) / 2;
+            _b = { minX: p.cx - _hw, maxX: p.cx + _hw, minY: p.cy - _hh, maxY: p.cy + _hh };
+        } else if (typeof p.x === 'number' && typeof p.y === 'number') {
+            _b = { minX: p.x, maxX: p.x + (p.w || 50), minY: p.y, maxY: p.y + (p.h || 50) };
+        }
+        if (_b && (_b.maxX < camX - 400 || _b.minX > camX + width + 400 || _b.maxY < camY - 400 || _b.minY > camY + height + 400)) {
             return;
         }
         ctx.save();
@@ -24598,20 +24698,12 @@ function drawCamera(cam) {
     const _isL7Cam = (cam.theme === 'l7');
     const _camRange = cam.fovRange || 320;
 
-    // 2026-11-07：视锥顶点移到镜头处（镜片中心在前方 16.5px）；扇形按遮挡裁剪（之前是纯圆扇形，弧线会穿墙、横贯其他扇形）
+    // 2026-11-07：视锥顶点移到镜头处（镜片中心在前方 16.5px）
+    // 2026-11-21：摄像头视野不再受墙/障碍物遮挡——扇形不再按遮挡裁剪（之前用 getVisionConePolygon 做射线裁剪，
+    // 面墙的摄像头视野几乎全被挡住）；下方扇形直接按满幅画。检测逻辑同步改（见摄像头检测处）。
     const _camA = cam.currentAngle;
     const _ax = Math.cos(_camA) * 16.5 * _camScale, _ay = Math.sin(_camA) * 16.5 * _camScale;
-    const _poly = (typeof getVisionConePolygon === 'function')
-        ? getVisionConePolygon(cam.x + _ax, cam.y + _ay, _camA, 0.9, _camRange)
-        : null;
     ctx.save();
-    if (_poly && _poly.length >= 3) {
-        ctx.beginPath();
-        ctx.moveTo(_poly[0].x - cam.x, _poly[0].y - cam.y);
-        for (let _pi = 1; _pi < _poly.length; _pi++) ctx.lineTo(_poly[_pi].x - cam.x, _poly[_pi].y - cam.y);
-        ctx.closePath();
-        ctx.clip();
-    }
     // 1. 监控扇区视觉：显著加强的半透明锥形光，保留高对比度原色且十分凸显 (Highly visible scan cone)
     ctx.fillStyle = cam.detecting ? 'rgba(255, 51, 51, 0.32)' : (_isL7Cam ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0, 255, 102, 0.16)');
     ctx.beginPath();
@@ -27858,6 +27950,10 @@ function draw() {
     const activeCameras = Array.isArray(cameras) ? cameras.slice() : [];
     activeCameras.forEach(cam => {
         if (!cam || typeof cam !== 'object') return;
+        // 2026-11-21：视口剔除——摄像头本体与视锥射程都进不了视口才跳过（视锥最长约 450，余量按射程+180 算；只跳过绘制，检测在 update 里照常跑）
+        const _camR = ((typeof cam.fovRange === 'number' && cam.fovRange > 0) ? cam.fovRange : 320) + 180;
+        const _cx = window.cameraX || 0, _cy = window.cameraY || 0;
+        if (cam.x < _cx - _camR || cam.x > _cx + width + _camR || cam.y < _cy - _camR || cam.y > _cy + height + _camR) return;
         if (levelId === 'level3_bank') {
             if (typeof isObjectRevealed === 'function' && !isObjectRevealed(cam.x, cam.y, 1, 1)) {
                 return;

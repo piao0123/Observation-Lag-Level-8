@@ -314,7 +314,7 @@ function buildCorridorPropBox(cx, cy, angle, w, h, noCollision, type, label, dis
         draw: (ctx) => {
             const cacheKey = cachePrefix + '_v2_ss4_' + cx.toFixed(1) + '_' + cy.toFixed(1) + '_' + angle.toFixed(4);
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const sz = Math.ceil(Math.hypot(w + 18, h + 18) + 12);
                 const off = document.createElement('canvas');
                 off.width = sz * SS;
@@ -331,7 +331,7 @@ function buildCorridorPropBox(cx, cy, angle, w, h, noCollision, type, label, dis
             const c = window[cacheKey];
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.size / 2, cy - c.size / 2, c.size, c.size);
             ctx.restore();
             if (drawDynamic) {
@@ -417,7 +417,11 @@ function drawBufferDressingLockersStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDressingLockersDynamic(ctx, cx, cy, angle) {
+    __dynDrawCached(ctx, 'drawBufferDressingLockersDynamic', 200, 160, cx, cy, (octx) => drawBufferDressingLockersDynamicImpl(octx, cx, cy, angle));
+}
+function drawBufferDressingLockersDynamicImpl(ctx, cx, cy, angle) {
     const time = Date.now() * 0.001;
     ctx.save();
     ctx.translate(cx, cy);
@@ -553,7 +557,11 @@ function drawBufferDressingMonitorStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDressingMonitorDynamic(ctx, cx, cy, angle) {
+    __dynDrawCached(ctx, 'drawBufferDressingMonitorDynamic', 200, 160, cx, cy, (octx) => drawBufferDressingMonitorDynamicImpl(octx, cx, cy, angle));
+}
+function drawBufferDressingMonitorDynamicImpl(ctx, cx, cy, angle) {
     const time = Date.now() * 0.001;
     const scrX = -28.2;
     const scrY = -4.3;
@@ -702,7 +710,11 @@ function drawBufferDressingSinkStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDressingSinkDynamic(ctx, cx, cy, angle) {
+    __dynDrawCached(ctx, 'drawBufferDressingSinkDynamic', 200, 160, cx, cy, (octx) => drawBufferDressingSinkDynamicImpl(octx, cx, cy, angle));
+}
+function drawBufferDressingSinkDynamicImpl(ctx, cx, cy, angle) {
     const time = Date.now() * 0.001;
     ctx.save();
     ctx.translate(cx, cy);
@@ -827,7 +839,11 @@ function drawBufferDressingSuitRackStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDressingSuitRackDynamic(ctx, cx, cy, angle) {
+    __dynDrawCached(ctx, 'drawBufferDressingSuitRackDynamic', 200, 160, cx, cy, (octx) => drawBufferDressingSuitRackDynamicImpl(octx, cx, cy, angle));
+}
+function drawBufferDressingSuitRackDynamicImpl(ctx, cx, cy, angle) {
     const time = Date.now() * 0.001;
     ctx.save();
     ctx.translate(cx, cy);
@@ -959,7 +975,11 @@ function drawBufferDeconGratingStatic(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDeconGratingDynamic(ctx, cx, cy, angle, getCorridor) {
+    __dynDrawCached(ctx, 'drawBufferDeconGratingDynamic', 480, 200, cx, cy, (octx) => drawBufferDeconGratingDynamicImpl(octx, cx, cy, angle, getCorridor));
+}
+function drawBufferDeconGratingDynamicImpl(ctx, cx, cy, angle, getCorridor) {
     const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
     const isAir = !!(corridor && corridor.airSpraying);
     const isLiq = !!(corridor && corridor.liquidSpraying);
@@ -1135,7 +1155,11 @@ function drawBufferDeconAirNozzlesStatic(ctx, cx, cy, angle, isNorth) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDeconAirNozzlesDynamic(ctx, cx, cy, angle, isNorth, getCorridor) {
+    __dynDrawCached(ctx, 'drawBufferDeconAirNozzlesDynamic', 480, 200, cx, cy, (octx) => drawBufferDeconAirNozzlesDynamicImpl(octx, cx, cy, angle, isNorth, getCorridor));
+}
+function drawBufferDeconAirNozzlesDynamicImpl(ctx, cx, cy, angle, isNorth, getCorridor) {
     const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
     const duration = (corridor && corridor.sprayDuration) ? corridor.sprayDuration : 180;
     const progress = corridor ? (corridor.airProgress || 0) : 0;
@@ -1368,7 +1392,11 @@ function drawBufferDeconLiquidNozzlesStatic(ctx, cx, cy, angle, isNorth) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawBufferDeconLiquidNozzlesDynamic(ctx, cx, cy, angle, isNorth, getCorridor) {
+    __dynDrawCached(ctx, 'drawBufferDeconLiquidNozzlesDynamic', 480, 200, cx, cy, (octx) => drawBufferDeconLiquidNozzlesDynamicImpl(octx, cx, cy, angle, isNorth, getCorridor));
+}
+function drawBufferDeconLiquidNozzlesDynamicImpl(ctx, cx, cy, angle, isNorth, getCorridor) {
     const corridor = typeof getCorridor === 'function' ? getCorridor() : getCorridor;
     const duration = (corridor && corridor.sprayDuration) ? corridor.sprayDuration : 180;
     const progress = corridor ? (corridor.liquidProgress || 0) : 0;
@@ -1554,7 +1582,7 @@ function getBufferDeconLiquidNozzles(cx, cy, angle, isNorth, getCorridor) {
 // - 4倍超采样(SS=4)离屏精灵 + 实时读取 openProgress / wheelAngle / isLocked
 // =========================================================================
 function createCorridorDoorSprite(logicalW, logicalH, drawFn) {
-    const SS = 4;
+    const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
     const off = document.createElement('canvas');
     off.width = Math.ceil(logicalW * SS);
     off.height = Math.ceil(logicalH * SS);
@@ -2038,7 +2066,7 @@ function drawAirtightBlastDoor(ctx, door) {
     ctx.translate(door.cx, door.cy);
     ctx.rotate(door.angle);
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
 
     // 1. 底层洁净门槛导轨槽
     const sill = sprites.sillSprite;
@@ -3136,7 +3164,11 @@ function drawWestAutopsyTableDeckStatic(ctx, cx, cy, angle = 0) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time, angle = 0) {
+    __dynDrawCached(ctx, 'drawWestAutopsyTableGlowDynamic', 360, 320, cx, cy, (octx) => drawWestAutopsyTableGlowDynamicImpl(octx, cx, cy, time, angle));
+}
+function drawWestAutopsyTableGlowDynamicImpl(ctx, cx, cy, time, angle = 0) {
     // 淡蓝白光晕椭圆 140x56 (×0.7 缩小)，透明度呼吸 (0.05 - 0.25)，周期 2 秒
     const breath = 0.5 + 0.5 * Math.sin(time * Math.PI);
     const centerAlpha = 0.05 + 0.20 * breath;
@@ -3288,7 +3320,11 @@ function drawWestAutopsyCorpseLayerStatic(ctx, cx, cy, angle = 0) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time, angle = 0) {
+    __dynDrawCached(ctx, 'drawWestAutopsyRingLampsDynamic', 360, 320, cx, cy, (octx) => drawWestAutopsyRingLampsDynamicImpl(octx, cx, cy, time, angle));
+}
+function drawWestAutopsyRingLampsDynamicImpl(ctx, cx, cy, time, angle = 0) {
     // 8 盏灯单双号反相呼吸：周期 2 秒，亮度 0.30 - 1.00，直径 7 (r = 3.5)
     const phaseBase = Math.sin(time * Math.PI);
     ctx.save();
@@ -3687,7 +3723,11 @@ function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind, angle = 0) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time, angle = 0) {
+    __dynDrawCached(ctx, 'drawWestAutopsyTrayDynamic', 90, 90, cx, cy, (octx) => drawWestAutopsyTrayDynamicImpl(octx, cx, cy, trayKind, time, angle));
+}
+function drawWestAutopsyTrayDynamicImpl(ctx, cx, cy, trayKind, time, angle = 0) {
     if (trayKind === 'tools') return;
 
     ctx.save();
@@ -3798,7 +3838,7 @@ function getWestAutopsyTableObstacle(cx, cy, angle = 0) {
             const vh = window.innerHeight || 1080;
             if (cx + 200 < camX || cx - 200 > camX + vw || cy + 180 < camY || cy - 180 > camY + vh) return;
 
-            const SS = 4;
+            const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
             const cw = 360, ch = 320;
 
             const deckKey = '__westAutopsyDeckV5_' + cx + '_' + cy + '_' + angle;
@@ -3835,7 +3875,7 @@ function getWestAutopsyTableObstacle(cx, cy, angle = 0) {
 
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(dCache.canvas, cx - dCache.w / 2, cy - dCache.h / 2, dCache.w, dCache.h);
             drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time, angle);
             ctx.drawImage(cCache.canvas, cx - cCache.w / 2, cy - cCache.h / 2, cCache.w, cCache.h);
@@ -3887,7 +3927,7 @@ function getWestAutopsyTrayObstacle(cx, cy, trayKind, label, angle = 0) {
 
             const cacheKey = '__westAutopsyTrayV5_' + trayKind + '_' + cx + '_' + cy + '_' + angle;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 52, ch = 52;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -3904,7 +3944,7 @@ function getWestAutopsyTrayObstacle(cx, cy, trayKind, label, angle = 0) {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time, angle);
             ctx.restore();
@@ -3987,7 +4027,7 @@ function getWestBucketObstacle(cx, cy, angle = 0) {
         draw: (ctx) => {
             const k = '__westBucketV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
-                const SS = 4, cw = 30, ch = 30;
+                const SS = 2, cw = 30, ch = 30; // 2026-11-21 优化：超采样 4→2;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
@@ -3998,7 +4038,7 @@ function getWestBucketObstacle(cx, cy, angle = 0) {
             }
             const c = window[k];
             ctx.save();
-            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             ctx.restore();
         }
@@ -4070,7 +4110,7 @@ function getWestStepStoolObstacle(cx, cy, angle = 0) {
         draw: (ctx) => {
             const k = '__westStepStoolV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
-                const SS = 4, cw = 36, ch = 36;
+                const SS = 2, cw = 36, ch = 36; // 2026-11-21 优化：超采样 4→2;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
@@ -4081,7 +4121,7 @@ function getWestStepStoolObstacle(cx, cy, angle = 0) {
             }
             const c = window[k];
             ctx.save();
-            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             ctx.restore();
         }
@@ -4134,7 +4174,7 @@ function getWestCoiledHoseProp(cx, cy) {
         draw: (ctx) => {
             const k = '__westCoiledHoseV5_' + cx + '_' + cy;
             if (!window[k]) {
-                const SS = 4, cw = 44, ch = 44;
+                const SS = 2, cw = 44, ch = 44; // 2026-11-21 优化：超采样 4→2;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
@@ -4145,7 +4185,7 @@ function getWestCoiledHoseProp(cx, cy) {
             }
             const c = window[k];
             ctx.save();
-            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             ctx.restore();
         }
@@ -4335,7 +4375,7 @@ function getWestToolCartObstacle(cx, cy, angle = 0) {
             if (cx + 55 < camX || cx - 55 > camX + vw || cy + 55 < camY || cy - 55 > camY + vh) return;
             const k = '__westToolCartV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
-                const SS = 4, cw = 96, ch = 96;
+                const SS = 2, cw = 96, ch = 96; // 2026-11-21 优化：超采样 4→2;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
@@ -4346,7 +4386,7 @@ function getWestToolCartObstacle(cx, cy, angle = 0) {
             }
             const c = window[k];
             ctx.save();
-            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             ctx.restore();
         }
@@ -5370,7 +5410,11 @@ function drawWestPentaIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestPentaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestPentaIncubationUnitDynamic', 380, 380, cx, cy, (octx) => drawWestPentaIncubationUnitDynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestPentaIncubationUnitDynamicImpl(ctx, cx, cy, unitAngle, time) {
     const ycTop = -27.5;
     const ycBotGlass = 22.0;
 
@@ -5769,7 +5813,7 @@ function getWestPentaIncubationUnitObstacle() {
 
             const cacheKey = '__westPentaIncubationUnitV1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 360, ch = 360;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -5786,7 +5830,7 @@ function getWestPentaIncubationUnitObstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestPentaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -6279,7 +6323,11 @@ function drawWestHeptaIncubationUnitStatic(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestHeptaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestHeptaIncubationUnitDynamic', 440, 440, cx, cy, (octx) => drawWestHeptaIncubationUnitDynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestHeptaIncubationUnitDynamicImpl(ctx, cx, cy, unitAngle, time) {
     const ycTop = -27.5;
     const ycBotGlass = 22.0;
 
@@ -6679,7 +6727,7 @@ function getWestHeptaIncubationUnitObstacle() {
 
             const cacheKey = '__westHeptaIncubationUnitV1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 420, ch = 420;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -6696,7 +6744,7 @@ function getWestHeptaIncubationUnitObstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestHeptaIncubationUnitDynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -7483,7 +7531,11 @@ function drawWestBench04Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench04Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench04Dynamic', 440, 280, cx, cy, (octx) => drawWestBench04DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench04DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -7684,7 +7736,7 @@ function getWestBench04Obstacle() {
 
             const cacheKey = '__westBench04V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 420, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -7701,7 +7753,7 @@ function getWestBench04Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench04Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -8318,7 +8370,11 @@ function drawWestBench05Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench05Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench05Dynamic', 440, 280, cx, cy, (octx) => drawWestBench05DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench05DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -8467,7 +8523,7 @@ function getWestBench05Obstacle() {
 
             const cacheKey = '__westBench05V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 420, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -8484,7 +8540,7 @@ function getWestBench05Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench05Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -9181,7 +9237,11 @@ function drawWestBench06Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench06Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench06Dynamic', 440, 280, cx, cy, (octx) => drawWestBench06DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench06DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -9385,7 +9445,7 @@ function getWestBench06Obstacle() {
 
             const cacheKey = '__westBench06V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 420, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -9402,7 +9462,7 @@ function getWestBench06Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench06Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -10018,7 +10078,11 @@ function drawWestBench01Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench01Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench01Dynamic', 340, 280, cx, cy, (octx) => drawWestBench01DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench01DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -10205,7 +10269,7 @@ function getWestBench01Obstacle() {
 
             const cacheKey = '__westBench01V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 320, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -10222,7 +10286,7 @@ function getWestBench01Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench01Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -10857,7 +10921,11 @@ function drawWestBench02Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench02Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench02Dynamic', 340, 280, cx, cy, (octx) => drawWestBench02DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench02DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -11042,7 +11110,7 @@ function getWestBench02Obstacle() {
 
             const cacheKey = '__westBench02V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 320, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -11059,7 +11127,7 @@ function getWestBench02Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench02Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -11596,7 +11664,11 @@ function drawWestBench03Static(ctx, cx, cy, unitAngle) {
     ctx.restore();
 }
 
+// 2026-11-21 动态层节流缓存：每 0.1s 重绘一次进离屏缓存，其余帧直接贴图（见 __dynDrawCached）。
 function drawWestBench03Dynamic(ctx, cx, cy, unitAngle, time) {
+    __dynDrawCached(ctx, 'drawWestBench03Dynamic', 340, 280, cx, cy, (octx) => drawWestBench03DynamicImpl(octx, cx, cy, unitAngle, time));
+}
+function drawWestBench03DynamicImpl(ctx, cx, cy, unitAngle, time) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(unitAngle);
@@ -11731,7 +11803,7 @@ function getWestBench03Obstacle() {
 
             const cacheKey = '__westBench03V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
-                const SS = 4;
+                const SS = 2; // 2026-11-21 优化：静态缓存超采样 4→2（源像素减 4 倍，drawImage 大降；2x 仍超采样，细字无损）;
                 const cw = 320, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -11748,7 +11820,7 @@ function getWestBench03Obstacle() {
             const time = Date.now() * 0.001;
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium'; // 2026-11-21 优化：high→medium（软件渲染下 high 的双三次滤波极贵；2x 超采样下 medium 视觉几乎无差）;
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
             drawWestBench03Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
@@ -12146,6 +12218,32 @@ const LEVEL_7_TEST = {
                     ctx.lineTo(1304, 1960);    // 中室西南角
                     ctx.closePath();
                     ctx.fillStyle = window.__l78GridPattern;
+                    ctx.fill();
+                    ctx.restore();
+
+                    // V19（2026-11-21）：左房间银色地砖，与中室同款 50px 方格 + 径向渐变
+                    // 银白系：中心 #edf0f3 略浅、边缘 #c6ccd2 银色；格线银灰细线，砖面本身不比银色更深
+                    if (typeof window.__l78GridPatternSilver === 'undefined' || !window.__l78GridPatternSilver) {
+                        const tc = document.createElement('canvas');
+                        tc.width = 50; tc.height = 50;
+                        const tctx = tc.getContext('2d');
+                        const g = tctx.createRadialGradient(25, 25, 5, 25, 25, 35);
+                        g.addColorStop(0, '#edf0f3');
+                        g.addColorStop(1, '#c6ccd2');
+                        tctx.fillStyle = g;
+                        tctx.fillRect(0, 0, 50, 50);
+                        tctx.strokeStyle = 'rgba(110, 118, 128, 0.45)';
+                        tctx.lineWidth = 1;
+                        tctx.strokeRect(0.5, 0.5, 49, 49);
+                        window.__l78GridPatternSilver = ctx.createPattern(tc, 'repeat');
+                    }
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(150, 1200);     // 西侧三角房 · 西尖
+                    ctx.lineTo(1055, 490);     // 西侧三角房 · 北墙东端
+                    ctx.lineTo(1308, 1953);    // 西侧三角房 · 东墙南端
+                    ctx.closePath();
+                    ctx.fillStyle = window.__l78GridPatternSilver;
                     ctx.fill();
                     ctx.restore();
 
