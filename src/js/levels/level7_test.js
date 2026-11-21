@@ -2652,7 +2652,7 @@ function drawAutopsySupineCerberus(ctx, cx, cy, angle) {
     ctx.restore();
 }
 
-function drawWestAutopsyTableDeckStatic(ctx, cx, cy) {
+function drawWestAutopsyTableDeckStatic(ctx, cx, cy, angle = 0) {
     // 0.7x 等比缩小：桌下胶垫 + 台身(2抽屉/下层搁板/交叉撑/调平脚/向东电源线插头) + 140x45 304不锈钢台面 + 28x34一体水槽 + 台面小件
     const W = 140;
     const H = 45;
@@ -2661,6 +2661,7 @@ function drawWestAutopsyTableDeckStatic(ctx, cx, cy) {
 
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
 
     // 0) 桌下深色防疲劳胶垫（比台面略大 154x58，无碰撞）
     ctx.fillStyle = '#090d11';
@@ -3135,7 +3136,7 @@ function drawWestAutopsyTableDeckStatic(ctx, cx, cy) {
     ctx.restore();
 }
 
-function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time) {
+function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time, angle = 0) {
     // 淡蓝白光晕椭圆 140x56 (×0.7 缩小)，透明度呼吸 (0.05 - 0.25)，周期 2 秒
     const breath = 0.5 + 0.5 * Math.sin(time * Math.PI);
     const centerAlpha = 0.05 + 0.20 * breath;
@@ -3143,6 +3144,7 @@ function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time) {
 
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
     ctx.scale(70, 28); // 140x56
     const glowGrad = ctx.createRadialGradient(0, 0, 0.05, 0, 0, 1);
     glowGrad.addColorStop(0, `rgba(224, 242, 254, ${centerAlpha.toFixed(3)})`);
@@ -3155,10 +3157,11 @@ function drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time) {
     ctx.restore();
 }
 
-function drawWestAutopsyCorpseLayerStatic(ctx, cx, cy) {
+function drawWestAutopsyCorpseLayerStatic(ctx, cx, cy, angle = 0) {
     // 槽内暗色血迹 + 68px 仰躺三头犬尸体 + 2 条固定束带（皮带+扣）+ Ø37 环形灯组支架/拉链/灯控盒
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
 
     // 暗色血迹
     [
@@ -3285,11 +3288,12 @@ function drawWestAutopsyCorpseLayerStatic(ctx, cx, cy) {
     ctx.restore();
 }
 
-function drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time) {
+function drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time, angle = 0) {
     // 8 盏灯单双号反相呼吸：周期 2 秒，亮度 0.30 - 1.00，直径 7 (r = 3.5)
     const phaseBase = Math.sin(time * Math.PI);
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
     for (let i = 0; i < 8; i++) {
         const theta = -Math.PI / 2 + i * (Math.PI / 4);
         const lx = Math.cos(theta) * 18.5;
@@ -3333,11 +3337,11 @@ function drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time) {
     ctx.restore();
 }
 
-function drawWestAutopsyTableAssembly(ctx, cx, cy, time = 0) {
-    drawWestAutopsyTableDeckStatic(ctx, cx, cy);
-    drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time);
-    drawWestAutopsyCorpseLayerStatic(ctx, cx, cy);
-    drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time);
+function drawWestAutopsyTableAssembly(ctx, cx, cy, time = 0, angle = 0) {
+    drawWestAutopsyTableDeckStatic(ctx, cx, cy, angle);
+    drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time, angle);
+    drawWestAutopsyCorpseLayerStatic(ctx, cx, cy, angle);
+    drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time, angle);
 }
 
 function drawDetailedHeartOrgan(ctx, hx, hy, sc, hasCore, time = 0, phase = 0) {
@@ -3435,7 +3439,7 @@ function drawDetailedHeartOrgan(ctx, hx, hy, sc, hasCore, time = 0, phase = 0) {
     ctx.restore();
 }
 
-function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind) {
+function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind, angle = 0) {
     // 0.7x 托盘 30x20：盘脚 + 外翻盘沿 + 角排水孔 + 蚀刻小标签 (HEART/TOOLS/LIVER/GUT)
     const W = 30, H = 20;
     const halfW = W / 2, halfH = H / 2;
@@ -3443,6 +3447,7 @@ function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind) {
 
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
 
     // 1) 盘脚 + 地面投影
     ctx.fillStyle = 'rgba(2, 10, 8, 0.55)';
@@ -3682,11 +3687,12 @@ function drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind) {
     ctx.restore();
 }
 
-function drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time) {
+function drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time, angle = 0) {
     if (trayKind === 'tools') return;
 
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
     ctx.scale(0.64, 0.64);
 
     if (trayKind === 'hearts') {
@@ -3756,22 +3762,32 @@ function drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time) {
     ctx.restore();
 }
 
-function drawWestAutopsyTray(ctx, cx, cy, trayKind, time = 0) {
-    drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind);
-    drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time);
+function drawWestAutopsyTray(ctx, cx, cy, trayKind, time = 0, angle = 0) {
+    drawWestAutopsyTrayStatic(ctx, cx, cy, trayKind, angle);
+    drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time, angle);
 }
 
-function getWestAutopsyTableObstacle(cx, cy) {
+function getWestAutopsyTableObstacle(cx, cy, angle = 0) {
     const W = 140;
     const H = 45;
-    return {
+    const halfW = W / 2;
+    const halfH = H / 2;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const worldPts = angle ? [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    })) : null;
+
+    const obs = {
         type: 'solid',
         cx: cx,
         cy: cy,
-        x: cx - W / 2,
-        y: cy - H / 2,
-        w: W,
-        h: H,
         label: 'WEST AUTOPSY TABLE',
         displayName: 'FORENSIC AUTOPSY TABLE',
         hideLabel: true,
@@ -3780,12 +3796,12 @@ function getWestAutopsyTableObstacle(cx, cy) {
             const camY = Math.max(0, window.cameraY || 0);
             const vw = window.innerWidth || 1920;
             const vh = window.innerHeight || 1080;
-            if (cx + 180 < camX || cx - 120 > camX + vw || cy + 80 < camY || cy - 80 > camY + vh) return;
+            if (cx + 200 < camX || cx - 200 > camX + vw || cy + 180 < camY || cy - 180 > camY + vh) return;
 
             const SS = 4;
-            const cw = 340, ch = 120;
+            const cw = 360, ch = 320;
 
-            const deckKey = '__westAutopsyDeckV5_' + cx + '_' + cy;
+            const deckKey = '__westAutopsyDeckV5_' + cx + '_' + cy + '_' + angle;
             if (!window[deckKey]) {
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -3794,12 +3810,12 @@ function getWestAutopsyTableObstacle(cx, cy) {
                 octx.save();
                 octx.scale(SS, SS);
                 octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestAutopsyTableDeckStatic(octx, cx, cy);
+                drawWestAutopsyTableDeckStatic(octx, cx, cy, angle);
                 octx.restore();
                 window[deckKey] = { canvas: off, w: cw, h: ch };
             }
 
-            const corpseKey = '__westAutopsyCorpseV5_' + cx + '_' + cy;
+            const corpseKey = '__westAutopsyCorpseV5_' + cx + '_' + cy + '_' + angle;
             if (!window[corpseKey]) {
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
@@ -3808,7 +3824,7 @@ function getWestAutopsyTableObstacle(cx, cy) {
                 octx.save();
                 octx.scale(SS, SS);
                 octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestAutopsyCorpseLayerStatic(octx, cx, cy);
+                drawWestAutopsyCorpseLayerStatic(octx, cx, cy, angle);
                 octx.restore();
                 window[corpseKey] = { canvas: off, w: cw, h: ch };
             }
@@ -3821,25 +3837,44 @@ function getWestAutopsyTableObstacle(cx, cy) {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(dCache.canvas, cx - dCache.w / 2, cy - dCache.h / 2, dCache.w, dCache.h);
-            drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time);
+            drawWestAutopsyTableGlowDynamic(ctx, cx, cy, time, angle);
             ctx.drawImage(cCache.canvas, cx - cCache.w / 2, cy - cCache.h / 2, cCache.w, cCache.h);
-            drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time);
+            drawWestAutopsyRingLampsDynamic(ctx, cx, cy, time, angle);
             ctx.restore();
         }
     };
+    if (worldPts) {
+        obs.points = worldPts;
+    } else {
+        obs.x = cx - halfW;
+        obs.y = cy - halfH;
+        obs.w = W;
+        obs.h = H;
+    }
+    return obs;
 }
 
-function getWestAutopsyTrayObstacle(cx, cy, trayKind, label) {
+function getWestAutopsyTrayObstacle(cx, cy, trayKind, label, angle = 0) {
     const W = 30;
     const H = 20;
-    return {
+    const halfW = W / 2;
+    const halfH = H / 2;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const worldPts = angle ? [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    })) : null;
+
+    const obs = {
         type: 'solid',
         cx: cx,
         cy: cy,
-        x: cx - W / 2,
-        y: cy - H / 2,
-        w: W,
-        h: H,
         label: label,
         displayName: label,
         hideLabel: true,
@@ -3848,12 +3883,12 @@ function getWestAutopsyTrayObstacle(cx, cy, trayKind, label) {
             const camY = Math.max(0, window.cameraY || 0);
             const vw = window.innerWidth || 1920;
             const vh = window.innerHeight || 1080;
-            if (cx + 40 < camX || cx - 40 > camX + vw || cy + 30 < camY || cy - 30 > camY + vh) return;
+            if (cx + 45 < camX || cx - 45 > camX + vw || cy + 45 < camY || cy - 45 > camY + vh) return;
 
-            const cacheKey = '__westAutopsyTrayV5_' + trayKind + '_' + cx + '_' + cy;
+            const cacheKey = '__westAutopsyTrayV5_' + trayKind + '_' + cx + '_' + cy + '_' + angle;
             if (!window[cacheKey]) {
                 const SS = 4;
-                const cw = 48, ch = 38;
+                const cw = 52, ch = 52;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
                 off.height = ch * SS;
@@ -3861,7 +3896,7 @@ function getWestAutopsyTrayObstacle(cx, cy, trayKind, label) {
                 octx.save();
                 octx.scale(SS, SS);
                 octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestAutopsyTrayStatic(octx, cx, cy, trayKind);
+                drawWestAutopsyTrayStatic(octx, cx, cy, trayKind, angle);
                 octx.restore();
                 window[cacheKey] = { canvas: off, w: cw, h: ch };
             }
@@ -3871,18 +3906,28 @@ function getWestAutopsyTrayObstacle(cx, cy, trayKind, label) {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
-            drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time);
+            drawWestAutopsyTrayDynamic(ctx, cx, cy, trayKind, time, angle);
             ctx.restore();
         }
     };
+    if (worldPts) {
+        obs.points = worldPts;
+    } else {
+        obs.x = cx - halfW;
+        obs.y = cy - halfH;
+        obs.w = W;
+        obs.h = H;
+    }
+    return obs;
 }
 
 // =========================================================================
 // 解剖室地面设施：水桶 (14x14 solid)、踏凳 (20x14 solid)、盘管 (Ø24 无碰撞)、器械推车 + 4 培养皿 (50x36 solid)
 // =========================================================================
-function drawWestBucketStatic(ctx, cx, cy) {
+function drawWestBucketStatic(ctx, cx, cy, angle = 0) {
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
     // 地面投影
     ctx.fillStyle = 'rgba(2, 10, 8, 0.52)';
     ctx.beginPath();
@@ -3919,22 +3964,35 @@ function drawWestBucketStatic(ctx, cx, cy) {
     ctx.restore();
 }
 
-function getWestBucketObstacle(cx, cy) {
-    return {
+function getWestBucketObstacle(cx, cy, angle = 0) {
+    const half = 7;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const worldPts = angle ? [
+        { x: -half, y: -half },
+        { x: half, y: -half },
+        { x: half, y: half },
+        { x: -half, y: half }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    })) : null;
+
+    const obs = {
         type: 'solid',
-        cx: cx, cy: cy, x: cx - 7, y: cy - 7, w: 14, h: 14,
+        cx: cx, cy: cy,
         label: 'WEST MOP BUCKET',
         displayName: 'CLEANING BUCKET',
         hideLabel: true,
         draw: (ctx) => {
-            const k = '__westBucketV5_' + cx + '_' + cy;
+            const k = '__westBucketV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
                 const SS = 4, cw = 30, ch = 30;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
                 octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestBucketStatic(octx, cx, cy);
+                drawWestBucketStatic(octx, cx, cy, angle);
                 octx.restore();
                 window[k] = { canvas: off, w: cw, h: ch };
             }
@@ -3945,12 +4003,19 @@ function getWestBucketObstacle(cx, cy) {
             ctx.restore();
         }
     };
+    if (worldPts) {
+        obs.points = worldPts;
+    } else {
+        obs.x = cx - half; obs.y = cy - half; obs.w = 14; obs.h = 14;
+    }
+    return obs;
 }
 
-function drawWestStepStoolStatic(ctx, cx, cy) {
+function drawWestStepStoolStatic(ctx, cx, cy, angle = 0) {
     // 20x14 两级不锈钢踏凳
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
     ctx.fillStyle = 'rgba(2, 10, 8, 0.52)';
     ctx.fillRect(-10.5, -6.5, 21, 14.5);
     // 4 支脚胶垫
@@ -3981,22 +4046,36 @@ function drawWestStepStoolStatic(ctx, cx, cy) {
     ctx.restore();
 }
 
-function getWestStepStoolObstacle(cx, cy) {
-    return {
+function getWestStepStoolObstacle(cx, cy, angle = 0) {
+    const W = 20, H = 14;
+    const halfW = W / 2, halfH = H / 2;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const worldPts = angle ? [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    })) : null;
+
+    const obs = {
         type: 'solid',
-        cx: cx, cy: cy, x: cx - 10, y: cy - 7, w: 20, h: 14,
+        cx: cx, cy: cy,
         label: 'WEST STEP STOOL',
         displayName: 'TWO-STEP STOOL',
         hideLabel: true,
         draw: (ctx) => {
-            const k = '__westStepStoolV5_' + cx + '_' + cy;
+            const k = '__westStepStoolV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
-                const SS = 4, cw = 34, ch = 28;
+                const SS = 4, cw = 36, ch = 36;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
                 octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestStepStoolStatic(octx, cx, cy);
+                drawWestStepStoolStatic(octx, cx, cy, angle);
                 octx.restore();
                 window[k] = { canvas: off, w: cw, h: ch };
             }
@@ -4007,6 +4086,12 @@ function getWestStepStoolObstacle(cx, cy) {
             ctx.restore();
         }
     };
+    if (worldPts) {
+        obs.points = worldPts;
+    } else {
+        obs.x = cx - halfW; obs.y = cy - halfH; obs.w = W; obs.h = H;
+    }
+    return obs;
 }
 
 function drawWestCoiledHoseProp(ctx, cx, cy) {
@@ -4067,12 +4152,13 @@ function getWestCoiledHoseProp(cx, cy) {
     };
 }
 
-function drawWestToolCartStatic(ctx, cx, cy) {
+function drawWestToolCartStatic(ctx, cx, cy, angle = 0) {
     // 器械推车 50x36 @ (420, 1300)：4脚轮(Ø5) + 下层搁板(试剂瓶x2+叠布x1) + 上层不锈钢台面 + 西侧推把 + 侧栏杆 + 4 培养皿
     const W = 50, H = 36;
     const hw = W / 2, hh = H / 2; // 25, 18
     ctx.save();
     ctx.translate(cx, cy);
+    if (angle) ctx.rotate(angle);
 
     // 1) 地面阴影 + 4 个脚轮 (直径 5 -> r=2.5，探出四角)
     ctx.fillStyle = 'rgba(2, 10, 8, 0.56)';
@@ -4220,11 +4306,24 @@ function drawWestToolCartStatic(ctx, cx, cy) {
     ctx.restore();
 }
 
-function getWestToolCartObstacle(cx, cy) {
+function getWestToolCartObstacle(cx, cy, angle = 0) {
     const W = 50, H = 36;
-    return {
+    const halfW = W / 2, halfH = H / 2;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const worldPts = angle ? [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    })) : null;
+
+    const obs = {
         type: 'solid',
-        cx: cx, cy: cy, x: cx - W / 2, y: cy - H / 2, w: W, h: H,
+        cx: cx, cy: cy,
         label: 'WEST TOOL CART',
         displayName: 'SPECIMEN TOOL CART',
         hideLabel: true,
@@ -4233,15 +4332,15 @@ function getWestToolCartObstacle(cx, cy) {
             const camY = Math.max(0, window.cameraY || 0);
             const vw = window.innerWidth || 1920;
             const vh = window.innerHeight || 1080;
-            if (cx + 45 < camX || cx - 45 > camX + vw || cy + 40 < camY || cy - 40 > camY + vh) return;
-            const k = '__westToolCartV5_' + cx + '_' + cy;
+            if (cx + 55 < camX || cx - 55 > camX + vw || cy + 55 < camY || cy - 55 > camY + vh) return;
+            const k = '__westToolCartV5_' + cx + '_' + cy + '_' + angle;
             if (!window[k]) {
-                const SS = 4, cw = 84, ch = 64;
+                const SS = 4, cw = 96, ch = 96;
                 const off = document.createElement('canvas');
                 off.width = cw * SS; off.height = ch * SS;
                 const octx = off.getContext('2d');
                 octx.save(); octx.scale(SS, SS); octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestToolCartStatic(octx, cx, cy);
+                drawWestToolCartStatic(octx, cx, cy, angle);
                 octx.restore();
                 window[k] = { canvas: off, w: cw, h: ch };
             }
@@ -4252,6 +4351,12 @@ function getWestToolCartObstacle(cx, cy) {
             ctx.restore();
         }
     };
+    if (worldPts) {
+        obs.points = worldPts;
+    } else {
+        obs.x = cx - halfW; obs.y = cy - halfH; obs.w = W; obs.h = H;
+    }
+    return obs;
 }
 
 // =========================================================================
@@ -9306,938 +9411,802 @@ function getWestBench06Obstacle() {
 }
 
 // =========================================================================
-// Level 8 · 西侧三角房 · 半开放三排武器测试站 TEST-01 (260x120 规则矩形，静态+动态分离)
-// 中心 (900, 1450)，长轴水平 (0 rad)，独立放置于房间中部偏东南空地
-// 结构：三排独立开放式钢架（西排武器/深钢灰、中排仪器/中钢灰、东排靶标/浅钢灰），
-// 排间留 10px 通视缝（[-50,-40] 与 [+40,+50]），共用开放式钢架底座，无连续台面/实心柜/封闭侧板
-// 不画地面警示线；整站单一 solid 碰撞体 (260x120)
+// Level 8 · 西侧三角房 · 长试验台 01：北墙西段湿化学台 (283x50，静态+动态分离，照 06 号型)
+// 中心 (362.19, 1079.26)，长轴沿北墙内缘 (-0.665 rad)，占沿墙 100–383
+// 东端与 02 台留 5px 空档，北缘距北墙内壁 3px（墙面管线与排风管道贴墙至 -28），正面朝房间内侧 (+y)
 // =========================================================================
-function drawWestWeaponTestStationStatic(ctx, cx, cy) {
+function drawWestBench01Static(ctx, cx, cy, unitAngle) {
     ctx.save();
     ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
 
-    // =====================================================================
-    // 0. 共用开放式钢架底座（仅画钢轨与支脚，不画连续底板/台面，排间 10px 缝完全透出地面）
-    // =====================================================================
-    // 底座细框下方轻微接触投影（只沿四周钢轨与各排骨架，留出通视缝与架内镂空）
-    ctx.fillStyle = 'rgba(2, 6, 12, 0.45)';
-    ctx.fillRect(-130, -59.5, 260, 4.5);
-    ctx.fillRect(-130, 55.0, 260, 4.5);
-    ctx.fillRect(-130, -56, 4.5, 112);
-    ctx.fillRect(125.5, -56, 4.5, 112);
-
-    // 南北贯通共用底座纵梁（y = -58 与 y = +58，连接三排并跨越两道 10px 通视缝）
-    ctx.fillStyle = '#2d3b4e';
-    ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 0.85;
-    ctx.fillRect(-129.5, -59.2, 259, 3.0);
-    ctx.strokeRect(-129.5, -59.2, 259, 3.0);
-    ctx.fillRect(-129.5, 56.2, 259, 3.0);
-    ctx.strokeRect(-129.5, 56.2, 259, 3.0);
-
-    // 底座纵梁顶面金属亮线与两道 10px 通视缝跨接夹板（[-50,-40] 与 [+40,+50]）
-    ctx.fillStyle = '#708094';
-    ctx.fillRect(-128, -58.5, 256, 0.8);
-    ctx.fillRect(-128, 56.9, 256, 0.8);
-    [-45, 45].forEach(gx => {
-        ctx.fillStyle = '#4a586d';
-        ctx.strokeStyle = '#0c1322';
-        ctx.lineWidth = 0.75;
-        ctx.fillRect(gx - 6, -59.6, 12, 3.8);
-        ctx.strokeRect(gx - 6, -59.6, 12, 3.8);
-        ctx.fillRect(gx - 6, 55.8, 12, 3.8);
-        ctx.strokeRect(gx - 6, 55.8, 12, 3.8);
-        // 跨接夹板螺栓
-        ctx.fillStyle = '#d1dae6';
-        ctx.beginPath(); ctx.arc(gx - 3.5, -57.7, 0.7, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(gx + 3.5, -57.7, 0.7, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(gx - 3.5, 57.7, 0.7, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(gx + 3.5, 57.7, 0.7, 0, Math.PI * 2); ctx.fill();
-    });
-
-    // 12 处调平地脚垫板（分置三排四角）
-    [-126.5, -53.5, -36.5, 36.5, 53.5, 126.5].forEach(fx => {
-        [-57.5, 57.5].forEach(fy => {
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(fx - 2.6, fy - 1.8, 5.2, 3.6);
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(fx - 1.6, fy - 1.0, 3.2, 2.0);
-        });
-    });
-
-    // 三排各自独立的底层交叉撑（分别用西深灰/中中灰/东浅灰，中缝完全镂空透视）
-    [
-        { x0: -126, x1: -54, col: '#283548', hi: '#475569' },
-        { x0: -36,  x1: 36,  col: '#475569', hi: '#64748b' },
-        { x0: 54,   x1: 126, col: '#78879b', hi: '#cbd5e1' }
-    ].forEach(br => {
-        ctx.strokeStyle = br.col;
-        ctx.lineWidth = 1.4;
-        ctx.beginPath();
-        ctx.moveTo(br.x0, -54); ctx.lineTo(br.x1, 54);
-        ctx.moveTo(br.x0, 54); ctx.lineTo(br.x1, -54);
-        ctx.stroke();
-        ctx.strokeStyle = br.hi;
-        ctx.lineWidth = 0.55;
-        ctx.beginPath();
-        ctx.moveTo(br.x0, -54); ctx.lineTo(br.x1, 54);
-        ctx.stroke();
-    });
-
-    // =====================================================================
-    // 一、西排 · 武器排（x ∈ [-130, -50], y ∈ [-60, +60]，深钢灰开放式枪架）
-    // =====================================================================
-    // 西排开放边框钢条（深钢灰 #1e293b / #273444）
-    ctx.fillStyle = '#1e293b';
-    ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 0.75;
-    ctx.fillRect(-129.5, -56, 3.0, 112); ctx.strokeRect(-129.5, -56, 3.0, 112);
-    ctx.fillRect(-53.5, -56, 3.0, 112);  ctx.strokeRect(-53.5, -56, 3.0, 112);
-    ctx.fillRect(-126.5, -55.8, 73, 2.6); ctx.strokeRect(-126.5, -55.8, 73, 2.6);
-    ctx.fillRect(-126.5, 53.2, 73, 2.6);  ctx.strokeRect(-126.5, 53.2, 73, 2.6);
-
-    // 立柱 2 根（螺栓与焊缝各不相同）
-    // 立柱 1（西北重型方立柱 -123, -47：4 枚六角螺栓 + 弧形 TIG 鱼鳞焊缝）
-    ctx.fillStyle = '#26303d';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.85;
-    ctx.fillRect(-127.5, -52.5, 9.5, 11.0);
-    ctx.strokeRect(-127.5, -52.5, 9.5, 11.0);
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(-125.8, -50.8, 6.1, 7.6);
-    [[-125.6, -50.6], [-119.9, -50.6], [-125.6, -43.4], [-119.9, -43.4]].forEach(([bx, by]) => {
-        ctx.fillStyle = '#94a3b8';
-        ctx.beginPath(); ctx.arc(bx, by, 0.85, 0, Math.PI * 2); ctx.fill();
-    });
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 0.6;
-    for (let wy = -50.5; wy <= -43.5; wy += 2.2) {
-        ctx.beginPath(); ctx.arc(-117.5, wy, 1.0, -Math.PI / 2, Math.PI / 2); ctx.stroke();
-    }
-
-    // 立柱 2（东南侧斜撑方立柱 -57, +47：斜角加强板 + 3 枚沉头内六角螺栓 + 之字 MIG 焊缝）
-    ctx.fillStyle = '#283548';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.85;
+    // 1. 地面投影阴影
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
     ctx.beginPath();
-    ctx.moveTo(-62.5, 42.0); ctx.lineTo(-52.5, 42.0); ctx.lineTo(-52.5, 52.8); ctx.lineTo(-60.0, 52.8); ctx.lineTo(-62.5, 49.5); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#3f4c5e';
-    ctx.fillRect(-59.5, 44.2, 5.2, 6.0);
-    [[-60.5, 44.0], [-54.5, 44.0], [-57.5, 50.8]].forEach(([bx, by]) => {
-        ctx.fillStyle = '#cbd5e1';
-        ctx.beginPath(); ctx.arc(bx, by, 0.78, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(bx - 0.35, by - 0.35, 0.7, 0.7);
-    });
-    ctx.strokeStyle = '#7c8ba1';
-    ctx.lineWidth = 0.55;
-    ctx.beginPath();
-    ctx.moveTo(-62.8, 42.5); ctx.lineTo(-64.2, 44.5); ctx.lineTo(-62.8, 46.5); ctx.lineTo(-64.2, 48.5);
-    ctx.stroke();
+    ctx.roundRect ? ctx.roundRect(-143.5, -27.0, 287, 54.5, 2.5) : ctx.rect(-143.5, -27.0, 287, 54.5);
+    ctx.fill();
 
-    // 横轨 2 根（开放式横向挂载轨，各自连接件与焊缝不同）
-    // 上横轨（y = -25：带长槽孔滑轨 + 左侧双螺栓端板 + 点焊）
-    ctx.fillStyle = '#273444';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.75;
-    ctx.fillRect(-126.5, -27.5, 73, 5.0);
-    ctx.strokeRect(-126.5, -27.5, 73, 5.0);
-    ctx.fillStyle = '#090d16';
-    for (let sx = -120; sx <= -60; sx += 10) {
-        ctx.fillRect(sx, -25.8, 5.0, 1.6);
-    }
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(-126.0, -28.5, 4.5, 7.0);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.beginPath(); ctx.arc(-123.8, -26.8, 0.65, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(-123.8, -23.2, 0.65, 0, Math.PI * 2); ctx.fill();
-
-    // 下横轨（y = +19：双脊 T 型导轨 + 右侧三铆钉角码 + V 形连续焊）
-    ctx.fillStyle = '#334155';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.75;
-    ctx.fillRect(-126.5, 16.5, 73, 5.2);
-    ctx.strokeRect(-126.5, 16.5, 73, 5.2);
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(-125.5, 18.4, 71, 1.4);
-    ctx.fillStyle = '#3f4c5e';
-    ctx.fillRect(-58.5, 15.2, 5.0, 7.8);
-    [-56.0].forEach(rx => {
-        [16.5, 19.1, 21.7].forEach(ry => {
-            ctx.fillStyle = '#e2e8f0';
-            ctx.beginPath(); ctx.arc(rx, ry, 0.58, 0, Math.PI * 2); ctx.fill();
-        });
-    });
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2（贴北墙 y ∈ [-28.0, -24.6]）
     ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.45;
+    ctx.beginPath(); ctx.moveTo(-139, -27.3); ctx.lineTo(139, -27.3); ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
     ctx.lineWidth = 0.55;
-    ctx.beginPath();
-    ctx.moveTo(-59.5, 15.8); ctx.lineTo(-58.2, 17.5); ctx.lineTo(-59.5, 19.2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-139, -27.0); ctx.lineTo(139, -27.0); ctx.stroke();
 
-    // 站体钢印编号 TEST-01（西北立柱顶缘）
-    ctx.fillStyle = '#b4c0d0';
-    ctx.strokeStyle = '#111827';
-    ctx.lineWidth = 0.75;
-    ctx.fillRect(-127.0, -58.2, 22.0, 4.8);
-    ctx.strokeRect(-127.0, -58.2, 22.0, 4.8);
-    ctx.font = 'bold 2.6px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#0b1120';
-    ctx.fillText('TEST-01', -116.0, -55.7);
-
-    // 西排小标识牌（武器：深炭底 + 屏蓝框 + 银白字）
-    ctx.fillStyle = '#0d1526';
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(-102.0, -56.2, 20.0, 6.2);
-    ctx.strokeRect(-102.0, -56.2, 20.0, 6.2);
-    ctx.font = 'bold 3.1px sans-serif';
-    ctx.fillStyle = '#e0f2fe';
-    ctx.fillText('武器', -92.0, -53.0);
-
-    // 顶部警示灯支架与底座（琥珀色，西排顶 -62, -51）
-    ctx.fillStyle = '#1b2434';
-    ctx.strokeStyle = '#0a0f1c';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(-67.5, -55.5, 11.0, 9.0);
-    ctx.strokeRect(-67.5, -55.5, 11.0, 9.0);
-    ctx.fillStyle = '#4e5d73';
-    ctx.beginPath(); ctx.arc(-62.0, -51.0, 3.8, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 0.75;
-    ctx.stroke();
-
-    // 步枪 2 挂架（上横轨 y = -25 挂着的第二支突击步枪：折叠线托 + 弯弹匣 + 全息红点 + 三叉消焰器）
-    // 双 J 形挂钩
-    [-108, -74].forEach(hx => {
-        ctx.fillStyle = '#6b7b92';
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 0.75;
-        ctx.fillRect(hx - 1.5, -29.0, 3.0, 8.0);
-        ctx.strokeRect(hx - 1.5, -29.0, 3.0, 8.0);
-    });
-    // 折叠线型枪托
-    ctx.strokeStyle = '#3f3f46';
+    ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 1.25;
-    ctx.beginPath();
-    ctx.moveTo(-121, -27.2); ctx.lineTo(-109, -26.2);
-    ctx.moveTo(-121, -22.2); ctx.lineTo(-109, -23.5);
-    ctx.moveTo(-121, -27.6); ctx.lineTo(-121, -21.8);
-    ctx.stroke();
-    // 冲压深灰机匣
-    ctx.fillStyle = '#334155';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.65;
-    ctx.fillRect(-109, -27.4, 22, 4.8);
-    ctx.strokeRect(-109, -27.4, 22, 4.8);
-    // 弯弹匣（斜向南伸出）
-    ctx.fillStyle = '#475569';
-    ctx.beginPath();
-    ctx.moveTo(-98, -22.6); ctx.lineTo(-93, -22.6); ctx.lineTo(-90.5, -15.5); ctx.lineTo(-95.5, -15.5); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    // 紧凑全息方框瞄具 + 翡翠绿发射点
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-103, -30.0, 7.5, 2.8);
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(-99.5, -29.1, 1.4, 1.0);
-    // 短四面导轨护木 + 氮化短枪管 + 三叉消焰制退器
-    ctx.fillStyle = '#27272a';
-    ctx.fillRect(-87, -26.6, 15, 3.2);
-    ctx.strokeRect(-87, -26.6, 15, 3.2);
-    ctx.fillStyle = '#52525b';
-    ctx.fillRect(-72, -25.8, 10, 1.6);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(-62, -26.6, 4.8, 1.0);
-    ctx.fillRect(-62, -24.4, 4.8, 1.0);
-    ctx.fillRect(-62, -25.5, 3.2, 1.0);
-
-    // 虎钳 1 个（跨架于中央开放横梁 y = 0 上：钳口 + 角度刻度盘 + 锁紧手轮）
-    // 虎钳开放承托鞍座（仅窄鞍座，左右镂空见地）
-    ctx.fillStyle = '#283548';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(-106, -9.5, 34, 22.5);
-    ctx.strokeRect(-106, -9.5, 34, 22.5);
-    // 前后齿纹夹钳口
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(-102, -5.2, 10, 12.0);
-    ctx.strokeRect(-102, -5.2, 10, 12.0);
-    ctx.fillRect(-83, -4.4, 9, 10.4);
-    ctx.strokeRect(-83, -4.4, 9, 10.4);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(-101, -4.4, 8, 1.2);
-    ctx.fillRect(-101, 4.8, 8, 1.2);
-    // 角度刻度盘 (-96, +9.6)
-    ctx.fillStyle = '#e2e8f0';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.55;
-    ctx.beginPath(); ctx.arc(-96, 9.5, 3.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#0f172a';
+    ctx.beginPath(); ctx.moveTo(-139, -25.9); ctx.lineTo(139, -25.9); ctx.stroke();
+    ctx.strokeStyle = '#334155';
     ctx.lineWidth = 0.45;
-    for (let a = -Math.PI; a <= 0; a += Math.PI / 4) {
-        ctx.beginPath();
-        ctx.moveTo(-96 + Math.cos(a) * 2.0, 9.5 + Math.sin(a) * 2.0);
-        ctx.lineTo(-96 + Math.cos(a) * 3.2, 9.5 + Math.sin(a) * 3.2);
-        ctx.stroke();
-    }
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath(); ctx.moveTo(-96, 9.5); ctx.lineTo(-93.8, 7.8); ctx.stroke();
-    // 锁紧手轮 (-78.5, +9.5)
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath(); ctx.arc(-78.5, 9.5, 3.0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 0.65;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(-81.2, 9.5); ctx.lineTo(-75.8, 9.5);
-    ctx.moveTo(-78.5, 6.8); ctx.lineTo(-78.5, 12.2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-139, -25.7); ctx.lineTo(139, -25.7); ctx.stroke();
 
-    // 步枪 1（夹在虎钳上，沿 y = +0.5 弹道轴线瞄东：镂空狙击托 + 直匣 + 长倍镜 + 坦克式双室制退器）
-    // 镂空狙击枪托
-    ctx.fillStyle = '#18181b';
-    ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 0.65;
-    ctx.beginPath();
-    ctx.moveTo(-125, -2.5); ctx.lineTo(-108, -1.2); ctx.lineTo(-108, 3.2); ctx.lineTo(-125, 5.2); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#05100c';
-    ctx.fillRect(-121.5, -0.4, 8.5, 2.5);
-    // CNC 铣削机匣
-    ctx.fillStyle = '#26303d';
-    ctx.fillRect(-108, -1.8, 24, 5.2);
-    ctx.strokeRect(-108, -1.8, 24, 5.2);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(-99, -0.8, 6.5, 1.5);
-    // 直弹匣 (20发)
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-95, 3.4, 5.2, 5.4);
-    ctx.strokeRect(-95, 3.4, 5.2, 5.4);
-    // 长可变倍瞄准镜 + 双环 + 蓝膜物镜
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-104, -5.0, 17, 2.8);
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 0.55;
-    ctx.strokeRect(-104, -5.0, 17, 2.8);
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(-87.8, -4.6, 1.0, 2.0);
-    // 槽孔护木 + 重型不锈钢槽纹枪管 + 双室坦克制退器
-    ctx.fillStyle = '#3f4c5e';
-    ctx.fillRect(-84, -1.1, 20, 3.8);
-    ctx.strokeRect(-84, -1.1, 20, 3.8);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(-64, -0.2, 8.5, 2.0);
-    ctx.fillStyle = '#e2e8f0';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.fillRect(-55.5, -1.0, 4.6, 3.6);
-    ctx.strokeRect(-55.5, -1.0, 4.6, 3.6);
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-54.4, -0.6, 0.9, 2.8);
-    ctx.fillRect(-52.7, -0.6, 0.9, 2.8);
-
-    // 手枪 1 支（挂在下横轨 y = +19 南侧挂钉上：-84..-62, y ∈ [+21, +33]）
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(-75, 19.5, 2.4, 5.0);
-    // 银灰切角滑套
-    ctx.fillStyle = '#cbd5e1';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.fillRect(-81, 22.8, 17.5, 3.8);
-    ctx.strokeRect(-81, 22.8, 17.5, 3.8);
-    // 后部防滑纹与绿氚准星
-    ctx.fillStyle = '#334155';
-    for (let sx = -80; sx <= -76; sx += 1.4) {
-        ctx.fillRect(sx, 23.2, 0.7, 3.0);
-    }
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(-64.8, 22.3, 1.0, 0.8);
-    // 聚合物握把与扳机护圈
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    ctx.moveTo(-80.5, 26.6); ctx.lineTo(-75.0, 26.6); ctx.lineTo(-76.5, 33.2); ctx.lineTo(-82.0, 33.2); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 0.65;
-    ctx.strokeRect(-74.5, 26.6, 4.2, 3.0);
-
-    // 西排南端角架：开盖弹药箱 (箱内 2 弹匣) + 枪油瓶 + 通条（均架在窄边肋条上，周围透空）
-    ctx.fillStyle = '#283548';
-    ctx.fillRect(-126.5, 33, 73, 2.2);
-    // 开盖弹药箱 (-125..-102, y ∈ [+31, +52])
-    ctx.fillStyle = '#365314';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.7;
-    ctx.fillRect(-125, 31.5, 22, 15.5);
-    ctx.strokeRect(-125, 31.5, 22, 15.5);
-    ctx.fillStyle = '#090d16';
-    ctx.fillRect(-122.8, 33.5, 17.6, 11.5);
-    [[-120.5, 35.0], [-112.5, 35.0]].forEach(([mx, my]) => {
-        ctx.fillStyle = '#64748b';
-        ctx.fillRect(mx, my, 5.0, 8.8);
-        ctx.fillStyle = '#d97706';
-        ctx.fillRect(mx + 0.8, my + 0.5, 3.4, 1.6);
+    [-112, -56, 0, 56, 112].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, -28.0, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, -28.0, 2.4, 3.2);
     });
-    // 翻开在南缘的箱盖
-    ctx.fillStyle = '#4d7c0f';
-    ctx.fillRect(-125, 47.2, 22, 4.6);
-    ctx.strokeRect(-125, 47.2, 22, 4.6);
 
-    // 枪油瓶 1 个 (-95, +39)
+    // 墙面插座排 5 个
+    [
+        { x: -126, kind: '2pin' },
+        { x: -72,  kind: '3pin' },
+        { x: -24,  kind: 'switch' },
+        { x: 46,   kind: 'led' },
+        { x: 118,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, -27.0, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, -27.0, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, -26.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, -27.2, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, -27.2, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, -27.0, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, -26.9, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(out.x - 2.4, -26.2, 0.75, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, -26.9, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, -26.9, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, -26.9, 2.0, 1.4);
+        }
+    });
+
+    // 墙面挂钩 2 个（左挂防酸手套、右挂实验擦拭抹布）
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-137.2, -26.9, 2.4, 2.2);
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#854d0e';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-137.6, -25.6); ctx.lineTo(-134.2, -25.6);
+    ctx.lineTo(-133.6, -27.9); ctx.lineTo(-135.1, -27.9);
+    ctx.lineTo(-136.0, -26.8); ctx.lineTo(-136.9, -27.9);
+    ctx.lineTo(-138.2, -27.9); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(134.8, -26.9, 2.4, 2.2);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(133.4, -27.9, 5.2, 2.5);
+    ctx.strokeRect(133.4, -27.9, 5.2, 2.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(134.1, -27.8, 1.1, 2.3);
+    ctx.fillRect(136.6, -27.8, 1.1, 2.3);
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（台前缘面向房间 y ∈ [+23.0, +25.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-110, -55, 0, 55, 110].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 20, 23.3); ctx.lineTo(bx + 20, 24.7);
+        ctx.moveTo(bx - 20, 24.7); ctx.lineTo(bx + 20, 23.3);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-139, 23.0, 278, 1.3);
+    [-138, -83, -28, 28, 83, 138].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, 23.2, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, 23.8, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [+12.6, +23.0]，朝房间侧 +y）
+    // 4A) 西组 [-138, -72]：带锁双开门柜
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-138, 12.6, 66, 10.4);
+    ctx.strokeRect(-138, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-137, 13.5, 31.2, 8.6);
+    ctx.fillRect(-104.2, 13.5, 31.2, 8.6);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(-105.0, 13.1); ctx.lineTo(-105.0, 22.4); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-109.2, 15.0, 1.5, 6.2);
+    ctx.fillRect(-102.3, 15.0, 1.5, 6.2);
+    ctx.fillStyle = '#fbbf24';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(-105.0, 17.8, 1.45, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-105.3, 17.1, 0.6, 1.4);
+
+    // 4B) 次西组 [-68, -2]：3 档抽屉（拉手逐档变短）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-68, 12.6, 66, 10.4);
+    ctx.strokeRect(-68, 12.6, 66, 10.4);
+    [
+        { y: 13.2, hw: 6.0 },
+        { y: 16.5, hw: 13.0 },
+        { y: 19.8, hw: 20.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#475569' : '#64748b';
+        ctx.fillRect(-66.5, dr.y, 63, 2.6);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(-66.5, dr.y, 63, 2.6);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-35.0 - dr.hw / 2, dr.y + 0.9, dr.hw, 0.9);
+    });
+
+    // 4C) 次东组 [+2, +68]：开放格（试剂桶 2 + 废液桶 2）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, 12.6, 66, 10.4);
+    ctx.strokeRect(2, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, 17.2, 64, 1.0);
     ctx.fillStyle = '#b45309';
     ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.beginPath(); ctx.arc(-94, 39.5, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(-95.8, 38.4, 3.6, 2.2);
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath(); ctx.arc(-94, 39.5, 1.2, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 0.85;
-    ctx.beginPath(); ctx.moveTo(-91.2, 39.5); ctx.lineTo(-87.0, 38.0); ctx.stroke();
-
-    // 通条 1 根 (-97..-56, y = +49)
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-97, 45.8, 2.2, 6.4);
-    ctx.strokeStyle = '#d97706';
-    ctx.lineWidth = 0.9;
-    ctx.beginPath(); ctx.moveTo(-94.8, 49.0); ctx.lineTo(-59.5, 49.0); ctx.stroke();
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(-59.8, 47.8, 3.8, 2.4);
-
-    // =====================================================================
-    // 二、中排 · 仪器排（x ∈ [-40, +40], y ∈ [-60, +60]，中钢灰开放式仪器架）
-    // =====================================================================
-    // 中排开放边框钢条（中钢灰 #475569 / #5b6b80，明显浅于西排深灰）
-    ctx.fillStyle = '#4c5b70';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(-39.5, -56, 2.8, 112); ctx.strokeRect(-39.5, -56, 2.8, 112);
-    ctx.fillRect(36.7, -56, 2.8, 112);  ctx.strokeRect(36.7, -56, 2.8, 112);
-    ctx.fillRect(-36.7, -55.8, 73.4, 2.6); ctx.strokeRect(-36.7, -55.8, 73.4, 2.6);
-    ctx.fillRect(-36.7, 53.2, 73.4, 2.6);  ctx.strokeRect(-36.7, 53.2, 73.4, 2.6);
-
-    // 中排中横轨（开放式，仅托住两道光幕门与工具条）
-    ctx.fillStyle = '#5a6a80';
-    ctx.fillRect(-36.7, -23.0, 73.4, 3.0);
-    ctx.fillRect(-36.7, 20.5, 73.4, 3.0);
-
-    // 中排小标识牌（仪器：中青灰底 + 翡翠边框 + 翡翠绿字）
-    ctx.fillStyle = '#192638';
-    ctx.strokeStyle = '#059669';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(-10.0, -56.2, 20.0, 6.2);
-    ctx.strokeRect(-10.0, -56.2, 20.0, 6.2);
-    ctx.font = 'bold 3.1px sans-serif';
-    ctx.fillStyle = '#6ee7b7';
-    ctx.fillText('仪器', 0.0, -53.0);
-
-    // 测速屏 1 个（立柱上小屏：x ∈ [-35, -9], y ∈ [-50, -27]）
-    ctx.fillStyle = '#607087';
-    ctx.fillRect(-25.0, -29.0, 6.0, 6.5); // 圆柱立柱底座
-    ctx.fillStyle = '#334155';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.85;
-    ctx.fillRect(-35, -49, 26, 20);
-    ctx.strokeRect(-35, -49, 26, 20);
-    ctx.fillStyle = '#020617';
-    ctx.fillRect(-33, -47, 22, 13.5);
-    ctx.strokeStyle = '#0ea5e9';
-    ctx.lineWidth = 0.75;
-    ctx.strokeRect(-33, -47, 22, 13.5);
-    ctx.font = 'bold 2.4px monospace';
-    ctx.fillStyle = '#9aa8bc';
-    ctx.fillText('CHRONO', -22.0, -31.2);
-
-    // 数据屏 1 个（立式屏 + 铰接支架：x ∈ [-2, +35], y ∈ [-50, -25]）
-    ctx.fillStyle = '#68788e';
-    ctx.fillRect(11.5, -28.0, 10.0, 5.2);
-    ctx.fillStyle = '#4a596e';
-    ctx.fillRect(14.5, -31.0, 4.0, 4.5);
-    ctx.fillStyle = '#1c2838';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.85;
-    ctx.fillRect(-2, -49, 37, 20);
-    ctx.strokeRect(-2, -49, 37, 20);
-    ctx.fillStyle = '#031522';
-    ctx.fillRect(0, -47, 33, 16);
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 0.55;
-    ctx.strokeRect(0, -47, 33, 16);
-    ctx.font = 'bold 2.4px monospace';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText('VEL / WAVE', 16.5, -44.8);
-
-    // 测速仪 2 道光幕门（跨 y = 0 弹道线，支架高度不同！）
-    // 门 1（西门 x = -25：高架方框光幕门 + 双高立式支架 + 顶部漫射板 + 琥珀传感器）
-    ctx.fillStyle = '#7c8ba1';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.7;
-    ctx.fillRect(-29.5, -18.5, 9.0, 4.8); // 高北支架脚
-    ctx.fillRect(-29.5, 15.0, 9.0, 4.8);  // 高南支架脚
-    ctx.fillStyle = '#55657a';
-    ctx.fillRect(-28.0, -14.5, 6.0, 30.5);
-    ctx.strokeRect(-28.0, -14.5, 6.0, 30.5);
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fillRect(-26.5, -12.5, 3.0, 26.5);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(-26.2, -11.0, 2.4, 2.0);
-    ctx.fillRect(-26.2, 10.5, 2.4, 2.0);
-
-    // 门 2（东门 x = +14：矮胖宽台斜罩光幕门 + 短台阶底座支架 + 遮光罩 + 翡翠传感器）
-    ctx.fillStyle = '#64748b';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.7;
-    ctx.fillRect(8.5, -13.5, 11.0, 3.0); // 矮宽北台阶脚
-    ctx.fillRect(8.5, 12.0, 11.0, 3.0);  // 矮宽南台阶脚
-    ctx.fillStyle = '#3b495c';
-    ctx.fillRect(10.0, -11.0, 8.0, 23.5);
-    ctx.strokeRect(10.0, -11.0, 8.0, 23.5);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(12.8, -8.5, 2.4, 18.5);
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(12.9, -10.2, 2.2, 1.8);
-    ctx.fillRect(12.9, 9.8, 2.2, 1.8);
-
-    // 光幕门间地面投影虚线标尺（仅位于门间内侧 x ∈ [-22, +10]）
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-    ctx.lineWidth = 0.6;
-    ctx.setLineDash([3, 2.5]);
-    ctx.beginPath(); ctx.moveTo(-21, 0.5); ctx.lineTo(9, 0.5); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 线缆盘 1 个（x = +26, y = +38：黑线缆绕盘 + 2 条连向两道光幕门的引线）
-    ctx.strokeStyle = '#020617';
-    ctx.lineWidth = 1.05;
-    ctx.beginPath(); ctx.moveTo(21, 35); ctx.quadraticCurveTo(0, 26, -24, 18); ctx.stroke();
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 0.9;
-    ctx.beginPath(); ctx.moveTo(24, 31); ctx.quadraticCurveTo(22, 21, 15, 14.5); ctx.stroke();
-    // 线缆盘法兰与同心黑线缆圈
-    ctx.fillStyle = '#7c8ba1';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath(); ctx.arc(26.0, 38.5, 8.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    [6.6, 5.2, 3.8].forEach((r, ci) => {
-        ctx.strokeStyle = ci % 2 === 0 ? '#020617' : '#1e293b';
-        ctx.lineWidth = 1.05;
-        ctx.beginPath(); ctx.arc(26.0, 38.5, r, 0, Math.PI * 2); ctx.stroke();
-    });
-    ctx.fillStyle = '#d97706';
-    ctx.beginPath(); ctx.arc(26.0, 38.5, 1.8, 0, Math.PI * 2); ctx.fill();
-
-    // 工具架 1 层（开放式穿孔钢条 y ∈ [+25, +37]，扳手/螺丝刀/钳子长短不同）
-    ctx.fillStyle = '#475569';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.fillRect(-35.5, 25.0, 48.0, 11.5);
-    ctx.strokeRect(-35.5, 25.0, 48.0, 11.5);
-    // 1) 长扳手 (24px: -34..-10, y = 27.5)
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1.35;
-    ctx.beginPath(); ctx.moveTo(-32.5, 27.5); ctx.lineTo(-11.5, 27.5); ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath(); ctx.arc(-33.0, 27.5, 1.9, 0.5, Math.PI * 2 - 0.5); ctx.fill();
-    ctx.beginPath(); ctx.arc(-11.0, 27.5, 1.7, Math.PI + 0.5, Math.PI - 0.5); ctx.fill();
-    // 2) 中螺丝刀 (17px: -34..-17, y = 33.0)
-    ctx.fillStyle = '#0284c7';
-    ctx.fillRect(-34.0, 31.6, 6.2, 2.8);
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-32.5, 32.0, 3.2, 2.0);
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 0.85;
-    ctx.beginPath(); ctx.moveTo(-27.8, 33.0); ctx.lineTo(-17.0, 33.0); ctx.stroke();
-    // 3) 短尖嘴钳 (12px: -12..0, y = 33.0)
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 0.85;
-    ctx.beginPath();
-    ctx.moveTo(-6.0, 32.8); ctx.lineTo(-1.0, 31.8);
-    ctx.moveTo(-6.0, 33.2); ctx.lineTo(-1.0, 34.2);
-    ctx.stroke();
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.1;
-    ctx.beginPath();
-    ctx.moveTo(-11.5, 31.4); ctx.lineTo(-6.0, 32.8);
-    ctx.moveTo(-11.5, 34.6); ctx.lineTo(-6.0, 33.2);
-    ctx.stroke();
-    ctx.fillStyle = '#e2e8f0';
-    ctx.beginPath(); ctx.arc(-6.0, 33.0, 0.9, 0, Math.PI * 2); ctx.fill();
-
-    // 弹匣 3 个（长短不同、最后一个带铜弹，插在南侧开放卡槽 y ∈ [+40, +53]）
-    ctx.fillStyle = '#55657a';
-    ctx.fillRect(-35.5, 43.0, 48.0, 2.5);
-    // 短弹匣 (8.5px)
-    ctx.fillStyle = '#64748b';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.fillRect(-33.5, 41.5, 5.5, 8.5);
-    ctx.strokeRect(-33.5, 41.5, 5.5, 8.5);
-    // 中弹匣 (11.5px + 观察窗)
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(-23.5, 40.2, 5.8, 11.5);
-    ctx.strokeRect(-23.5, 40.2, 5.8, 11.5);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(-21.6, 43.0, 2.0, 5.5);
-    // 长弧形带铜弹弹匣 (14.5px)
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    ctx.moveTo(-13.0, 38.8); ctx.lineTo(-7.0, 38.8); ctx.lineTo(-4.8, 52.8); ctx.lineTo(-10.8, 52.8); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(-12.2, 39.2, 4.4, 1.9);
-    ctx.fillStyle = '#fbbf24';
-    ctx.beginPath(); ctx.arc(-10.0, 38.6, 1.0, 0, Math.PI * 2); ctx.fill();
-
-    // =====================================================================
-    // 三、东排 · 靶标排（x ∈ [+50, +130], y ∈ [-60, +60]，浅钢灰开放式靶架）
-    // =====================================================================
-    // 东排开放边框钢条（浅钢灰 #78879b / #94a3b8 / #cbd5e1，明显浅于中排与西排）
-    ctx.fillStyle = '#7e8ea3';
-    ctx.strokeStyle = '#111827';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(50.5, -56, 2.8, 112);  ctx.strokeRect(50.5, -56, 2.8, 112);
-    ctx.fillRect(126.7, -56, 2.8, 112); ctx.strokeRect(126.7, -56, 2.8, 112);
-    ctx.fillRect(53.3, -55.8, 73.4, 2.6); ctx.strokeRect(53.3, -55.8, 73.4, 2.6);
-    ctx.fillRect(53.3, 53.2, 73.4, 2.6);  ctx.strokeRect(53.3, 53.2, 73.4, 2.6);
-    ctx.fillStyle = '#d5dee9';
-    ctx.fillRect(53.8, -55.2, 72.4, 0.8);
-    ctx.fillRect(53.8, 53.8, 72.4, 0.8);
-
-    // 东排小标识牌（靶标：浅拉丝钢底 + 琥珀边框 + 深炭字）
-    ctx.fillStyle = '#dae2ec';
-    ctx.strokeStyle = '#c2410c';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(78.0, -56.2, 20.0, 6.2);
-    ctx.strokeRect(78.0, -56.2, 20.0, 6.2);
-    ctx.font = 'bold 3.1px sans-serif';
-    ctx.fillStyle = '#0b1120';
-    ctx.fillText('靶标', 88.0, -53.0);
-
-    // 上层开放式搁板（y ∈ [-27, -5]：浅钢灰条形镂空搁板 + 挂耳）+ 弹道明胶块 1
-    for (let sy = -25.5; sy <= -7.5; sy += 6.0) {
-        ctx.fillStyle = '#9aa8bc';
-        ctx.strokeStyle = '#1f2937';
-        ctx.lineWidth = 0.7;
-        ctx.fillRect(54.5, sy, 23.0, 3.0);
-        ctx.strokeRect(54.5, sy, 23.0, 3.0);
-    }
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(54.5, -26.5, 2.5, 22.0);
-    ctx.fillRect(75.0, -26.5, 2.5, 22.0);
-    // 明胶块 1（透明琥珀：上偏西入口弹孔 + 星形放射空腔裂纹 + 滞留铜弹芯）
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.52)';
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(57.5, -24.5, 17.0, 18.0);
-    ctx.strokeRect(57.5, -24.5, 17.0, 18.0);
-    ctx.fillStyle = 'rgba(254, 243, 199, 0.25)';
-    ctx.fillRect(58.5, -23.5, 15.0, 3.2);
-    ctx.fillStyle = '#78350f';
-    ctx.beginPath(); ctx.arc(58.2, -17.5, 1.2, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#fef3c7';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath();
-    ctx.moveTo(58.2, -17.5); ctx.lineTo(66.8, -16.8);
-    ctx.moveTo(62.5, -17.2); ctx.lineTo(65.0, -22.2);
-    ctx.moveTo(63.2, -17.1); ctx.lineTo(66.2, -11.5);
-    ctx.moveTo(65.2, -17.0); ctx.lineTo(69.8, -20.5);
-    ctx.stroke();
-    ctx.fillStyle = '#ea580c';
-    ctx.beginPath(); ctx.arc(67.5, -16.8, 1.15, 0, Math.PI * 2); ctx.fill();
-
-    // 下层开放式搁板（y ∈ [+7, +29]：偏下暗影衬托下层位置 + 中浅灰条形搁板）+ 弹道明胶块 2
-    ctx.fillStyle = 'rgba(2, 6, 12, 0.35)';
-    ctx.fillRect(55.5, 8.5, 23.0, 21.0);
-    for (let sy = 8.5; sy <= 26.5; sy += 6.0) {
-        ctx.fillStyle = '#6c7c92';
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 0.7;
-        ctx.fillRect(56.0, sy, 23.0, 2.8);
-        ctx.strokeRect(56.0, sy, 23.0, 2.8);
-    }
-    ctx.fillStyle = '#a3b1c4';
-    ctx.fillRect(56.0, 7.2, 2.4, 21.5);
-    ctx.fillRect(76.6, 7.2, 2.4, 21.5);
-    // 明胶块 2（透明深琥珀：偏下入口 + 弯折贯通裂纹 + 气泡群）
-    ctx.fillStyle = 'rgba(217, 119, 6, 0.50)';
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 0.8;
-    ctx.fillRect(59.0, 9.5, 17.0, 18.0);
-    ctx.strokeRect(59.0, 9.5, 17.0, 18.0);
-    ctx.fillStyle = '#78350f';
-    ctx.beginPath(); ctx.arc(59.7, 21.0, 1.05, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#fde68a';
     ctx.lineWidth = 0.5;
-    ctx.beginPath();
-    ctx.moveTo(59.7, 21.0); ctx.lineTo(65.8, 22.0); ctx.lineTo(75.4, 18.2);
-    ctx.moveTo(64.5, 21.8); ctx.lineTo(67.2, 26.2);
-    ctx.moveTo(69.5, 20.5); ctx.lineTo(71.8, 13.5);
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(254, 243, 199, 0.58)';
-    ctx.beginPath(); ctx.arc(62.8, 13.5, 0.85, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(71.0, 24.5, 0.7, 0, Math.PI * 2); ctx.fill();
-
-    // 钢靶板 1 块（圆形靶 + 靶心 + 4 处弹痕，立在开放 A 型支架上，x = +89, y = +1）
-    // A 型钢架脚
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.moveTo(83.0, -14.0); ctx.lineTo(95.0, -14.0);
-    ctx.moveTo(83.0, 16.5);  ctx.lineTo(95.0, 16.5);
-    ctx.moveTo(89.0, -14.0); ctx.lineTo(89.0, 16.5);
-    ctx.stroke();
-    // 顶部命中指示灯灯座 (89, -15)
-    ctx.fillStyle = '#1e293b';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.6;
-    ctx.fillRect(86.2, -17.5, 5.6, 4.0);
-    ctx.strokeRect(86.2, -17.5, 5.6, 4.0);
-    // 圆形钢靶盘
+    ctx.fillRect(10, 13.4, 16, 3.5);
+    ctx.strokeRect(10, 13.4, 16, 3.5);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(15.5, 15.8, 5, 1.1);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(42, 13.4, 16, 3.5);
+    ctx.strokeRect(42, 13.4, 16, 3.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(47.5, 15.8, 5, 1.1);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(9, 18.6, 20, 3.9);
+    ctx.strokeRect(9, 18.6, 20, 3.9);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(15, 21.5, 8, 1.0);
     ctx.fillStyle = '#e2e8f0';
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.85;
-    ctx.beginPath(); ctx.arc(89.0, 1.0, 8.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 0.65;
-    ctx.beginPath(); ctx.arc(89.0, 1.0, 6.2, 0, Math.PI * 2); ctx.stroke();
-    ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath(); ctx.arc(89.0, 1.0, 3.8, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = '#dc2626';
-    ctx.beginPath(); ctx.arc(89.0, 1.0, 1.6, 0, Math.PI * 2); ctx.fill();
-    // 4 处不同弹痕凹坑
-    [[85.5, -2.5], [92.2, 2.8], [86.8, 5.4], [91.5, -3.8]].forEach(([ix, iy]) => {
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath(); ctx.arc(ix, iy, 0.85, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 0.45;
-        ctx.stroke();
-    });
+    ctx.fillRect(40, 18.6, 20, 3.9);
+    ctx.strokeRect(40, 18.6, 20, 3.9);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(46, 21.5, 8, 1.0);
 
-    // 防弹背板 1 块（厚钢板 + 铆钉 + 后斜撑，x ∈ [+104, +115], y ∈ [-33, +35]）
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1.3;
-    ctx.beginPath();
-    ctx.moveTo(114.5, -24); ctx.lineTo(126.5, -28);
-    ctx.moveTo(114.5, 26);  ctx.lineTo(126.5, 30);
-    ctx.stroke();
+    // 4D) 东组 [+72, +138]：深柜（单门 + 把手 + 散热百叶孔）
     ctx.fillStyle = '#475569';
     ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.9;
-    ctx.fillRect(104.5, -33, 10.0, 68);
-    ctx.strokeRect(104.5, -33, 10.0, 68);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(104.5, -33, 2.6, 68);
-    // 铆钉阵列
-    for (let ry = -28; ry <= 30; ry += 8.2) {
-        ctx.fillStyle = '#f1f5f9';
-        ctx.beginPath(); ctx.arc(111.5, ry, 1.05, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 0.45;
-        ctx.stroke();
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(72, 12.6, 66, 10.4);
+    ctx.strokeRect(72, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(73.2, 13.6, 63.6, 8.4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(76.2, 14.8, 1.8, 6.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 104; vx <= 132; vx += 3.6) {
+        ctx.beginPath(); ctx.moveTo(vx, 14.8); ctx.lineTo(vx + 2.0, 20.8); ctx.stroke();
     }
 
-    // 沙袋 2 个（堆在背板根部，褶皱与扎口各不相同）
-    // 沙袋 1（北根部 +96..+117, y ∈ [-44, -33.5]：斜向压缩褶皱 + 西端拧绳扎口）
-    ctx.fillStyle = '#a8a29e';
-    ctx.strokeStyle = '#1c1917';
-    ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(98.0, -43.5, 18.0, 9.5, 3.0) : ctx.rect(98.0, -43.5, 18.0, 9.5);
-    ctx.fill(); ctx.stroke();
-    // 西端褶扇扎口
-    ctx.fillStyle = '#78716c';
-    ctx.beginPath();
-    ctx.moveTo(98.0, -39.5); ctx.lineTo(94.5, -42.0); ctx.lineTo(94.5, -35.5); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#57534e';
-    ctx.fillRect(97.2, -40.5, 1.4, 3.5);
-    ctx.strokeStyle = '#44403c';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath();
-    ctx.moveTo(101.0, -41.5); ctx.lineTo(105.0, -35.8);
-    ctx.moveTo(108.0, -42.0); ctx.lineTo(111.5, -36.0);
-    ctx.stroke();
+    // 5. 304 不锈钢凸边环氧耐酸台面（283x37.6 @ x ∈ [-141.5, +141.5], y ∈ [-25.0, +12.6]，网格 + BENCH-01 钢印）
+    const topGrad = ctx.createLinearGradient(0, -25.0, 0, 12.6);
+    topGrad.addColorStop(0, '#1e293b');
+    topGrad.addColorStop(0.15, '#0f172a');
+    topGrad.addColorStop(0.8, '#1e293b');
+    topGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-141.5, -25.0, 283, 37.6);
 
-    // 沙袋 2（南根部 +96..+120, y ∈ [+35.5, +46.5]：弧形缝线褶皱 + 东端绳结扎口）
-    ctx.fillStyle = '#d6d3d1';
-    ctx.strokeStyle = '#292524';
-    ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(96.5, 36.0, 19.5, 9.5, 2.8) : ctx.rect(96.5, 36.0, 19.5, 9.5);
-    ctx.fill(); ctx.stroke();
-    // 东端绳结扎口
-    ctx.fillStyle = '#b0aaa4';
-    ctx.beginPath();
-    ctx.moveTo(116.0, 40.8); ctx.lineTo(120.0, 38.0); ctx.lineTo(120.0, 43.5); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#857f79';
-    ctx.fillRect(115.2, 39.0, 1.4, 3.5);
-    ctx.strokeStyle = '#6d6660';
-    ctx.lineWidth = 0.7;
-    ctx.beginPath();
-    ctx.moveTo(99.0, 39.0); ctx.quadraticCurveTo(106.5, 37.6, 113.5, 39.2);
-    ctx.moveTo(99.5, 42.5); ctx.quadraticCurveTo(106.5, 43.8, 113.0, 42.2);
-    ctx.stroke();
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -128; gx <= 128; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -23.5); ctx.lineTo(gx, 11.0); ctx.stroke();
+    }
+    for (let gy = -20; gy <= 6; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-140.0, gy); ctx.lineTo(140.0, gy); ctx.stroke();
+    }
 
-    // 灭火器 1 个（挂在东排东南架角 x = +120, y = +46.5：红瓶 + 软管 + 压力表）
-    ctx.fillStyle = '#9aa8bc';
-    ctx.fillRect(124.0, 43.5, 3.0, 6.0); // 架角抱箍卡扣
-    ctx.fillStyle = '#090d16';
-    ctx.beginPath(); ctx.arc(119.5, 46.5, 6.8, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#dc2626';
-    ctx.strokeStyle = '#7f1d1d';
-    ctx.lineWidth = 0.85;
-    ctx.beginPath(); ctx.arc(119.5, 46.5, 5.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#ef4444';
-    ctx.beginPath(); ctx.arc(118.2, 45.2, 2.0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#b91c1c';
-    ctx.beginPath(); ctx.arc(121.0, 48.0, 1.4, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#d97706';
-    ctx.fillRect(117.9, 44.9, 3.2, 3.2);
-    // 软管与喷嘴
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-140.75, -24.25, 281.5, 36.1);
     ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 1.15;
-    ctx.beginPath(); ctx.moveTo(118.0, 46.0); ctx.quadraticCurveTo(111.0, 43.5, 112.0, 51.8); ctx.stroke();
-    // 白色压力表盘 + 绿区弧
-    ctx.fillStyle = '#f8fafc';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-141.5, -25.0, 283, 37.6);
+
+    // 台面编号钢印 BENCH-01（西南前沿面向房间）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-138.5, 8.0, 20, 4.2);
     ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 0.45;
-    ctx.beginPath(); ctx.arc(122.4, 44.5, 2.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#10b981';
-    ctx.beginPath(); ctx.arc(122.4, 44.5, 1.0, -Math.PI, 0); ctx.fill();
-
-    ctx.restore();
-}
-
-function drawWestWeaponTestStationDynamic(ctx, cx, cy, time) {
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    // 1. 测速屏数字滚动变化（每轮击发稳定更新并带微滚动位移，不晃眼）
-    const cycle = time % 3.6;
-    const shotIdx = Math.floor(time / 3.6);
-    const velBase = 910.2 + Math.sin(shotIdx * 2.3) * 5.4;
-    const velStr = velBase.toFixed(1);
-    const prevStr = (910.2 + Math.sin((shotIdx - 1) * 2.3) * 5.4).toFixed(1);
-    const scrollProgress = Math.min(1, cycle / 0.45);
-    const scrollOffset = (1 - scrollProgress) * 3.0;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(-32.5, -46.2, 21.0, 11.8);
-    ctx.clip();
-    ctx.fillStyle = '#020617';
-    ctx.fillRect(-32.5, -46.2, 21.0, 11.8);
-    ctx.font = 'bold 2.8px monospace';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-138.5, 8.0, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    if (scrollProgress < 1) {
-        ctx.fillStyle = `rgba(56, 189, 248, ${(1 - scrollProgress).toFixed(2)})`;
-        ctx.fillText(prevStr, -22.0, -41.8 - (3.0 - scrollOffset));
-    }
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillText(velStr, -22.0, -41.8 + scrollOffset);
-    ctx.font = 'bold 2.4px monospace';
-    ctx.fillStyle = '#10b981';
-    ctx.fillText(`m/s #${String((shotIdx % 99) + 1).padStart(2, '0')}`, -22.0, -37.0);
-    ctx.restore();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-01', -128.5, 10.15);
 
-    // 2. 数据屏测速散布数值 + 波形缓慢滚动
-    const dispMoa = (0.74 + Math.sin(shotIdx * 1.7) * 0.09).toFixed(2);
-    ctx.fillStyle = '#031522';
-    ctx.fillRect(0.6, -42.5, 31.8, 10.8);
-    ctx.font = 'bold 2.4px monospace';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`${velStr}`, 2.0, -40.2);
-    ctx.fillStyle = '#10b981';
-    ctx.fillText(`D:${dispMoa}`, 17.5, -40.2);
+    // =====================================================================
+    // 6. 湿化学核心模块与台面器皿（1:1 比例，操作面朝向房间侧 +y）
+    // =====================================================================
 
-    ctx.save();
+    // 6A) 最西端功能区 [-139, -95]：旋转蒸发仪 + 单层试剂架(4瓶) + 移液器架(3支) + 培养皿/镊子/药匙
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-138.5, -14.0, 23.0, 21.0);
+    ctx.strokeRect(-138.5, -14.0, 23.0, 21.0);
+    // 恒温水浴锅
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath(); ctx.arc(-130.5, -1.5, 6.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath(); ctx.arc(-130.5, -1.5, 4.6, 0, Math.PI * 2); ctx.fill();
+    // 驱动机头 + 冷凝管 + 接收瓶 + 前置数显（朝 +y）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-135.5, -13.0, 6.0, 6.2);
+    ctx.strokeRect(-135.5, -13.0, 6.0, 6.2);
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
     ctx.beginPath();
-    ctx.rect(1.5, -38.0, 30.0, 6.0);
-    ctx.clip();
+    ctx.moveTo(-129.5, -8.5); ctx.lineTo(-119.5, -12.5); ctx.lineTo(-117.0, -8.1); ctx.lineTo(-127.0, -4.3); ctx.closePath();
+    ctx.fill(); ctx.stroke();
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 0.75;
+    ctx.lineWidth = 0.5;
     ctx.beginPath();
-    for (let wx = 0; wx <= 30; wx += 1.5) {
-        const wy = Math.sin(wx * 0.45 - time * 1.4) * 1.7 + Math.cos(wx * 0.9 - time * 0.7) * 0.6;
-        if (wx === 0) ctx.moveTo(1.5 + wx, -35.0 + wy);
-        else ctx.lineTo(1.5 + wx, -35.0 + wy);
-    }
+    ctx.moveTo(-127.5, -6.5); ctx.lineTo(-124.5, -8.3); ctx.lineTo(-122.5, -7.1); ctx.lineTo(-119.5, -9.5);
     ctx.stroke();
-    ctx.restore();
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.38)';
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath(); ctx.arc(-119.6, -1.2, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-137.0, 3.4, 12.0, 3.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.45;
+    ctx.strokeRect(-137.0, 3.4, 12.0, 3.2);
 
-    // 3. 靶标命中指示灯闪烁（命中周期初始亮起 0.45s 后熄灭，模拟命中后亮一下再灭）
-    const hitActive = cycle < 0.45;
-    if (hitActive) {
-        const flashAlpha = Math.sin((cycle / 0.45) * Math.PI);
-        ctx.fillStyle = `rgba(16, 185, 129, ${(0.38 * flashAlpha).toFixed(2)})`;
-        ctx.beginPath(); ctx.arc(89.0, -15.5, 3.2, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#34d399';
-        ctx.beginPath(); ctx.arc(89.0, -15.5, 1.15, 0, Math.PI * 2); ctx.fill();
-    } else {
-        ctx.fillStyle = '#064e3b';
-        ctx.beginPath(); ctx.arc(89.0, -15.5, 0.95, 0, Math.PI * 2); ctx.fill();
-    }
+    // 单层试剂架（靠北墙 -y：x ∈ [-138.5, -110.5], y ∈ [-23.5, -15.0]，防倒挡杆朝房间 +y）
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-138.5, -23.5, 28.0, 8.5);
+    ctx.strokeRect(-138.5, -23.5, 28.0, 8.5);
+    [
+        { x: -134.8, w: 5.0, h: 6.0, body: '#b45309', liq: '#f59e0b', cap: '#0f172a' },
+        { x: -128.2, w: 4.6, h: 5.4, body: '#1d4ed8', liq: '#60a5fa', cap: '#e2e8f0' },
+        { x: -121.6, w: 5.2, h: 6.4, body: '#cbd5e1', liq: '#bae6fd', cap: '#dc2626' },
+        { x: -115.0, w: 4.6, h: 5.0, body: '#047857', liq: '#34d399', cap: '#fbbf24' }
+    ].forEach(b => {
+        ctx.fillStyle = b.body;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(b.x - b.w / 2, -22.2, b.w, b.h);
+        ctx.strokeRect(b.x - b.w / 2, -22.2, b.w, b.h);
+        ctx.fillStyle = b.liq;
+        ctx.fillRect(b.x - b.w / 2 + 0.6, -22.2 + b.h * 0.1, b.w - 1.2, b.h * 0.48);
+        ctx.fillStyle = b.cap;
+        ctx.fillRect(b.x - 1.3, -16.5, 2.6, 1.3);
+    });
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.moveTo(-138.0, -18.0); ctx.lineTo(-111.0, -18.0); ctx.stroke();
 
-    // 4. 顶部警示灯缓慢旋转呼吸（琥珀色，西排顶 -62, -51）
-    const breath = 0.42 + 0.38 * Math.sin(time * 1.6);
-    const rotA = time * 1.15;
-    ctx.fillStyle = `rgba(245, 158, 11, ${(0.24 * breath).toFixed(2)})`;
-    ctx.beginPath(); ctx.arc(-62.0, -51.0, 5.2, 0, Math.PI * 2); ctx.fill();
-    // 旋转光束扇区
-    ctx.fillStyle = `rgba(251, 191, 36, ${(0.55 * breath).toFixed(2)})`;
+    // 移液器架 + 3 支移液器 + 培养皿/镊子/药匙（x ∈ [-114, -95]）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-113.5, -10.5, 13.0, 8.0);
+    ctx.strokeRect(-113.5, -10.5, 13.0, 8.0);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-112.5, -9.8, 11.0, 1.2);
+    [
+        { px: -110.2, len: 11.5, col: '#38bdf8' },
+        { px: -107.0, len: 9.5,  col: '#10b981' },
+        { px: -103.8, len: 7.5,  col: '#f8fafc' }
+    ].forEach(pip => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.fillRect(pip.px - 0.8, -8.8, 1.6, pip.len);
+        ctx.strokeRect(pip.px - 0.8, -8.8, 1.6, pip.len);
+        ctx.fillStyle = pip.col;
+        ctx.fillRect(pip.px - 1.1, -8.8 + pip.len - 0.8, 2.2, 1.5);
+    });
+    ctx.fillStyle = 'rgba(226, 232, 240, 0.35)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath(); ctx.arc(-105.0, 5.2, 4.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(-105.0, 5.2, 3.8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
     ctx.beginPath();
-    ctx.moveTo(-62.0, -51.0);
-    ctx.arc(-62.0, -51.0, 3.6, rotA - 0.45, rotA + 0.45);
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(-108.5, -22.0); ctx.lineTo(-97.5, -20.6);
+    ctx.moveTo(-108.5, -20.2); ctx.lineTo(-97.5, -20.6);
+    ctx.stroke();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.moveTo(-108.0, -17.4); ctx.lineTo(-97.5, -17.4); ctx.stroke();
+
+    // 6B) 水槽西（x = -83.5，方形水槽 + 弯颈龙头 + 挡水板 + 皂液瓶）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-93, -19.0, 19, 26.5);
+    ctx.strokeRect(-93, -19.0, 19, 26.5);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-90.8, -13.2, 14.6, 18.4);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-90.8, -13.2, 14.6, 18.4);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.beginPath(); ctx.arc(-86.5, -2.5, 2.0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-83.5, -4.0, 1.9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-92.5, -18.8, 18, 3.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(-92.5, -18.8, 18, 3.2);
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(-83.5, -16.5); ctx.lineTo(-83.5, -10.5); ctx.arc(-85.1, -10.5, 1.6, 0, Math.PI, false); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-83.5, -16.8, 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(-78.5, -17.2, 3.4, 4.0);
+    ctx.strokeRect(-78.5, -17.2, 3.4, 4.0);
+
+    // 6C) 小型通风橱（x ∈ [-71, +35]，宽 106px，排风管入北墙，前视窗朝 +y 开口）
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-71, -23.7, 106, 33.2);
+    ctx.strokeRect(-71, -23.7, 106, 33.2);
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-20, -28.0, 12, 6.5);
+    ctx.strokeRect(-20, -28.0, 12, 6.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-22, -24.8, 16, 1.6);
+    ctx.strokeRect(-22, -24.8, 16, 1.6);
+    // 内腔网孔工作台面
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-64, -19.5, 84, 21.0);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    for (let gx = -60; gx <= 16; gx += 4.5) {
+        ctx.beginPath(); ctx.moveTo(gx, -19.0); ctx.lineTo(gx, 1.0); ctx.stroke();
+    }
+    for (let gy = -17.5; gy <= -1.5; gy += 4.0) {
+        ctx.beginPath(); ctx.moveTo(-63.5, gy); ctx.lineTo(19.5, gy); ctx.stroke();
+    }
+    // 橱内：圆底烧瓶 + 铁架台 + 5 支试管架
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-45, -16.5, 14, 3.0);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-38, -15.0); ctx.lineTo(-38, -9.2); ctx.stroke();
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(-38, -8.8, 5.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-15, -13.4, 31, 8.2);
+    ctx.strokeRect(-15, -13.4, 31, 8.2);
+    ['#38bdf8', '#f59e0b', '#10b981', '#e2e8f0', '#f43f5e'].forEach((tCol, ti) => {
+        const tx = -10.5 + ti * 5.5;
+        ctx.fillStyle = tCol;
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath(); ctx.arc(tx, -9.3, 1.75, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    });
+    // 右侧进风百叶口
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(22.0, -16.0, 11.0, 20.0);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    for (let ly = -14.5; ly <= 2.0; ly += 2.6) {
+        ctx.beginPath(); ctx.moveTo(23.2, ly); ctx.lineTo(31.8, ly); ctx.stroke();
+    }
+    // 前沿风速监控屏（面向房间 +y）
+    ctx.fillStyle = '#020617';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-66, 3.6, 27, 5.2);
+    ctx.strokeRect(-66, 3.6, 27, 5.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('0.52m/s', -55, 6.25);
+    // 半开玻璃视窗（向后方北墙 -y 拉起）
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.16)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-65, -16.7, 86, 12.5);
+    ctx.strokeRect(-65, -16.7, 86, 12.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-65, -5.5, 86, 1.3);
+
+    // 6D) 东中部玻璃器皿 + 氧气阀 + 带玻璃门试剂柜（x ∈ [+37, +80]）
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.28)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(38.8, -17.5, 3.8, 12.0);
+    ctx.strokeRect(38.8, -17.5, 3.8, 12.0);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(40.7, -18.8); ctx.lineTo(40.7, -4.0); ctx.stroke();
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.36)';
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.arc(48.0, -9.2, 3.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(45.7, -6.2, 4.6, 1.3);
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.42)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(41.0, 2.8, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(46.2, -2.2, 4.8, 1.4);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(47.3, -0.8, 2.6, 8.0);
+    ctx.strokeRect(47.3, -0.8, 2.6, 8.0);
+
+    // 氧气阀（接北墙气管 -25.9）
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(44.5, -21.5); ctx.lineTo(44.5, -25.9); ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(42.5, -23.2, 4.0, 3.4);
+    ctx.strokeRect(42.5, -23.2, 4.0, 3.4);
+    ctx.fillStyle = '#16a34a';
+    ctx.beginPath(); ctx.arc(44.5, -21.5, 2.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    // 带玻璃门试剂柜（x ∈ [+53, +79]）
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.fillRect(53, -22.2, 26, 29.7);
+    ctx.strokeRect(53, -22.2, 26, 29.7);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(54.8, -20.2, 22.4, 25.7);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(55.0, -12.5, 22.0, 1.1);
+    ctx.fillRect(55.0, -3.5, 22.0, 1.1);
+    [
+        { x: 58.0, y: -18.6, c: '#d97706' },
+        { x: 63.0, y: -18.6, c: '#38bdf8' },
+        { x: 68.0, y: -18.6, c: '#e2e8f0' },
+        { x: 73.2, y: -18.6, c: '#10b981' },
+        { x: 58.2, y: -9.6,  c: '#ef4444' },
+        { x: 63.2, y: -9.6,  c: '#facc15' },
+        { x: 68.2, y: -9.6,  c: '#3b82f6' },
+        { x: 73.2, y: -9.6,  c: '#cbd5e1' }
+    ].forEach(sb => {
+        ctx.fillStyle = sb.c;
+        ctx.fillRect(sb.x - 1.5, sb.y, 3.0, 4.8);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(sb.x - 0.8, sb.y + 4.8, 1.6, 0.9);
+    });
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(54.4, -20.8, 23.2, 27.0);
+    ctx.strokeRect(54.4, -20.8, 23.2, 27.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(63.5, 6.0, 5.0, 1.2);
+
+    // 6E) 水槽东（x = +91.5，圆形水槽 + 双控龙头 + 弹簧软管喷枪）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(82, -19.0, 19, 26.5);
+    ctx.strokeRect(82, -19.0, 19, 26.5);
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.arc(91.5, -3.2, 7.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(91.5, -3.2, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(86.5, -17.1, 10.0, 2.6);
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath(); ctx.arc(87.3, -15.8, 1.25, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(95.7, -15.8, 1.25, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(91.5, -15.6); ctx.lineTo(91.5, -9.5); ctx.stroke();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(93.9, -15.0); ctx.lineTo(96.4, -12.8); ctx.lineTo(93.7, -11.2); ctx.lineTo(96.2, -9.2);
+    ctx.stroke();
+
+    // 6F) 最东端（x ∈ [+103, +139]）：氩气阀 + 台面计时器 + 记录板
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.moveTo(128.0, -21.5); ctx.lineTo(128.0, -25.9); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(126.3, -23.0, 3.4, 3.0);
+    ctx.strokeRect(126.3, -23.0, 3.4, 3.0);
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath(); ctx.arc(128.0, -21.5, 2.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(128.0, -21.5, 0.7, 0, Math.PI * 2); ctx.fill();
+
+    // 台面计时器（按钮朝房间侧 +y）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(104.5, -16.6, 15.5, 9.4);
+    ctx.strokeRect(104.5, -16.6, 15.5, 9.4);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(106.0, -15.2, 12.5, 4.6);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(106.8, -9.6, 2.8, 1.4);
     ctx.fillStyle = '#f59e0b';
-    ctx.beginPath(); ctx.arc(-62.0, -51.0, 1.45, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(110.8, -9.6, 2.8, 1.4);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(114.8, -9.6, 2.8, 1.4);
+
+    // 记录板 + 记号笔
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(104.5, -4.0, 27.0, 11.8);
+    ctx.strokeRect(104.5, -4.0, 27.0, 11.8);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(106.5, -2.7, 23.0, 9.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(114.0, -3.5, 8.0, 2.0);
+    ctx.strokeRect(114.0, -3.5, 8.0, 2.0);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.5;
+    [0.0, 2.2, 4.4].forEach((ly, li) => {
+        ctx.beginPath(); ctx.moveTo(108.5, ly); ctx.lineTo(126.0 - li * 2.2, ly); ctx.stroke();
+    });
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(134.5, -3.0); ctx.lineTo(136.0, 6.5); ctx.stroke();
 
     ctx.restore();
 }
 
-function getWestWeaponTestStationObstacle() {
-    const cx = 900, cy = 1450;
-    const w = 260, h = 120;
-    const halfW = w * 0.5, halfH = h * 0.5;
+function drawWestBench01Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 旋转蒸发仪：前置数显 + 沸腾气泡 + 冷凝液滴 + 接收瓶液面
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-136.6, 3.8, 11.2, 2.4);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('58C', -131.0, 5.0);
+    const bathAng = time * 2.4;
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.65)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(-130.5, -1.5, 3.0, bathAng, bathAng + 1.9); ctx.stroke();
+    for (let bi = 0; bi < 3; bi++) {
+        const bp = ((time * 0.9 + bi * 0.33) % 1.0);
+        ctx.fillStyle = `rgba(224, 242, 254, ${(1 - bp).toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(-132.2 + bi * 1.7, -3.5 + bp * 3.8, 0.55, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    const condT = (time * 0.8) % 1.0;
+    ctx.fillStyle = '#7dd3fc';
+    ctx.beginPath();
+    ctx.arc(-127.5 + condT * 7.9, -8.2 + (-2.0 + 8.2) * condT, 0.75, 0, Math.PI * 2);
+    ctx.fill();
+    const wave = Math.sin(time * 1.6);
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.7)';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-122.0, -1.2 + wave * 0.45);
+    ctx.lineTo(-117.2, -1.2 - wave * 0.45);
+    ctx.stroke();
+
+    // 2. 双水槽：滴水液珠 + 排水口扩散涟漪
+    const dropW = (time * 1.05) % 1.0;
+    ctx.fillStyle = `rgba(125, 211, 252, ${(1 - dropW * 0.5).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(-86.7, -10.5 + dropW * 6.5, 0.65, 0, Math.PI * 2); ctx.fill();
+    const ripW = 1.6 + ((time * 1.1) % 1.0) * 4.5;
+    ctx.strokeStyle = `rgba(125, 211, 252, ${(0.55 * (1 - ((time * 1.1) % 1.0))).toFixed(2)})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(-83.5, -4.0, ripW, 0, Math.PI * 2); ctx.stroke();
+
+    const dropE = (time * 0.9 + 0.45) % 1.0;
+    ctx.fillStyle = `rgba(125, 211, 252, ${(1 - dropE * 0.5).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(91.5, -9.5 + dropE * 6.3, 0.65, 0, Math.PI * 2); ctx.fill();
+    const ripE = 1.6 + ((time * 0.95 + 0.4) % 1.0) * 4.5;
+    ctx.strokeStyle = `rgba(125, 211, 252, ${(0.55 * (1 - ((time * 0.95 + 0.4) % 1.0))).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(91.5, -3.2, ripE, 0, Math.PI * 2); ctx.stroke();
+
+    // 3. 通风橱：风速数字 + 排风气流 + 磁力搅拌 + 5 试管液面微晃
+    const vel = (0.51 + Math.sin(time * 1.7) * 0.02).toFixed(2);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(-65.2, 4.1, 21.5, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText(`${vel}m/s`, -54.5, 6.25);
+    for (let si = 0; si < 3; si++) {
+        const airP = ((time * 0.75 + si * 0.33) % 1.0);
+        const ax = -42 + si * 21;
+        const ay = -4.0 - airP * 14.5;
+        ctx.strokeStyle = `rgba(148, 163, 184, ${(0.35 * Math.sin(airP * Math.PI)).toFixed(2)})`;
+        ctx.lineWidth = 0.55;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(-14 + (ax + 14) * (1 - airP * 0.5), ay - 2.2); ctx.stroke();
+    }
+    ctx.save();
+    ctx.translate(-38, -8.8);
+    ctx.rotate(time * 6.0);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-1.8, -0.45, 3.6, 0.9);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.65)';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-41.5, -8.6 + wave * 0.55);
+    ctx.lineTo(-34.5, -8.6 - wave * 0.55);
+    ctx.stroke();
+    for (let ti = 0; ti < 5; ti++) {
+        const tw = Math.sin(time * 2.0 + ti) * 0.35;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        ctx.arc(-10.5 + ti * 5.5, -9.3, 1.1, tw, tw + 1.3);
+        ctx.stroke();
+    }
+
+    // 4. 东中部玻璃器皿：冷却水 + 分液漏斗 + 烧瓶/量筒液面
+    const coolT = (time * 1.1) % 1.0;
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(40.7, -6.2 - coolT * 10.6, 0.75, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(40.7, -6.2 - ((coolT + 0.5) % 1.0) * 10.6, 0.65, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.7)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(45.7, -9.2 + wave * 0.3);
+    ctx.lineTo(50.3, -9.2 - wave * 0.3);
+    ctx.stroke();
+    const sepDrop = (time * 0.7) % 1.0;
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(48.0, -4.6 + sepDrop * 4.5, 0.65, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(38.6, 2.8 + wave * 0.35);
+    ctx.lineTo(43.4, 2.8 - wave * 0.35);
+    ctx.stroke();
+
+    // 5. 试剂架微反光 + 玻璃柜微光
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 0.45;
+    [-134.8, -128.2, -121.6, -115.0].forEach((bx, bi) => {
+        const w = Math.sin(time * 1.4 + bi * 1.2) * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(bx - 1.4, -19.2 + w);
+        ctx.lineTo(bx + 1.4, -19.2 - w);
+        ctx.stroke();
+    });
+    const rCabGlow = 0.06 + 0.05 * Math.sin(time * 1.0);
+    ctx.fillStyle = `rgba(56, 189, 248, ${rCabGlow.toFixed(3)})`;
+    ctx.fillRect(55.0, -19.8, 22.0, 24.6);
+
+    // 6. 台面计时器倒计时
+    const totalSec = 900 - (Math.floor(time) % 900);
+    const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+    const ss = String(totalSec % 60).padStart(2, '0');
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(106.0, -15.2, 12.5, 4.6);
+    ctx.font = 'bold 2.6px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(mm + ':' + ss, 112.25, -12.9);
+
+    // 7. 各仪器与墙面插座状态灯
+    [
+        { x: -126.2, y: 5.2,   on: '#f59e0b', dim: '#78350f', spd: 1.5, ph: 0.2 },
+        { x: -135.2, y: -8.5,  on: '#38bdf8', dim: '#0c4a6e', spd: 1.8, ph: 1.1 },
+        { x: -41.8,  y: 6.2,   on: '#10b981', dim: '#064e3b', spd: 1.4, ph: 0.0 },
+        { x: 57.0,   y: 6.8,   on: '#10b981', dim: '#064e3b', spd: 0.9, ph: 0.8 },
+        { x: 118.8,  y: -15.6, on: '#38bdf8', dim: '#0c4a6e', spd: 2.0, ph: 1.4 },
+        { x: 43.6,   y: -26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.5 },
+        { x: 44.5,   y: -23.8, on: '#4ade80', dim: '#14532d', spd: 1.7, ph: 0.3 },
+        { x: 128.0,  y: -23.8, on: '#e2e8f0', dim: '#475569', spd: 1.3, ph: 2.0 }
+    ].forEach(led => {
+        const pulse = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = pulse > 0.35 ? led.on : led.dim;
+        ctx.beginPath(); ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function getWestBench01Obstacle() {
+    const cx = 362.19, cy = 1079.26;
+    const unitAngle = -0.665;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 141.5; // 283 / 2
+    const halfH = 25;    // 50 / 2
+
     const worldPts = [
-        { x: cx - halfW, y: cy - halfH },
-        { x: cx + halfW, y: cy - halfH },
-        { x: cx + halfW, y: cy + halfH },
-        { x: cx - halfW, y: cy + halfH }
-    ];
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
 
     return {
         type: 'solid',
         cx: cx,
         cy: cy,
-        x: cx - halfW,
-        y: cy - halfH,
-        w: w,
-        h: h,
         points: worldPts,
-        label: 'WEST WEAPON TEST STATION',
-        displayName: 'WEAPON TEST STATION TEST-01',
+        label: 'WEST WET CHEMISTRY BENCH 01',
+        displayName: 'WET CHEMISTRY BENCH 01',
         hideLabel: true,
         draw: (ctx) => {
             const camX = Math.max(0, window.cameraX || 0);
             const camY = Math.max(0, window.cameraY || 0);
             const vw = window.innerWidth || 1920;
             const vh = window.innerHeight || 1080;
-            if (cx + 170 < camX || cx - 170 > camX + vw || cy + 100 < camY || cy - 100 > camY + vh) return;
+            if (cx + 190 < camX || cx - 190 > camX + vw || cy + 160 < camY || cy - 160 > camY + vh) return;
 
-            const cacheKey = '__westWeaponTestStationV2_' + cx + '_' + cy;
+            const cacheKey = '__westBench01V1_' + cx + '_' + cy;
             if (!window[cacheKey]) {
                 const SS = 4;
-                const cw = 300, ch = 160;
+                const cw = 320, ch = 260;
                 const off = document.createElement('canvas');
                 off.width = cw * SS;
                 off.height = ch * SS;
@@ -10245,7 +10214,7 @@ function getWestWeaponTestStationObstacle() {
                 octx.save();
                 octx.scale(SS, SS);
                 octx.translate(cw / 2 - cx, ch / 2 - cy);
-                drawWestWeaponTestStationStatic(octx, cx, cy);
+                drawWestBench01Static(octx, cx, cy, unitAngle);
                 octx.restore();
                 window[cacheKey] = { canvas: off, w: cw, h: ch };
             }
@@ -10255,7 +10224,1533 @@ function getWestWeaponTestStationObstacle() {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
-            drawWestWeaponTestStationDynamic(ctx, cx, cy, time);
+            drawWestBench01Dynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// Level 8 · 西侧三角房 · 长试验台 02：北墙中段仪器分析台 (283x50，静态+动态分离，照 04 号型)
+// 中心 (588.78, 901.50)，长轴沿北墙内缘 (-0.665 rad)，占沿墙 388–671
+// 西端与 01 台留 5px 空档，东端与 03 台留 5px 空档，北缘距北墙内壁 3px（墙面管线贴墙至 -28）
+// =========================================================================
+function drawWestBench02Static(ctx, cx, cy, unitAngle) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面投影阴影
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-143.5, -27.0, 287, 54.5, 2.5) : ctx.rect(-143.5, -27.0, 287, 54.5);
+    ctx.fill();
+
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2（贴北墙 y ∈ [-28.0, -24.6]）
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-139, -27.3); ctx.lineTo(139, -27.3); ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-139, -27.0); ctx.lineTo(139, -27.0); ctx.stroke();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-139, -25.9); ctx.lineTo(139, -25.9); ctx.stroke();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(-139, -25.7); ctx.lineTo(139, -25.7); ctx.stroke();
+
+    [-112, -56, 0, 56, 112].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, -28.0, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, -28.0, 2.4, 3.2);
+    });
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(10.5, -26.7, 3.0, 1.6);
+
+    [
+        { x: -124, kind: '2pin' },
+        { x: -74,  kind: '3pin' },
+        { x: -20,  kind: 'switch' },
+        { x: 42,   kind: 'led' },
+        { x: 108,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, -27.0, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, -27.0, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, -26.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, -27.2, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, -27.2, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, -27.0, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, -26.9, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(out.x - 2.4, -26.2, 0.75, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, -26.9, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, -26.9, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, -26.9, 2.0, 1.4);
+        }
+    });
+
+    // 左挂蓝手套、右挂抹布
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-137.2, -26.9, 2.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-137.6, -25.6); ctx.lineTo(-134.2, -25.6);
+    ctx.lineTo(-133.6, -27.9); ctx.lineTo(-135.2, -27.9);
+    ctx.lineTo(-136.0, -26.8); ctx.lineTo(-136.8, -27.9);
+    ctx.lineTo(-138.2, -27.9); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(134.8, -26.9, 2.4, 2.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(133.4, -28.0, 5.2, 2.6, 0.7) : ctx.rect(133.4, -28.0, 5.2, 2.6);
+    ctx.fill(); ctx.stroke();
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（面向房间 y ∈ [+23.0, +25.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-110, -55, 0, 55, 110].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 20, 23.3); ctx.lineTo(bx + 20, 24.7);
+        ctx.moveTo(bx - 20, 24.7); ctx.lineTo(bx + 20, 23.3);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-139, 23.0, 278, 1.3);
+    [-138, -83, -28, 28, 83, 138].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, 23.2, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, 23.8, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [+14.2, +23.0]）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-138, 14.2, 66, 8.8);
+    ctx.strokeRect(-138, 14.2, 66, 8.8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-137, 15.0, 31.2, 7.2);
+    ctx.fillRect(-104.2, 15.0, 31.2, 7.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(-105.0, 14.7); ctx.lineTo(-105.0, 22.5); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-109.0, 16.4, 1.5, 4.8);
+    ctx.fillRect(-102.5, 16.4, 1.5, 4.8);
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-105.0, 18.6, 1.05, 0, Math.PI * 2); ctx.fill();
+
+    // 4 档抽屉
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-68, 14.2, 66, 8.8);
+    ctx.strokeRect(-68, 14.2, 66, 8.8);
+    [
+        { y: 14.6, hw: 5.0 },
+        { y: 16.7, hw: 9.0 },
+        { y: 18.8, hw: 13.5 },
+        { y: 20.9, hw: 18.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#475569' : '#64748b';
+        ctx.fillRect(-66.5, dr.y, 63, 1.7);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.45;
+        ctx.strokeRect(-66.5, dr.y, 63, 1.7);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-35.0 - dr.hw / 2, dr.y + 0.55, dr.hw, 0.7);
+    });
+
+    // 开放格（线缆盘 + 备用试剂箱 2）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, 14.2, 66, 8.8);
+    ctx.strokeRect(2, 14.2, 66, 8.8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, 17.8, 64, 0.95);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(10, 14.6, 2.2, 3.0);
+    ctx.fillRect(27.8, 14.6, 2.2, 3.0);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(12.2, 14.9, 15.6, 2.3);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.55;
+    for (let sx = 14; sx <= 26; sx += 3) {
+        ctx.beginPath(); ctx.moveTo(sx, 14.9); ctx.lineTo(sx, 17.2); ctx.stroke();
+    }
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(8, 19.2, 22, 3.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(8, 19.2, 22, 3.1);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(10, 20.2, 8, 1.2);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(36, 19.2, 24, 3.1);
+    ctx.strokeRect(36, 19.2, 24, 3.1);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(39, 20.2, 9, 1.2);
+
+    // 东深柜
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(72, 14.2, 66, 8.8);
+    ctx.strokeRect(72, 14.2, 66, 8.8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(73.2, 15.1, 63.6, 7.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(76.2, 16.2, 1.8, 4.9);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 104; vx <= 132; vx += 3.6) {
+        ctx.beginPath(); ctx.moveTo(vx, 16.1); ctx.lineTo(vx + 2.0, 21.1); ctx.stroke();
+    }
+
+    // 5. 走线槽（面向房间侧）
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-139, 12.0, 278, 2.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-139, 12.0, 278, 2.2);
+    [
+        { y: 13.85, w: 0.55 },
+        { y: 13.40, w: 0.85 },
+        { y: 12.90, w: 1.15 },
+        { y: 12.38, w: 1.45 }
+    ].forEach(cb => {
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = cb.w;
+        ctx.beginPath(); ctx.moveTo(-136, cb.y); ctx.lineTo(136, cb.y); ctx.stroke();
+    });
+
+    // 6. 环氧树脂台面（283x37 @ x ∈ [-141.5, +141.5], y ∈ [-25.0, +12.0]）
+    const topGrad = ctx.createLinearGradient(0, -25.0, 0, 12.0);
+    topGrad.addColorStop(0, '#1e293b');
+    topGrad.addColorStop(0.15, '#0f172a');
+    topGrad.addColorStop(0.82, '#1e293b');
+    topGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-141.5, -25.0, 283, 37.0);
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -128; gx <= 128; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -23.5); ctx.lineTo(gx, 10.5); ctx.stroke();
+    }
+    for (let gy = -20; gy <= 6; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-140.0, gy); ctx.lineTo(140.0, gy); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-140.75, -24.25, 281.5, 35.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-141.5, -25.0, 283, 37.0);
+
+    // 钢印 BENCH-02（西南前沿面向房间）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-138.5, 7.5, 20, 4.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-138.5, 7.5, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-02', -128.5, 9.65);
+
+    // =====================================================================
+    // 7. 台面 6 台仪器 + 3 组耗材（1:1 比例，操作面朝向房间 +y）
+    // =====================================================================
+
+    // 7A) 仪器 1：实时荧光定量 PCR 仪（-139..-110）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-138.5, -17.5, 29, 24);
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.moveTo(-124, 6.5); ctx.lineTo(-124, 12.0); ctx.stroke();
+    const pcrGrad = ctx.createLinearGradient(-137.5, 0, -110.5, 0);
+    pcrGrad.addColorStop(0, '#cbd5e1');
+    pcrGrad.addColorStop(0.25, '#f8fafc');
+    pcrGrad.addColorStop(0.8, '#e2e8f0');
+    pcrGrad.addColorStop(1, '#94a3b8');
+    ctx.fillStyle = pcrGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-137.5, -16.5, 27, 22);
+    ctx.strokeRect(-137.5, -16.5, 27, 22);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.6;
+    for (let vx = -134.5; vx <= -113.5; vx += 2.2) {
+        ctx.beginPath(); ctx.moveTo(vx, -16.0); ctx.lineTo(vx, -14.0); ctx.stroke();
+    }
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-134.5, -13.0, 21, 11.5);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.strokeRect(-134.5, -13.0, 21, 11.5);
+    ctx.fillStyle = '#64748b';
+    for (let r = 0; r < 5; r++) {
+        for (let col = 0; col < 8; col++) {
+            ctx.fillRect(-132.8 + col * 2.3, -11.5 + r * 1.9, 1.0, 1.0);
+        }
+    }
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-130, -1.6, 12, 1.4);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-133.5, -0.6, 15.5, 5.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-133.5, -0.6, 15.5, 5.2);
+
+    // 7B) 耗材簇 A（-108..-85）：移液器架 + 枪头盒 2 个（一开一合，盖朝北墙 -y 翻开）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-108.0, -14.0, 10.5, 14.0, 1.5) : ctx.rect(-108.0, -14.0, 10.5, 14.0);
+    ctx.fill(); ctx.stroke();
+    [
+        { x: -105.7, len: 12.0, cap: '#38bdf8' },
+        { x: -102.7, len: 9.5,  cap: '#f59e0b' },
+        { x: -99.7,  len: 7.2,  cap: '#ef4444' }
+    ].forEach(pip => {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(pip.x - 0.8, -13.0, 1.6, pip.len);
+        ctx.fillStyle = pip.cap;
+        ctx.fillRect(pip.x - 1.1, -13.0 + pip.len - 0.8, 2.2, 1.8);
+    });
+    // 枪头盒 1（开启，前侧靠近房间）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-96.0, -1.4, 10.5, 8.2);
+    ctx.strokeRect(-96.0, -1.4, 10.5, 8.2);
+    ctx.fillStyle = '#38bdf8';
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+            ctx.beginPath(); ctx.arc(-94.2 + c * 2.2, 0.4 + r * 2.2, 0.55, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.35)';
+    ctx.fillRect(-96.0, -3.8, 10.5, 2.2);
+    // 枪头盒 2（闭合）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-96.0, -14.0, 10.5, 8.5);
+    ctx.strokeRect(-96.0, -14.0, 10.5, 8.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-92.2, -5.9, 3.0, 1.1);
+
+    // 7C) 仪器 2：液相色谱仪 HPLC（-83..-51）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-67, 8.5); ctx.lineTo(-67, 12.0); ctx.stroke();
+    const hplcGrad = ctx.createLinearGradient(-82.5, 0, -51.5, 0);
+    hplcGrad.addColorStop(0, '#94a3b8');
+    hplcGrad.addColorStop(0.25, '#e2e8f0');
+    hplcGrad.addColorStop(0.85, '#cbd5e1');
+    hplcGrad.addColorStop(1, '#64748b');
+    ctx.fillStyle = hplcGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-82.5, -16.3, 31, 24.5);
+    ctx.strokeRect(-82.5, -16.3, 31, 24.5);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(-82.5, -2.0); ctx.lineTo(-51.5, -2.0);
+    ctx.moveTo(-82.5, -9.5); ctx.lineTo(-51.5, -9.5);
+    ctx.stroke();
+    // 进样盘（前侧朝房间 +y）
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-80.5, -0.6, 15.5, 7.8);
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(-80.5, -0.6, 15.5, 7.8);
+    for (let vy = 1.2; vy <= 5.5; vy += 2.1) {
+        for (let vx = -78.5; vx <= -66.5; vx += 2.4) {
+            ctx.fillStyle = (Math.round(vx + vy) % 2 === 0) ? '#38bdf8' : '#e2e8f0';
+            ctx.beginPath(); ctx.arc(vx, vy, 0.7, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    [
+        { x: -60.5, y: -12.5, col: '#38bdf8', cap: '#0284c7' },
+        { x: -55.0, y: -12.5, col: '#f59e0b', cap: '#b45309' }
+    ].forEach(bot => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 2.6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bot.col;
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 2.0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bot.cap;
+        ctx.beginPath(); ctx.arc(bot.x, bot.y, 0.9, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(bot.x, bot.y); ctx.lineTo(bot.x - 2.6, -6.0); ctx.stroke();
+    });
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-63.8, 2.3, 11.2, 4.5);
+
+    // 实验记录板 1 块（置于低矮耗材簇 B 后方靠墙空位 x = -36, y = -20.0）
+    ctx.save();
+    ctx.translate(-36, -20.0);
+    ctx.rotate(-0.10);
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-5.2, -3.5, 10.4, 7.0);
+    ctx.strokeRect(-5.2, -3.5, 10.4, 7.0);
+    ctx.fillStyle = '#fefce8';
+    ctx.fillRect(-4.3, -2.5, 8.6, 5.2);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-2.0, -3.7, 4.0, 1.4);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    [-1.1, 0.2, 1.5].forEach((ly, i) => {
+        ctx.beginPath(); ctx.moveTo(-3.3, ly); ctx.quadraticCurveTo(-0.5, ly - 0.5, 3.0 - i * 0.8, ly + 0.2); ctx.stroke();
+    });
+    ctx.restore();
+
+    // 7D) 耗材簇 B（-49..-23）：24孔样品架 + 96孔板×2 + 镊子 + 刮刀
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-47.5, 5.2); ctx.lineTo(-40.5, 8.5);
+    ctx.moveTo(-47.5, 6.3); ctx.lineTo(-40.5, 8.5);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-38.5, 7.4, 6.2, 1.1);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-34.0, 7.1, 3.2, 1.7);
+
+    ctx.fillStyle = '#1e3a8a';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-49.0, -16.0, 14.5, 14.0);
+    ctx.strokeRect(-49.0, -16.0, 14.5, 14.0);
+    const tubeCols = ['#10b981', '#f59e0b', '#38bdf8', '#e2e8f0'];
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            const tx = -47.3 + c * 2.2;
+            const ty = -14.0 + r * 3.1;
+            const col = tubeCols[(r * 3 + c) % 4];
+            const cap = (r + c) % 2 === 0 ? '#ef4444' : '#2563eb';
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(tx, ty, 0.72, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = cap;
+            ctx.lineWidth = 0.45;
+            ctx.beginPath(); ctx.arc(tx, ty, 0.9, 0, Math.PI * 2); ctx.stroke();
+        }
+    }
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-33.5, 0.4, 10.0, 7.6);
+    ctx.strokeRect(-33.5, 0.4, 10.0, 7.6);
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            ctx.fillStyle = (r + c) % 3 === 0 ? '#10b981' : ((r + c) % 3 === 1 ? '#38bdf8' : '#cbd5e1');
+            ctx.fillRect(-32.4 + c * 1.4, 1.6 + r * 1.4, 0.9, 0.9);
+        }
+    }
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#64748b';
+    ctx.fillRect(-33.5, -13.8, 10.0, 7.6);
+    ctx.strokeRect(-33.5, -13.8, 10.0, 7.6);
+    ctx.fillStyle = '#cbd5e1';
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 6; c++) {
+            ctx.fillRect(-32.4 + c * 1.4, -12.6 + r * 1.4, 0.9, 0.9);
+        }
+    }
+
+    // 7E) 仪器 3：落地式大容量离心机（x = -5.5, y = -5.2，前转速屏朝 +y）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(-5.5, 10.5); ctx.lineTo(-5.5, 12.0); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-5.5, -5.2, 16.5, 0, Math.PI * 2); ctx.fill();
+    const centGrad = ctx.createRadialGradient(-9.5, -8.5, 3, -5.5, -5.2, 15.2);
+    centGrad.addColorStop(0, '#64748b');
+    centGrad.addColorStop(0.65, '#475569');
+    centGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = centGrad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.arc(-5.5, -5.2, 15.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const lidGrad = ctx.createLinearGradient(-16.5, -15, 5.5, 5);
+    lidGrad.addColorStop(0, '#e2e8f0');
+    lidGrad.addColorStop(0.5, '#94a3b8');
+    lidGrad.addColorStop(1, '#475569');
+    ctx.fillStyle = lidGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.beginPath(); ctx.arc(-5.5, -5.5, 11.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-5.5, -5.5, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(-5.5, -5.5, 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-8.5, -18.2, 6.0, 2.2);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-14.0, 5.2, 17.0, 5.2);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-14.0, 5.2, 17.0, 5.2);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-13.0, 6.0, 12.2, 3.6);
+
+    // 7F) 耗材簇 C（+13..+37）：记号笔 + 台面计时器 + 离心管架
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(13.0, 5.8, 8.2, 1.8);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(20.7, 5.8, 2.2, 1.8);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(14.5, 6.0, 2.5, 1.3);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(24.5, 2.4, 10.5, 6.8);
+    ctx.strokeRect(24.5, 2.4, 10.5, 6.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(26.2, 7.4, 2.6, 1.1);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(30.4, 7.4, 2.6, 1.1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(25.7, 3.4, 8.1, 3.3);
+
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(13.5, -16.5, 22, 14.5);
+    ctx.strokeRect(13.5, -16.5, 22, 14.5);
+    [
+        { x: 16.0, y: -5.5, col: '#10b981' },
+        { x: 20.0, y: -5.5, col: '#f59e0b' },
+        { x: 16.0, y: -12.2, col: '#38bdf8' },
+        { x: 20.0, y: -12.2, col: '#e2e8f0' }
+    ].forEach(t15 => {
+        ctx.fillStyle = t15.col;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.35, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.5, 0, Math.PI * 2); ctx.stroke();
+    });
+    [
+        { x: 28.5, y: -5.5, col: '#10b981' },
+        { x: 28.5, y: -12.5, col: '#f59e0b' }
+    ].forEach(t50 => {
+        ctx.fillStyle = t50.col;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.25, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.45, 0, Math.PI * 2); ctx.stroke();
+    });
+
+    // 7G) 仪器 4：超声破碎仪（+39..+64）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(51, 7.5); ctx.lineTo(51, 12.0); ctx.stroke();
+    ctx.fillStyle = '#e7e5e4';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(39, -15.5, 16, 22);
+    ctx.strokeRect(39, -15.5, 16, 22);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(40.5, 0.0, 13, 5.2);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(40.5, 0.0, 13, 5.2);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(56.0, -15.5, 8.0, 20.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.strokeRect(56.0, -15.5, 8.0, 20.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(59.5, -15.0, 2.4, 5.5);
+    ctx.fillRect(57.0, -6.2, 4.5, 2.2);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(58.2, -4.4, 2.0, 4.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(59.2, 1.2, 2.2, 0, Math.PI * 2); ctx.fill();
+
+    // 7H) 仪器 5：恒温摇床（+67..+98）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(66.5, -17.8, 32, 25);
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.05;
+    ctx.beginPath(); ctx.moveTo(82.5, 7.2); ctx.lineTo(82.5, 12.0); ctx.stroke();
+    const shkGrad = ctx.createLinearGradient(67.5, 0, 97.5, 0);
+    shkGrad.addColorStop(0, '#93c5fd');
+    shkGrad.addColorStop(0.3, '#dbeafe');
+    shkGrad.addColorStop(0.85, '#bfdbfe');
+    shkGrad.addColorStop(1, '#60a5fa');
+    ctx.fillStyle = shkGrad;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(67.5, -17.0, 30, 23.5);
+    ctx.strokeRect(67.5, -17.0, 30, 23.5);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(70.5, 0.9, 16.5, 4.6);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(70.5, 0.9, 16.5, 4.6);
+
+    // 7I) 仪器 6：真空干燥箱（+102..+134，真空管接入北墙 -25.9）
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.15;
+    ctx.beginPath(); ctx.moveTo(118, 7.5); ctx.lineTo(118, 12.0); ctx.stroke();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath(); ctx.moveTo(126, -17.0); ctx.lineTo(126, -25.9); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.95;
+    ctx.fillRect(102, -17.0, 32, 24.5);
+    ctx.strokeRect(102, -17.0, 32, 24.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(103.5, -10.3, 22, 16.5);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(103.5, -10.3, 22, 16.5);
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(106.0, -7.7, 16.5, 11.5);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(106.0, -7.7, 16.5, 11.5);
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.arc(129.2, 2.5, 3.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.beginPath(); ctx.arc(129.2, -2.2, 1.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.restore();
+}
+
+function drawWestBench02Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. PCR 仪
+    const pcrPhase = 0.5 + 0.5 * Math.sin(time * 0.45);
+    const pcrTemp = (60.2 + pcrPhase * 34.8).toFixed(1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-133.0, -0.2, 14.5, 4.4);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = pcrPhase > 0.7 ? '#f59e0b' : '#38bdf8';
+    ctx.fillText(`${pcrTemp}C`, -125.75, 1.85);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-132.0, 3.4, 12.5, 0.7);
+    ctx.fillStyle = pcrPhase > 0.7 ? '#f59e0b' : '#10b981';
+    ctx.fillRect(-132.0, 3.4, 12.5 * pcrPhase, 0.7);
+
+    // 2. HPLC 实时出峰 + 毛细管液滴
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-63.5, 2.6, 10.6, 3.9);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    for (let sx = 0; sx <= 9; sx += 1.0) {
+        const u = ((sx * 0.1 + time * 0.45) % 1.0);
+        const peak = Math.exp(-Math.pow((u - 0.5) * 7.0, 2)) * 2.2;
+        const px = -63.0 + sx;
+        const py = 5.8 - peak;
+        if (sx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    [
+        { bx: -60.5, col: '#7dd3fc' },
+        { bx: -55.0, col: '#fcd34d' }
+    ].forEach((cap, ci) => {
+        const flowT = (time * 0.85 + ci * 0.5) % 1.0;
+        const fx = cap.bx - 2.6 * flowT;
+        const fy = -12.5 + (-6.0 + 12.5) * flowT;
+        ctx.fillStyle = cap.col;
+        ctx.beginPath(); ctx.arc(fx, fy, 0.7, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // 3. 离心机转子 + RPM
+    const rotAngle = time * 8.5;
+    ctx.save();
+    ctx.translate(-5.5, -5.5);
+    ctx.rotate(rotAngle);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-2.2, 0); ctx.lineTo(2.2, 0);
+    ctx.moveTo(0, -2.2); ctx.lineTo(0, 2.2);
+    ctx.stroke();
+    ctx.restore();
+    const centRpm = 4195 + Math.round(Math.sin(time * 2.3) * 8);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-13.0, 6.0, 12.2, 3.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${centRpm}RPM`, -6.9, 7.85);
+
+    // 4. 台面计时器
+    const b2Sec = 265 - (Math.floor(time) % 265);
+    const b2mm = String(Math.floor(b2Sec / 60)).padStart(2, '0');
+    const b2ss = String(b2Sec % 60).padStart(2, '0');
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(25.7, 3.4, 8.1, 3.3);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${b2mm}:${b2ss}`, 29.75, 5.05);
+
+    // 5. 超声破碎仪
+    const usWatt = 236 + Math.round(Math.sin(time * 5.0) * 6);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(40.5, 0.0, 13, 5.2);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${usWatt}W`, 47.0, 2.65);
+    const ringR = 0.8 + ((time * 1.9) % 1.0) * 1.45;
+    const ringAlpha = 1.0 - ((time * 1.9) % 1.0);
+    ctx.strokeStyle = `rgba(224, 242, 254, ${ringAlpha.toFixed(2)})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(59.2, 1.2, ringR, 0, Math.PI * 2); ctx.stroke();
+
+    // 6. 恒温摇床
+    const ox = Math.cos(time * 3.0) * 0.65;
+    const oy = Math.sin(time * 3.0) * 0.65;
+    ctx.save();
+    ctx.translate(82.5 + ox, -7.8 + oy);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-11.0, -7.0, 22.0, 14.0);
+    ctx.strokeRect(-11.0, -7.0, 22.0, 14.0);
+    [[-5.8, -3.1], [5.8, -3.1], [-5.8, 3.1], [5.8, 3.1]].forEach(([fx, fy], fi) => {
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(fx, fy, 2.6, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = fx < 0 ? 'rgba(16, 185, 129, 0.72)' : 'rgba(56, 189, 248, 0.72)';
+        ctx.beginPath(); ctx.arc(fx, fy, 1.8, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.75)';
+        ctx.lineWidth = 0.45;
+        const sa = time * 3.0 + fi * 1.5;
+        ctx.beginPath(); ctx.arc(fx, fy, 1.1, sa, sa + 1.4); ctx.stroke();
+    });
+    ctx.restore();
+    const shkRpm = 179 + Math.round(Math.sin(time * 1.5));
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(70.5, 0.9, 16.5, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${shkRpm}RPM`, 78.75, 3.25);
+
+    // 7. 真空干燥箱
+    const vGlow = 0.14 + 0.1 * Math.sin(time * 1.2);
+    ctx.fillStyle = `rgba(245, 158, 11, ${vGlow.toFixed(3)})`;
+    ctx.fillRect(106.4, -7.3, 15.7, 10.7);
+    const needleAng = -2.2 + Math.sin(time * 4.5) * 0.12;
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(129.2, 2.5);
+    ctx.lineTo(129.2 + Math.cos(needleAng) * 2.4, 2.5 + Math.sin(needleAng) * 2.4);
+    ctx.stroke();
+    const vacPulseY = -17.0 - ((time * 1.3) % 1.0) * 8.9;
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(126.0, vacPulseY, 0.7, 0, Math.PI * 2); ctx.fill();
+
+    // 8. 呼吸指示灯
+    [
+        { x: -115.0, y: 2.0,   on: '#10b981', dim: '#064e3b', spd: 1.4, ph: 0.0 },
+        { x: -115.0, y: 4.0,   on: '#f59e0b', dim: '#78350f', spd: 0.9, ph: 1.5 },
+        { x: -53.8,  y: 5.2,   on: '#10b981', dim: '#064e3b', spd: 1.1, ph: 1.2 },
+        { x: 0.8,    y: 7.8,   on: '#10b981', dim: '#064e3b', spd: 1.5, ph: 0.6 },
+        { x: 52.2,   y: 2.6,   on: '#ef4444', dim: '#7f1d1d', spd: 2.2, ph: 1.8 },
+        { x: 92.0,   y: 3.2,   on: '#f59e0b', dim: '#78350f', spd: 1.2, ph: 2.8 },
+        { x: 129.2,  y: 6.0,   on: '#f59e0b', dim: '#78350f', spd: 0.9, ph: 0.4 },
+        { x: 39.6,   y: -26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.9 }
+    ].forEach(led => {
+        const pulse = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = pulse > 0.35 ? led.on : led.dim;
+        ctx.beginPath(); ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function getWestBench02Obstacle() {
+    const cx = 588.78, cy = 901.50;
+    const unitAngle = -0.665;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 141.5; // 283 / 2
+    const halfH = 25;    // 50 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST ANALYTICAL BENCH 02',
+        displayName: 'ANALYTICAL INSTRUMENT BENCH 02',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 190 < camX || cx - 190 > camX + vw || cy + 160 < camY || cy - 160 > camY + vh) return;
+
+            const cacheKey = '__westBench02V1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 320, ch = 260;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBench02Static(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestBench02Dynamic(ctx, cx, cy, unitAngle, time);
+            ctx.restore();
+        }
+    };
+}
+
+// =========================================================================
+// Level 8 · 西侧三角房 · 长试验台 03：北墙东段生物安全/标本储存台 (283x50，静态+动态分离，照 05 号型)
+// 中心 (815.37, 723.73)，长轴沿北墙内缘 (-0.665 rad)，占沿墙 676–959
+// 西端与 02 台留 5px 空档，东端距五联舱留足净空，北缘距北墙内壁 3px（墙面管线贴墙至 -28）
+// =========================================================================
+function drawWestBench03Static(ctx, cx, cy, unitAngle) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 地面投影阴影
+    ctx.fillStyle = 'rgba(2, 6, 12, 0.54)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(-143.5, -27.0, 287, 54.5, 2.5) : ctx.rect(-143.5, -27.0, 287, 54.5);
+    ctx.fill();
+
+    // 2. 墙面管线 ×2 + 墙面插座排 ×5 + 墙面挂钩 ×2（贴北墙 y ∈ [-28.0, -24.6]）
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-139, -27.3); ctx.lineTo(139, -27.3); ctx.stroke();
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-139, -27.0); ctx.lineTo(139, -27.0); ctx.stroke();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.25;
+    ctx.beginPath(); ctx.moveTo(-139, -25.9); ctx.lineTo(139, -25.9); ctx.stroke();
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.45;
+    ctx.beginPath(); ctx.moveTo(-139, -25.7); ctx.lineTo(139, -25.7); ctx.stroke();
+
+    [-112, -56, 0, 56, 112].forEach((clx, idx) => {
+        ctx.fillStyle = idx % 2 === 0 ? '#cbd5e1' : '#94a3b8';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.fillRect(clx - 1.2, -28.0, 2.4, 3.2);
+        ctx.strokeRect(clx - 1.2, -28.0, 2.4, 3.2);
+    });
+    // 液氮排气管墙端法兰接口
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.fillRect(-69.0, -28.0, 7.0, 3.2);
+    ctx.strokeRect(-69.0, -28.0, 7.0, 3.2);
+
+    [
+        { x: -124, kind: '2pin' },
+        { x: -78,  kind: '3pin' },
+        { x: -14,  kind: 'switch' },
+        { x: 46,   kind: 'led' },
+        { x: 112,  kind: 'usb' }
+    ].forEach(out => {
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.55;
+        ctx.fillRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.strokeRect(out.x - 4.2, -27.9, 8.4, 3.3);
+        ctx.fillStyle = '#0f172a';
+        if (out.kind === '2pin') {
+            ctx.fillRect(out.x - 1.8, -27.0, 0.9, 1.4);
+            ctx.fillRect(out.x + 0.9, -27.0, 0.9, 1.4);
+        } else if (out.kind === '3pin') {
+            ctx.fillRect(out.x - 0.45, -26.2, 0.9, 1.0);
+            ctx.fillRect(out.x - 2.0, -27.2, 1.1, 0.9);
+            ctx.fillRect(out.x + 0.9, -27.2, 1.1, 0.9);
+        } else if (out.kind === 'switch') {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(out.x - 3.0, -27.0, 2.2, 1.6);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x + 0.5, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 2.1, -26.9, 0.9, 1.3);
+        } else if (out.kind === 'led') {
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(out.x - 2.4, -26.2, 0.75, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(out.x - 0.4, -26.9, 0.9, 1.3);
+            ctx.fillRect(out.x + 1.4, -26.9, 0.9, 1.3);
+        } else {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(out.x - 2.6, -26.9, 2.0, 1.4);
+            ctx.fillRect(out.x + 0.6, -26.9, 2.0, 1.4);
+        }
+    });
+
+    // 左挂蓝手套、右挂透明防护面屏
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-137.2, -26.9, 2.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(-137.6, -25.6); ctx.lineTo(-134.2, -25.6);
+    ctx.lineTo(-133.6, -27.9); ctx.lineTo(-135.2, -27.9);
+    ctx.lineTo(-136.0, -26.8); ctx.lineTo(-136.8, -27.9);
+    ctx.lineTo(-138.2, -27.9); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(134.8, -26.7, 2.4, 2.0);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(133.0, -26.1, 6.0, 1.0);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.arc(136.0, -26.0, 3.1, Math.PI + 0.15, -0.15);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // 3. 桌腿交叉撑、踢脚与调平脚 6 个（面向房间 y ∈ [+23.0, +25.0]）
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.85;
+    [-110, -55, 0, 55, 110].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx - 20, 23.3); ctx.lineTo(bx + 20, 24.7);
+        ctx.moveTo(bx - 20, 24.7); ctx.lineTo(bx + 20, 23.3);
+        ctx.stroke();
+    });
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-139, 23.0, 278, 1.3);
+    [-138, -83, -28, 28, 83, 138].forEach(fx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(fx - 2.6, 23.2, 5.2, 2.2);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(fx - 1.8, 23.8, 3.6, 1.2);
+    });
+
+    // 4. 台下 4 组各不相同的钢制柜体（y ∈ [+12.6, +23.0]）
+    // 4A) 带锁标本柜 + 挂锁 + 生物危害标识 #1
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-138, 12.6, 66, 10.4);
+    ctx.strokeRect(-138, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-137, 13.5, 31.2, 8.6);
+    ctx.fillRect(-104.2, 13.5, 31.2, 8.6);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.moveTo(-105.0, 13.1); ctx.lineTo(-105.0, 22.4); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-109.2, 15.0, 1.5, 6.2);
+    ctx.fillRect(-102.3, 15.0, 1.5, 6.2);
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 0.75;
+    ctx.beginPath(); ctx.arc(-105.0, 16.5, 1.4, Math.PI, 0); ctx.stroke();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.5;
+    ctx.fillRect(-106.5, 16.8, 3.0, 2.8);
+    ctx.strokeRect(-106.5, 16.8, 3.0, 2.8);
+    ctx.fillStyle = '#eab308';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-121.5, 14.2); ctx.lineTo(-116.0, 21.2); ctx.lineTo(-127.0, 21.2); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-121.5, 18.8, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    // 4B) 3 档抽屉
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-68, 12.6, 66, 10.4);
+    ctx.strokeRect(-68, 12.6, 66, 10.4);
+    [
+        { y: 13.2, hw: 6.0 },
+        { y: 16.5, hw: 13.0 },
+        { y: 19.8, hw: 20.0 }
+    ].forEach((dr, dIdx) => {
+        ctx.fillStyle = dIdx % 2 === 0 ? '#475569' : '#64748b';
+        ctx.fillRect(-66.5, dr.y, 63, 2.6);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(-66.5, dr.y, 63, 2.6);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-35.0 - dr.hw / 2, dr.y + 0.9, dr.hw, 0.9);
+    });
+
+    // 4C) 开放格（冻存盒 2 + 生物危害废弃桶 1）
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(2, 12.6, 66, 10.4);
+    ctx.strokeRect(2, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(3, 17.2, 64, 1.0);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(10, 13.4, 20, 3.4);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(10, 13.4, 20, 3.4);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(38, 13.4, 20, 3.4);
+    ctx.strokeRect(38, 13.4, 20, 3.4);
+    ctx.fillStyle = '#eab308';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(19, 18.6, 32, 3.8);
+    ctx.strokeRect(19, 18.6, 32, 3.8);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(19, 21.45, 32, 0.95);
+    ctx.beginPath();
+    ctx.moveTo(35, 18.9); ctx.lineTo(37.5, 20.3); ctx.lineTo(35, 21.7); ctx.lineTo(32.5, 20.3); ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.arc(35, 20.3, 0.65, 0, Math.PI * 2); ctx.fill();
+
+    // 4D) 深柜
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(72, 12.6, 66, 10.4);
+    ctx.strokeRect(72, 12.6, 66, 10.4);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(73.2, 13.6, 63.6, 8.4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(76.2, 14.8, 1.8, 6.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.7;
+    for (let vx = 104; vx <= 132; vx += 3.6) {
+        ctx.beginPath(); ctx.moveTo(vx, 14.8); ctx.lineTo(vx + 2.0, 20.8); ctx.stroke();
+    }
+
+    // 5. 不锈钢银白边框环氧台面（283x37.6 @ x ∈ [-141.5, +141.5], y ∈ [-25.0, +12.6]）
+    const topGrad = ctx.createLinearGradient(0, -25.0, 0, 12.6);
+    topGrad.addColorStop(0, '#1e293b');
+    topGrad.addColorStop(0.15, '#0f172a');
+    topGrad.addColorStop(0.8, '#1e293b');
+    topGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(-141.5, -25.0, 283, 37.6);
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 0.5;
+    for (let gx = -128; gx <= 128; gx += 15) {
+        ctx.beginPath(); ctx.moveTo(gx, -23.5); ctx.lineTo(gx, 11.0); ctx.stroke();
+    }
+    for (let gy = -20; gy <= 6; gy += 8.5) {
+        ctx.beginPath(); ctx.moveTo(-140.0, gy); ctx.lineTo(140.0, gy); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-140.75, -24.25, 281.5, 36.1);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(-141.5, -25.0, 283, 37.6);
+
+    // 台面钢印 BENCH-03
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-138.5, 8.0, 20, 4.2);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-138.5, 8.0, 20, 4.2);
+    ctx.font = 'bold 2.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('BENCH-03', -128.5, 10.15);
+
+    // =====================================================================
+    // 6. 超低温与液氮储存核心模块 + 样本处理耗材（1:1 比例，操作面朝向房间 +y）
+    // =====================================================================
+
+    // 6A) 超低温冰箱（-139..-105，-80°C 立柜）
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-139.0, -18.7, 34, 26.5);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(-138.0, -18.0, 32, 25.2);
+    ctx.strokeRect(-138.0, -18.0, 32, 25.2);
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-135.5, -15.7, 27, 21.5);
+    ctx.strokeRect(-135.5, -15.7, 27, 21.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-111.5, -9.0, 2.2, 11.5);
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-111.5, -9.0, 2.2, 11.5);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-137.2, -11.7, 1.8, 3.2);
+    ctx.fillRect(-137.2, 0.3, 1.8, 3.2);
+    ctx.font = 'bold 2.8px monospace';
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillText('-80°C', -122.0, -5.5);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-133.5, -0.6, 17.5, 5.4);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 0.65;
+    ctx.strokeRect(-133.5, -0.6, 17.5, 5.4);
+
+    // 6B) 耗材簇 A（-103..-83）：冻存管盒 2 + 镊子 + 刮刀
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(-102.5, -2.0, 12.0, 9.2);
+    ctx.strokeRect(-102.5, -2.0, 12.0, 9.2);
+    ctx.fillStyle = '#10b981';
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+            ctx.beginPath(); ctx.arc(-100.3 + c * 2.5, 0.2 + r * 2.5, 0.7, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    ctx.fillStyle = 'rgba(167, 243, 208, 0.28)';
+    ctx.fillRect(-102.5, -4.5, 12.0, 2.3);
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(-102.5, -15.5, 12.0, 9.5);
+    ctx.strokeRect(-102.5, -15.5, 12.0, 9.5);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-101.0, -14.0, 9.0, 6.5);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-98.0, -6.3, 3.0, 1.2);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(-89.5, 2.5); ctx.lineTo(-82.5, 6.5);
+    ctx.moveTo(-89.5, 3.7); ctx.lineTo(-82.5, 6.5);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-89.5, -11.3, 6.5, 1.2);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-85.5, -11.6, 3.0, 1.8);
+
+    // 6C) 液氮储存罐（cx = -65.5, y = -5.2，排气管接入北墙 -27.3）
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(-65.5, -18.0); ctx.lineTo(-65.5, -27.3); ctx.stroke();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.moveTo(-66.3, -18.0); ctx.lineTo(-66.3, -27.3); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(-65.5, -5.2, 16.2, 0, Math.PI * 2); ctx.fill();
+    const ln2Grad = ctx.createRadialGradient(-69.5, -8.5, 2, -65.5, -5.2, 15.0);
+    ln2Grad.addColorStop(0, '#f8fafc');
+    ln2Grad.addColorStop(0.55, '#cbd5e1');
+    ln2Grad.addColorStop(1, '#64748b');
+    ctx.fillStyle = ln2Grad;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath(); ctx.arc(-65.5, -5.2, 15.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(-65.5, -5.2, 8.0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-69.0, -6.2, 7.0, 2.0);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-72.5, 4.9, 14.0, 3.6);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.55;
+    ctx.strokeRect(-72.5, 4.9, 14.0, 3.6);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-71.5, 5.7, 9.6, 2.0);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('LN2', -65.5, -10.5);
+
+    // 记录板（置于样本箱后方靠墙空位 x = -35, y = -20.2）
+    ctx.save();
+    ctx.translate(-35, -20.2);
+    ctx.rotate(0.08);
+    ctx.fillStyle = '#78350f';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.6;
+    ctx.fillRect(-4.8, -3.2, 9.6, 6.4);
+    ctx.strokeRect(-4.8, -3.2, 9.6, 6.4);
+    ctx.fillStyle = '#fefce8';
+    ctx.fillRect(-4.0, -2.3, 8.0, 4.7);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(-1.8, -3.4, 3.6, 1.3);
+    ctx.restore();
+
+    // 6D) 耗材簇 B（-48..-24）：标签打印机 + 记号笔 + 便携标本箱
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.75;
+    ctx.fillRect(-47.0, -1.0, 14.0, 9.2);
+    ctx.strokeRect(-47.0, -1.0, 14.0, 9.2);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-45.0, 5.2, 10.0, 2.0);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(-43.5, 7.2, 7.0, 3.0);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-31.5, 5.6, 7.2, 1.6);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-30.0, 5.8, 2.2, 1.1);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-47.5, -16.8, 22.5, 13.5);
+    ctx.strokeRect(-47.5, -16.8, 22.5, 13.5);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(-45.5, -8.4, 7.0, 3.4);
+
+    // 6E) 冻存架 1 组（-22..+8，A1/B4/C9 面向房间 +y 拉出）
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.85;
+    ctx.fillRect(-22, -17.5, 30, 23.0);
+    ctx.strokeRect(-22, -17.5, 30, 23.0);
+    [
+        { x: -20.5, w: 8.4, col: '#0284c7', txt: 'A1', txtCol: '#e0f2fe', pull: 2.8 },
+        { x: -11.2, w: 8.4, col: '#10b981', txt: 'B4', txtCol: '#ecfdf5', pull: 1.3 },
+        { x: -1.9,  w: 8.4, col: '#f59e0b', txt: 'C9', txtCol: '#fef3c7', pull: 0.0 }
+    ].forEach(tier => {
+        const ty = -16.2 + tier.pull;
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(tier.x, ty, tier.w, 20.5);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 0.6;
+        ctx.strokeRect(tier.x, ty, tier.w, 20.5);
+        ctx.fillStyle = tier.col;
+        ctx.fillRect(tier.x + 0.8, ty + 1.5, tier.w - 1.6, 16.8);
+        ctx.strokeRect(tier.x + 0.8, ty + 1.5, tier.w - 1.6, 16.8);
+        ctx.font = 'bold 2.4px monospace';
+        ctx.fillStyle = tier.txtCol;
+        ctx.fillText(tier.txt, tier.x + tier.w / 2, ty + 9.9);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(tier.x + 1.8, ty + 20.1, tier.w - 3.6, 1.3);
+    });
+
+    // 6F) 耗材簇 C（+11..+35）：计时器 + 离心管架
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 0.7;
+    ctx.fillRect(16.5, 2.8, 12.5, 6.8);
+    ctx.strokeRect(16.5, 2.8, 12.5, 6.8);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(18.4, 7.8, 3.2, 1.1);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(23.8, 7.8, 3.2, 1.1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(17.8, 3.6, 9.9, 3.5);
+
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.65;
+    ctx.fillRect(11.5, -17.0, 22.5, 15.0);
+    ctx.strokeRect(11.5, -17.0, 22.5, 15.0);
+    [
+        { x: 14.2, y: -5.8, col: '#10b981' },
+        { x: 18.4, y: -5.8, col: '#f59e0b' },
+        { x: 14.2, y: -12.6, col: '#38bdf8' },
+        { x: 18.4, y: -12.6, col: '#e2e8f0' }
+    ].forEach(t15 => {
+        ctx.fillStyle = t15.col;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.35, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 0.65;
+        ctx.beginPath(); ctx.arc(t15.x, t15.y, 1.5, 0, Math.PI * 2); ctx.stroke();
+    });
+    [
+        { x: 27.2, y: -5.8, col: '#10b981' },
+        { x: 27.2, y: -12.8, col: '#38bdf8' }
+    ].forEach(t50 => {
+        ctx.fillStyle = t50.col;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.25, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(t50.x, t50.y, 2.45, 0, Math.PI * 2); ctx.stroke();
+    });
+
+    // 6G) 标本柜（+37..+77）
+    ctx.fillStyle = '#94a3b8';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.9;
+    ctx.fillRect(37, -17.7, 40, 25.5);
+    ctx.strokeRect(37, -17.7, 40, 25.5);
+    ctx.fillStyle = '#082f49';
+    ctx.fillRect(39.2, -15.5, 35.6, 21.0);
+    [-11.5, -3.0].forEach((sy, sIdx) => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(40.0, sy, 34.0, 1.4);
+        for (let rx = 42.5; rx <= 71.5; rx += 5.2) {
+            ctx.fillStyle = (rx + sIdx) % 2 === 0 ? '#10b981' : '#38bdf8';
+            ctx.fillRect(rx, sy + 2.0, 3.4, 3.8);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(rx + 0.6, sy + 5.8, 2.2, 0.8);
+        }
+    });
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 0.95;
+    ctx.strokeRect(39.2, -15.5, 17.8, 21.0);
+    ctx.strokeRect(57.0, -15.5, 17.8, 21.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(54.6, -3.0, 1.2, 5.2);
+    ctx.fillRect(58.2, -3.0, 1.2, 5.2);
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.55;
+    ctx.beginPath(); ctx.arc(57.0, -4.5, 1.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    // 6H) 传递窗（+81..+127）
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 0.95;
+    ctx.fillRect(81, -17.7, 46, 25.5);
+    ctx.strokeRect(81, -17.7, 46, 25.5);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(84.5, -14.5, 39.0, 19.0);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 0.7;
+    ctx.strokeRect(84.5, -14.5, 39.0, 19.0);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 0.9;
+    ctx.strokeRect(85.5, -13.5, 18.0, 17.0);
+    ctx.strokeRect(104.5, -13.5, 18.0, 17.0);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(101.2, -7.5, 1.4, 6.0);
+    ctx.fillRect(105.4, -7.5, 1.4, 6.0);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(88.5, -6.2, 2.2, 2.4);
+    ctx.fillRect(117.3, -6.2, 2.2, 2.4);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(85.5, 5.0, 12.5, 2.3);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('PASS-BOX', 108.0, 6.0);
+
+    ctx.restore();
+}
+
+function drawWestBench03Dynamic(ctx, cx, cy, unitAngle, time) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(unitAngle);
+
+    // 1. 超低温冰箱
+    const tempVal = (-80.0 + Math.sin(time * 0.42) * 0.4).toFixed(1);
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(-133.0, -0.2, 16.5, 4.6);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${tempVal}C`, -124.75, 1.85);
+    const compLoad = 0.55 + 0.35 * Math.sin(time * 0.9);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-132.0, 3.6, 14.5, 0.7);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-132.0, 3.6, 14.5 * compLoad, 0.7);
+    const frostDrift = 0.22 + 0.14 * Math.sin(time * 1.4);
+    ctx.fillStyle = `rgba(224, 242, 254, ${frostDrift.toFixed(3)})`;
+    ctx.fillRect(-134.0, 5.9, 24.0, 1.3);
+
+    // 2. 液氮储存罐
+    const ln2Level = 8.4 + Math.sin(time * 0.7) * 1.2;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-71.7, 5.6, 12.4, 2.2);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-71.5, 5.7, ln2Level, 2.0);
+    const mistR = 4.2 + ((time * 0.75) % 1.0) * 5.8;
+    const mistA = (1.0 - ((time * 0.75) % 1.0)) * 0.36;
+    ctx.strokeStyle = `rgba(224, 242, 254, ${mistA.toFixed(3)})`;
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(-65.5, -5.2, mistR, 0, Math.PI * 2); ctx.stroke();
+    const exhY = -18.2 - ((time * 1.15) % 1.0) * 8.8;
+    ctx.fillStyle = '#bae6fd';
+    ctx.beginPath(); ctx.arc(-65.5, exhY, 0.85, 0, Math.PI * 2); ctx.fill();
+
+    // 3. 冻存架 A1 冷雾
+    const a1Frost = 0.16 + 0.12 * Math.sin(time * 1.8);
+    ctx.fillStyle = `rgba(186, 230, 253, ${a1Frost.toFixed(3)})`;
+    ctx.fillRect(-19.8, -10.8, 7.0, 16.0);
+
+    // 4. 台面计时器
+    const b3Sec = 760 - (Math.floor(time) % 760);
+    const b3mm = String(Math.floor(b3Sec / 60)).padStart(2, '0');
+    const b3ss = String(b3Sec % 60).padStart(2, '0');
+    ctx.fillStyle = '#06263d';
+    ctx.fillRect(17.8, 3.6, 9.9, 3.5);
+    ctx.font = 'bold 2.4px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`${b3mm}:${b3ss}`, 22.75, 5.35);
+
+    // 5. 标本柜内部冷光 + 液面微闪
+    const cabGlow = 0.08 + 0.06 * Math.sin(time * 1.1);
+    ctx.fillStyle = `rgba(56, 189, 248, ${cabGlow.toFixed(3)})`;
+    ctx.fillRect(40.0, -14.8, 34.0, 19.6);
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.5)';
+    ctx.lineWidth = 0.45;
+    [-11.5, -3.0].forEach((sy, sIdx) => {
+        for (let rx = 42.5; rx <= 71.5; rx += 5.2) {
+            const w = Math.sin(time * 1.6 + rx * 0.4 + sIdx) * 0.35;
+            ctx.beginPath(); ctx.moveTo(rx + 0.4, sy + 3.8 + w); ctx.lineTo(rx + 3.0, sy + 3.8 - w); ctx.stroke();
+        }
+    });
+
+    // 6. 传递窗：UV 灯管 + 扫描光束 + 互锁进度条
+    const uvPulse = 0.45 + 0.35 * Math.sin(time * 1.15);
+    ctx.fillStyle = `rgba(56, 189, 248, ${(uvPulse * 0.24).toFixed(3)})`;
+    ctx.fillRect(86.5, -12.0, 35.0, 14.0);
+    const scanX = 87.5 + ((Math.sin(time * 1.2) * 0.5 + 0.5) * 33.0);
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(scanX, -12.5); ctx.lineTo(scanX, 2.5); ctx.stroke();
+    ctx.strokeStyle = `rgba(186, 230, 253, ${(0.55 + 0.35 * uvPulse).toFixed(2)})`;
+    ctx.lineWidth = 1.35;
+    ctx.beginPath(); ctx.moveTo(90.7, -5.0); ctx.lineTo(117.3, -5.0); ctx.stroke();
+    const uvPct = ((time * 0.12) % 1.0);
+    ctx.fillStyle = '#a855f7';
+    ctx.fillRect(86.2, 5.6, 11.1 * uvPct, 1.1);
+
+    // 7. 指示灯
+    [
+        { x: -115.2, y: 3.2,   on: '#ef4444', dim: '#7f1d1d', spd: 1.8, ph: 0.0 },
+        { x: -115.2, y: 1.0,   on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 1.0 },
+        { x: -55.5,  y: 6.8,   on: '#38bdf8', dim: '#0c4a6e', spd: 1.3, ph: 2.0 },
+        { x: -34.5,  y: 7.2,   on: '#10b981', dim: '#064e3b', spd: 2.4, ph: 0.4 },
+        { x: -40.5,  y: -6.7,  on: '#38bdf8', dim: '#0c4a6e', spd: 1.5, ph: 1.2 },
+        { x: 49.0,   y: 6.6,   on: '#10b981', dim: '#064e3b', spd: 1.1, ph: 0.5 },
+        { x: 122.0,  y: 5.8,   on: '#c084fc', dim: '#4c1d95', spd: 1.4, ph: 1.7 },
+        { x: 43.6,   y: -26.2, on: '#10b981', dim: '#064e3b', spd: 1.0, ph: 0.9 }
+    ].forEach(led => {
+        const p = 0.5 + 0.5 * Math.sin(time * led.spd + led.ph);
+        ctx.fillStyle = p > 0.35 ? led.on : led.dim;
+        ctx.beginPath(); ctx.arc(led.x, led.y, 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+
+    ctx.restore();
+}
+
+function getWestBench03Obstacle() {
+    const cx = 815.37, cy = 723.73;
+    const unitAngle = -0.665;
+    const cosA = Math.cos(unitAngle);
+    const sinA = Math.sin(unitAngle);
+    const halfW = 141.5; // 283 / 2
+    const halfH = 25;    // 50 / 2
+
+    const worldPts = [
+        { x: -halfW, y: -halfH },
+        { x: halfW, y: -halfH },
+        { x: halfW, y: halfH },
+        { x: -halfW, y: halfH }
+    ].map(p => ({
+        x: +(cx + p.x * cosA - p.y * sinA).toFixed(2),
+        y: +(cy + p.x * sinA + p.y * cosA).toFixed(2)
+    }));
+
+    return {
+        type: 'solid',
+        cx: cx,
+        cy: cy,
+        points: worldPts,
+        label: 'WEST BIOSAFETY BENCH 03',
+        displayName: 'BIOSAFETY & SPECIMEN STORAGE BENCH 03',
+        hideLabel: true,
+        draw: (ctx) => {
+            const camX = Math.max(0, window.cameraX || 0);
+            const camY = Math.max(0, window.cameraY || 0);
+            const vw = window.innerWidth || 1920;
+            const vh = window.innerHeight || 1080;
+            if (cx + 190 < camX || cx - 190 > camX + vw || cy + 160 < camY || cy - 160 > camY + vh) return;
+
+            const cacheKey = '__westBench03V1_' + cx + '_' + cy;
+            if (!window[cacheKey]) {
+                const SS = 4;
+                const cw = 320, ch = 260;
+                const off = document.createElement('canvas');
+                off.width = cw * SS;
+                off.height = ch * SS;
+                const octx = off.getContext('2d');
+                octx.save();
+                octx.scale(SS, SS);
+                octx.translate(cw / 2 - cx, ch / 2 - cy);
+                drawWestBench03Static(octx, cx, cy, unitAngle);
+                octx.restore();
+                window[cacheKey] = { canvas: off, w: cw, h: ch };
+            }
+            const c = window[cacheKey];
+            const time = Date.now() * 0.001;
+            ctx.save();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(c.canvas, cx - c.w / 2, cy - c.h / 2, c.w, c.h);
+            drawWestBench03Dynamic(ctx, cx, cy, unitAngle, time);
             ctx.restore();
         }
     };
@@ -10560,31 +12055,33 @@ const LEVEL_7_TEST = {
             // (已删除 R2-R，替换为圆形控制台)
             // (已删除 R3-L/R3-R，替换为三联方形隔间控制台，2026-11-05)
 
-            // J. 西侧三角房 · 0.7x 法医解剖室设施：向右侧斜上方挪至 (640,1085) 靠近房间中央与上方通道，不挡通道出口
-            getWestAutopsyTableObstacle(640, 1085),
-            getWestAutopsyTrayObstacle(585, 1049, 'hearts', 'AUTOPSY TRAY NW (HEARTS)'),
-            getWestAutopsyTrayObstacle(695, 1049, 'tools', 'AUTOPSY TRAY NE (TOOLS)'),
-            getWestAutopsyTrayObstacle(585, 1122, 'organs', 'AUTOPSY TRAY SW (ORGANS)'),
-            getWestAutopsyTrayObstacle(695, 1122, 'intestines', 'AUTOPSY TRAY SE (INTESTINES)'),
-            getWestToolCartObstacle(510, 1085),
-            getWestBucketObstacle(560, 1150),
-            getWestStepStoolObstacle(730, 1145),
+            // J. 西侧三角房 · 0.7x 法医解剖室设施：沿北墙平行 (-0.665 rad) 移至 (601.3, 1035.6) 一带，远离五联/七联舱与出口
+            getWestAutopsyTableObstacle(601.3, 1035.6, -0.665),
+            getWestAutopsyTrayObstacle(535.8, 1041.2, 'hearts', 'AUTOPSY TRAY NW (HEARTS)', -0.665),
+            getWestAutopsyTrayObstacle(622.3, 973.3, 'tools', 'AUTOPSY TRAY NE (TOOLS)', -0.665),
+            getWestAutopsyTrayObstacle(580.8, 1098.6, 'organs', 'AUTOPSY TRAY SW (ORGANS)', -0.665),
+            getWestAutopsyTrayObstacle(667.4, 1030.7, 'intestines', 'AUTOPSY TRAY SE (INTESTINES)', -0.665),
+            getWestToolCartObstacle(499.0, 1115.8, -0.665),
+            getWestBucketObstacle(578.4, 1136.1, -0.665),
+            getWestStepStoolObstacle(709.1, 1027.2, -0.665),
 
             // K. 西侧三角房 · 0.7x 五联胶囊型培养舱 (228x114 旋转矩形 solid @ 1018.93,712.87) + 七联胶囊型培养舱 (318x114 旋转矩形 solid @ 1110.88,1239.52)
             getWestPentaIncubationUnitObstacle(),
             getWestHeptaIncubationUnitObstacle(),
 
-            // L. 西侧三角房 · 底墙西段长试验台 04（仪器分析台 330x50 旋转矩形 solid @ 378.59,1307.44，占沿墙 85–415）
+            // L. 西侧三角房 · 北墙三台长试验台 01–03（各 283x50 旋转矩形 solid，角度 -0.665 rad，贴墙距内壁 3px）
+            getWestBench01Obstacle(),
+            getWestBench02Obstacle(),
+            getWestBench03Obstacle(),
+
+            // M. 西侧三角房 · 底墙西段长试验台 04（仪器分析台 330x50 旋转矩形 solid @ 378.59,1307.44，占沿墙 85–415）
             getWestBench04Obstacle(),
 
-            // M. 西侧三角房 · 底墙中段长试验台 05（生物安全/标本储存台 330x50 旋转矩形 solid @ 658.37,1491.69，占沿墙 420–750）
+            // N. 西侧三角房 · 底墙中段长试验台 05（生物安全/标本储存台 330x50 旋转矩形 solid @ 658.37,1491.69，占沿墙 420–750）
             getWestBench05Obstacle(),
 
-            // N. 西侧三角房 · 底墙东段长试验台 06（湿化学台 330x50 旋转矩形 solid @ 938.14,1675.95，占沿墙 755–1085）
-            getWestBench06Obstacle(),
-
-            // O. 西侧三角房 · 紧凑武器测试站 TEST-01（260x120 规则矩形 solid @ 900,1450，水平 0 rad）
-            getWestWeaponTestStationObstacle()
+            // O. 西侧三角房 · 底墙东段长试验台 06（湿化学台 330x50 旋转矩形 solid @ 938.14,1675.95，占沿墙 755–1085）
+            getWestBench06Obstacle()
         ];
 
         // =====================================================================
@@ -11679,8 +13176,8 @@ const LEVEL_7_TEST = {
             c2DeconLiqS,
             getAirtightBlastDoor('airtight_door_3', c2Door3Pos.x, c2Door3Pos.y, c2Angle, false),
             getAirtightBlastDoor('airtight_door_4', c2Door4Pos.x, c2Door4Pos.y, c2Angle, true),
-            // 12. 西侧三角房无碰撞地面盘管 (直径 24，随解剖组移至 750,1110)
-            getWestCoiledHoseProp(750, 1110)
+            // 12. 西侧三角房无碰撞地面盘管 (直径 24，随解剖组移至 703.3, 987.4)
+            getWestCoiledHoseProp(703.3, 987.4)
         );
 
         // =====================================================================
